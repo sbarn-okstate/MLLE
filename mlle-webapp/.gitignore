@@ -22,3 +22,31 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignore Emscripten compiled binaries and temp files
+external/emsdk/emsdk_env.sh
+external/emsdk/emsdk_set_env.sh
+external/emsdk/.emscripten
+external/emsdk/.emscripten_ports
+external/emsdk/.git-credentials
+external/emsdk/tmp/
+external/emsdk/upstream/
+external/emsdk/fastcomp/
+external/emsdk/node/
+external/emsdk/zips/
+external/emsdk/clang/
+external/emsdk/python/
+external/emsdk/java/
+external/emsdk/.cache/
+
+# Ignore build artifacts (WebAssembly and JS output)
+*.wasm
+*.js
+*.data
+*.mem
+*.wast
+*.html
+*.map
+
+# Ignore any log files
+emscripten_log.txt

@@ -28,3 +28,10 @@ Running the webapp
   ```
 5. Click ctrl+c to exit from the above output. 
 
+
+## Setting Up Emscripten
+Run the following command before building:
+  setup_emsdk.bat
+
+To ensure Emscripten is working:
+  emcc -v
