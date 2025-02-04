@@ -30,7 +30,7 @@ Running the webapp
 
 ## Compiling C++ to WebAssembly
 While installing Node.js, check the box to install Chocolately
-   choco install make
+   
 
 
 ## Setting Up Emscripten
