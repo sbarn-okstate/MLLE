@@ -25,6 +25,6 @@ Note: This only applies to your current terminal session. Closing or resetting t
 1. Start the emscripten command prompt: ```$./MLLE/external/emdsk> .\emcmdprompt.bat```
 2. Prepare make files: ```$./MLLE/backend> emcmake cmake .```
 3. Build C++: ```$./MLLE/backend> emmake ninja```
-4. Compile linked code to JavaScript and WebAssembly: ```emcc [generated *.o *.so or *.a file] -o [output filename].js```
+4. Compile linked code to JavaScript and WebAssembly: ```emcc [generated *.o *.so or *.a file, usually in a subfolder of /CMakeFiles] -o [output filename].js```
 
   
