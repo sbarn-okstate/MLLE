@@ -1,8 +1,11 @@
-#include <emscription.h>
+#include <emscripten.h>
+#include <stdio.h>
 
 extern "C" {
-    EMSCRIPTEN_KEEPALIVE
-    int increment(int count) {
-        return count + 1;
+    void test(){
+        printf("hello, world!\n");
     }
+    //int increment(int count) {
+    //    return count + 1;
+    //}
 }
