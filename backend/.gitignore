@@ -1,0 +1,15 @@
+# Build files
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/Makefile
+/ninja_build/
+.ninja_deps
+.ninja_log
+*.ninja
+*.cmake
+/*.o
+/*.a
+/*.so
+/*.wasm
+/*.js
