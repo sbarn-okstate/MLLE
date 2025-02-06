@@ -28,14 +28,3 @@ Running the webapp
   ```
 5. Click ctrl+c to exit from the above output. 
 
-## Compiling C++ to WebAssembly
-While installing Node.js, check the box to install Chocolately
-   
-
-
-## Setting Up Emscripten
-Run the following command before building:
-  setup_emsdk.bat
-
-To ensure Emscripten is working:
-  emcc -v
