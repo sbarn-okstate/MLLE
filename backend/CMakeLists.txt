@@ -1,22 +1,18 @@
-cmake_minimum_required(VERSION 3.10)
-project(MyWasmProject)
+cmake_minimum_required(VERSION 3.8)
 
-# Set the C++ standard
+project(test)
+
+add_definitions(-std=c++17)
 set(CMAKE_CXX_STANDARD 17)
 
-# Add C++ source files
-add_library(my_wasm_module MODULE main.cpp)
+if (DEFINED EMSCRIPTEN)
+    # Compile to object file (.o)
+    add_compile_options(-c)  # Tells CMake to generate object files
+    
+    add_library(main_obj OBJECT main.cpp)
 
-# Emscripten settings for WebAssembly output
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1 -s EXPORTED_FUNCTIONS='[\"_my_function\"]'")
-
-# This tells emcc to use a JavaScript file as the main entry point
-set_target_properties(my_wasm_module PROPERTIES
-    LINK_FLAGS "-s EXPORTED_FUNCTIONS='[\"_my_function\"]'"
-)
-
-# Optionally, if you want to include a JS file that initializes the WASM module
-# You can also copy a JavaScript file that interacts with the WebAssembly code
-#add_custom_command(TARGET my_wasm_module POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/main.js ${CMAKE_BINARY_DIR}/
-#)
+    # No executable is generated here, just the object file
+    # Later, you will manually run emcc to link the object into wasm and js
+else()
+    add_library(main SHARED main.cpp)
+endif()
