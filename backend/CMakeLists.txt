@@ -1,18 +1,12 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14)
 
-project(test)
+project(backend)
 
 add_definitions(-std=c++17)
 set(CMAKE_CXX_STANDARD 17)
 
-if (DEFINED EMSCRIPTEN)
-    # Compile to object file (.o)
-    add_compile_options(-c)  # Tells CMake to generate object files
-    
-    add_library(main_obj OBJECT main.cpp)
+# Find all C++ source files
+file(GLOB_RECURSE SOURCES src/*.cpp)
 
-    # No executable is generated here, just the object file
-    # Later, you will manually run emcc to link the object into wasm and js
-else()
-    add_library(main SHARED main.cpp)
-endif()
+# Create an object library (compiles each .cpp file into a .o file)
+add_library(backend_objects OBJECT ${SOURCES})

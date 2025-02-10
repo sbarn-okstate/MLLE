@@ -8,7 +8,7 @@
 
 extern "C"
 {
-    EMSCRIPTEN_KEEPALIVE void my_function(){
-        printf("hello world!\n");
+    EMSCRIPTEN_KEEPALIVE void my_function_again(){
+        printf("hello world again!\n");
     }
 }
