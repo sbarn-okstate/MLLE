@@ -1,0 +1,12 @@
+.nodeConnector {
+    color: green;
+}
+
+svg {
+    background-color: rgb(139, 139, 139);
+}
+
+rect {
+    stroke-width: 4;
+    stroke: red;
+}
