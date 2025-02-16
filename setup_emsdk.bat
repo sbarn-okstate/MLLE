@@ -1,7 +1,10 @@
 @echo off
-cd /d %~dp0\external\emsdk
-call emsdk install latest
-call emsdk activate latest
+cd /d "%~dp0external\emsdk"
+
+echo Installing Emscripten SDK...
+call emsdk.bat install latest
+call emsdk.bat activate latest
 call emsdk_env.bat
-cd ..\..
-echo Emscripten setup complete!
+set PATH=%CD%\upstream\emscripten;%PATH%
+echo Emscripten setup complete.
+

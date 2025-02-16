@@ -1,0 +1,24 @@
+.footertext {
+    color: rgba(160, 160, 160, 0.87);
+    font-size: small;
+    text-align: center;
+    display:inline-block;
+    position:absolute;
+    top: 96%;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+body {
+    margin: 0;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+button {
+    height: 3em;
+    width: 10em;
+    border-radius: 1em;
+}
