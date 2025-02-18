@@ -1,4 +1,4 @@
-Install TensorFlow automatically with: \
+Install TensorFlow automatically with: 
 ```
 .\tensorflow_setup
 ```
