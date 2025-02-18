@@ -5,7 +5,7 @@ async function createWorker() {
     let worker;
     
     if (typeof Worker !== 'undefined') {
-        worker = new Worker('backend-worker.js', { type: 'module' }); // Use ES modules in the worker
+        worker = new Worker('./backend-worker.js', { type: 'module' }); // Use ES modules in the worker
     } else {
         console.error("Web Workers are not supported in this environment.");
         return;
