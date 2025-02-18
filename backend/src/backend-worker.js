@@ -1,5 +1,5 @@
 // backend-worker.js
-import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.jss';
+import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
 
 import { prepareModel, trainModel } from './model.js';
 
