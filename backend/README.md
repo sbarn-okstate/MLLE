@@ -1,6 +1,9 @@
-To install tensorflow automatically: ```.\setup```
+Install TensorFlow automatically with: \
+```.\tensorflow_setup```
 
-or install manually with:
+OR
+
+Install Tensorflow manually with:
 ```
 ~backend/tensorflow> npm install @tensorflow/tfjs
 ~backend/tensorflow> npm install @tensorflow/tfjs-backend-wasm
