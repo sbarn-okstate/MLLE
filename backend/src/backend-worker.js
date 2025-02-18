@@ -12,7 +12,7 @@ onmessage = function(event) {
         break;
       case 'trainModel':
         if (active_model) {
-          trainModel(active_model, data[0], [1]);
+          trainModel(active_model, data[0], data[1]);
         }
         break;
       default:
