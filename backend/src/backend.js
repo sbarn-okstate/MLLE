@@ -1,4 +1,4 @@
-import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
+//import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
 
 // Create a worker for the browser
 async function createWorker() {
