@@ -4,7 +4,6 @@
 import * as defaults from './defaults.js';
 
 export async function prepareModel(layers){
-    await tfReady;
     const model = tf.sequential();
     for (let layer of layers) {
       if (layer.type === 'dense') {
