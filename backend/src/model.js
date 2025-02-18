@@ -2,7 +2,7 @@
 
 //import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
 
-import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
+import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js';
 
 import * as defaults from './defaults.js';
 
