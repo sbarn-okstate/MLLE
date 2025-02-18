@@ -1,9 +1,6 @@
 // model.js
 
 //import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
-
-import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
-
 import * as defaults from './defaults.js';
 
 export async function prepareModel(layers){
