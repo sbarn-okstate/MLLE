@@ -53,7 +53,7 @@ export async function startTraining() {
 
     // Send messages to the worker
     worker.postMessage({ action: "prepareModel", data: test_model });
-    worker.postMessage({ action: "trainModel", data: {xs: xs.arraySync(), ys: ys.arraySync());
+    worker.postMessage({ action: "trainModel", data: {xs: xs.arraySync(), ys: ys.arraySync()}});
     
     worker.onmessage = (e) => {
         console.log(e.data);
