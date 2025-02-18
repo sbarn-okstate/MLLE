@@ -1,5 +1,7 @@
 Install TensorFlow automatically with: \
-```.\tensorflow_setup```
+```
+.\tensorflow_setup
+```
 
 OR
 
