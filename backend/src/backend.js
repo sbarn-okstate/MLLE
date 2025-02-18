@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs';
+import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
 
 // Create a worker for the browser
 async function createWorker() {
@@ -14,7 +14,7 @@ async function createWorker() {
     return worker;
 }  
 
-async function startTraining() {
+export async function startTraining() {
     const worker = await createWorker();
 
     if (!worker) {
@@ -64,5 +64,3 @@ async function startTraining() {
         console.error('Worker Error:', error);
     };
 }
-
-startTraining().catch((err) => console.error('Error during training:', err));

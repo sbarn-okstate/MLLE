@@ -1,6 +1,6 @@
 // model.js
 
-import * as tf from '@tensorflow/tfjs';
+import * as tf from '../tensorflow/node_modules/@tensorflow/tfjs';
 import * as defaults from './defaults.js';
 
 export async function prepareModel(layers){
@@ -36,15 +36,15 @@ export async function prepareModel(layers){
     return model;
   }
   
-  export async function trainModel(model, xs, ys){
-    await model.fit(xs, ys, {
-      epochs: 500, // Number of epochs (iterations over the dataset)
-      callbacks: {
-        onEpochEnd: (epoch, logs) => {
-          console.log(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
-        }
+export async function trainModel(model, xs, ys){
+  await model.fit(xs, ys, {
+    epochs: 500, // Number of epochs (iterations over the dataset)
+    callbacks: {
+      onEpochEnd: (epoch, logs) => {
+        console.log(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
       }
-    });
-  
-    console.log('Training complete!');
-  }
+    }
+  });
+
+  console.log('Training complete!');
+}
