@@ -16,6 +16,13 @@ onmessage = function(event) {
         active_model = prepareModel(data);
         break;
       case 'trainModel':
+        console.log('Received xs:', data.xs);
+        console.log('Received ys:', data.ys);
+        
+        if (!Array.isArray(data.xs)) {
+          console.error('data.xs is not an array:', data.xs);
+        }
+
         if (active_model) {
           trainModel(active_model, tf.tensor(data.xs), tf.tensor(data.ys));
         }
