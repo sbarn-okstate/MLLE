@@ -1,5 +1,6 @@
 // backend-worker.js
-import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
+import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.esm.js';
+
 console.log('TensorFlow.js module:', tf);
 console.log('TensorFlow.js version:', tf?.version);
 console.log('tf.tensor exists:', typeof tf.tensor);
