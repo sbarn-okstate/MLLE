@@ -28,6 +28,7 @@ export async function startTraining() {
     let test_model = [
         {
             type: "dense",
+            inputShape: [5],
             units: 128,
             activation: "relu"
         },
