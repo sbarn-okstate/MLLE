@@ -51,11 +51,11 @@ export async function startTraining() {
             units: 1,
         }
     ];
-
+    console.log('here');
     // Send messages to the worker
     worker.postMessage({ action: "prepareModel", data: test_model });
     worker.postMessage({ action: "trainModel", data: {xs: xs.arraySync(), ys: ys.arraySync()}});
-    
+    console.log('here2');
     worker.onmessage = (e) => {
         console.log(e.data);
         // Here, the UI can update with weights or other data from the worker
