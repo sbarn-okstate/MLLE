@@ -1,4 +1,6 @@
 // backend-worker.js
+console.log('Worker loaded');
+
 import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.esm.js';
 
 console.log('TensorFlow.js module:', tf);
