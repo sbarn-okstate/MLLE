@@ -21,7 +21,7 @@ export async function startTraining() {
         console.error("Failed to create worker.");
         return;
     }
-
+    console.log('here3');
     const xs = tf.tensor2d([[1], [2], [3], [4], [5]], [5, 1]); // Input data
     const ys = tf.tensor2d([[1], [3], [5], [7], [9]], [5, 1]); // Expected output (linear pattern)
 
