@@ -10,6 +10,7 @@ import { prepareModel, trainModel } from './model.js';
 let active_model = null
 
 onmessage = function(event) {
+    console.log('Worker received message');
     const { action, data } = event.data;
     switch(action){
       case 'prepareModel':
