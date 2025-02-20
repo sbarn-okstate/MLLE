@@ -7,7 +7,7 @@ console.log('tf.tensor exists:', typeof tf.tensor);
 
 import { prepareModel, trainModel } from './model.js';
 
-let active_model = null
+let active_model = null;
 
 onmessage = function(event) {
     console.log('Worker received message');
