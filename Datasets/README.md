@@ -1,8 +1,14 @@
 # Datasets
 This is a list of datasets stored in this folder. 
 
+Heart Disease Dataset
+- **Filename:** Heart Disease Dataset.zip
+- **Note:** All values in this dataset are only numbers. The last column named Target is our label/classifications.
+- **Can use for:** Classification
+- **Link:** https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset/data
+
 Optical Recognition of Handwritten Digits
-- **Filename: optical+recognition+of+handwritten+digits.zip**
+- **Filename:** optical+recognition+of+handwritten+digits.zip
 - **Note:** This is the 8x8 digits dataset 
 - **Can use for:** Classification
 - **Link:** https://archive.ics.uci.edu/dataset/80/optical+recognition+of+handwritten+digits
