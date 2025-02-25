@@ -18,6 +18,16 @@ function TestDraggable() {
 }
 */
 
+
+function button1() {
+    console.log("Button 1 pressed!");
+}
+
+function button2() {
+    console.log("Button 2 pressed!");
+}
+
+
 // Programmatically add draggable
 function AddDraggable() {
     //console.log("creating count" + count + " draggable element");
@@ -66,6 +76,8 @@ function SandboxTest() {
                 <Link to="/">Go Back</Link>
             </div>
             <button onClick={() => AddDraggable()}>Add Draggable</button>
+            <button onClick={() => button1()}>Button 1</button>
+            <button onClick={() => button2()}>Button 2</button>
             {/*
 
             // I don't know if we still need this
