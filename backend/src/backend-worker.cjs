@@ -16,8 +16,8 @@ parentPort.on('message', function(event) {
       active_model = prepareModel(data);
       break;
     case 'trainModel':
-      parentPort.postMessage('Received xs:', data.xs);
-      parentPort.postMessage('Received ys:', data.ys);
+      //parentPort.postMessage('Received xs:', data.xs);
+      //parentPort.postMessage('Received ys:', data.ys);
 
       if (!Array.isArray(data.xs)) {
         parentPort.postMessage('data.xs is not an array:', data.xs);
