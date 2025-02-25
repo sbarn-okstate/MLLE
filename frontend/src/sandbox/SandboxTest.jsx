@@ -6,7 +6,8 @@ import SandboxController from './SandboxController.jsx';
 
 var count = 0;
 var draggables = [];
-var controller = new SandboxController();
+var controller = new SandboxController("poo");
+var controller1 = new SandboxController("pee");
 
 // Define test draggable
 /*
@@ -56,6 +57,7 @@ function SandboxTest() {
     */
     useEffect(() => {
         controller.test();
+        controller1.test();
     })
 
     return(
