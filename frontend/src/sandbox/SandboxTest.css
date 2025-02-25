@@ -18,6 +18,12 @@
     border-radius: 5px;
 }
 
+.newNode {
+    background-color: red;
+    padding: 2px;
+    border-radius: 2px;
+}
+
 svg {
     background-color: rgb(139, 139, 139);
 }

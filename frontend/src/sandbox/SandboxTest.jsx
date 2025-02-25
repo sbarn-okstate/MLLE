@@ -65,6 +65,16 @@ function SandboxTest() {
             <div>
                 <Link to="/">Go Back</Link>
             </div>
+            <div className="newNode">
+                <p>Layer type: 
+                    <span>
+                        <select name="type" id="layertype">
+                            <option value="dense">Dense</option>
+                            <option value="dropout">Dropout</option>
+                        </select>
+                    </span>
+                </p>
+            </div>
             <button onClick={() => AddDraggable()}>Add Draggable</button>
             {/*
 
