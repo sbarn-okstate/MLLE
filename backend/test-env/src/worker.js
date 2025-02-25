@@ -4,10 +4,11 @@ import { prepareModel, trainModel } from './model.js';  // Import model function
 
 self.onmessage = async (event) => {
     const { type, data } = event.data;
-
+    self.postMessage(data);
     if (type === "prepareModel") {
         const model = await prepareModel(data);
         self.postMessage("Model created!");
+        self.postMessage(model);
         self.model = model;  // Store model in worker for training
     }
 

@@ -33,7 +33,7 @@ export async function prepareModel(layers) {
       optimizer: 'adam'
   });
 
-  return model;
+  return model.summary();
 }
 
 export async function trainModel(model, xs, ys, worker) {
