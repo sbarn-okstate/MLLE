@@ -1,3 +1,5 @@
+// backend.js
+
 let backend_worker = null;
 
 export function createBackendWorker() {
