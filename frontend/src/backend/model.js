@@ -48,9 +48,10 @@ export async function trainModel(xs, ys, worker) {
             return;
         }
     
+        await tf.ready();  // Ensure TensorFlow.js is initialized
+
         xs = tf.tensor2d(xs, [xs.length, 1]);
         ys = tf.tensor2d(ys, [ys.length, 1]);
-        await tf.ready();  // Ensure TensorFlow.js is initialized
     
         await model.fit(xs, ys, {
             epochs: 500,
