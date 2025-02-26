@@ -1,4 +1,5 @@
 // model.js
+
 import * as defaults from './defaults.js'
 
 let model = null;
