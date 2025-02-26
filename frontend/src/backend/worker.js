@@ -1,6 +1,8 @@
-import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';  // Import TensorFlow from CDN
+// worker.js
 
-import { prepareModel, trainModel } from './model.js';  // Import model functions
+import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
+
+import { prepareModel, trainModel } from './model.js';
 
 self.onmessage = async (event) => {
     const { func, args } = event.data;
