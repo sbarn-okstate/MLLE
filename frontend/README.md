@@ -1,15 +1,18 @@
 # Webapp
+```
 npm install
 npm i plain-draggable babel-loader@latest pointer-event cssprefix anim-event m-class-list
-npm run dev
-
+npm run dev 
+```
 # If plain-draggable doesn't work
+```
 cd node_modules/plain-draggable
 npm i
-
+```
 # If npm run doesn't work
+```
 npm install
-
+```
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
