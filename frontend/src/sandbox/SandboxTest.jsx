@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
+import * as backend from '../backend/backend.js'
 
 var count = 0;
 var draggables = [];
@@ -17,16 +18,51 @@ function TestDraggable() {
     draggables.push(new PlainDraggable(draggable));
 }
 */
+let backend_worker = null
 
-
-function button1() {
-    console.log("Button 1 pressed!");
+function createBackend() {
+    backend.createBackendWorker();
+    backend_worker = backend.getBackendWorker();
 }
 
-function button2() {
+function createModel() {
+    //FIXME: This is just a test
     console.log("Button 2 pressed!");
+    let test_model = [
+        {
+            type: "dense",
+            inputShape: [5],
+            units: 128,
+            activation: "relu"
+        },
+        {
+            type: "dropout",
+            rate: 0.2
+        },
+        {
+            type: "dense",
+            units: 64,
+            activation: "relu"
+        },
+        {
+            type: "dense",
+            units: 32,
+            activation: "relu"
+        },
+        {
+            type: "dense",
+            units: 1,
+        }
+    ];
+    backend_worker.postMessage({func: 'prepareModel', args: test_model})
 }
 
+function train() {
+    //FIXME: This is just a test
+    let xs = [1,2,3,4,5]  // Input data
+    let ys = [1,3,5,7,9]; // Expected output 
+    backend_worker.postMessage({func: 'trainModel', args: {xs: xs, ys: ys}});
+}
 
 // Programmatically add draggable
 function AddDraggable() {
@@ -76,8 +112,9 @@ function SandboxTest() {
                 <Link to="/">Go Back</Link>
             </div>
             <button onClick={() => AddDraggable()}>Add Draggable</button>
-            <button onClick={() => button1()}>Button 1</button>
-            <button onClick={() => button2()}>Button 2</button>
+            <button onClick={() => createBackend()}>Create Backend</button>
+            <button onClick={() => createModel()}>Create Model</button>
+            <button onClick={() => train()}>Train</button>
             {/*
 
             // I don't know if we still need this
