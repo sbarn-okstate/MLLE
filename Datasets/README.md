@@ -1,5 +1,5 @@
 # Datasets
-This is a list of datasets stored in this folder. 
+This is a list of datasets stored in this folder. The following are regarding all .zip files only.
 
 Heart Disease Dataset
 - **Filename:** Heart Disease Dataset.zip
