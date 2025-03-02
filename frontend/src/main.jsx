@@ -7,10 +7,12 @@ import SandboxTest from './sandbox/SandboxTest.jsx';
 import './index.css'
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Welcome />} />
-      <Route path="/sandbox" element={<SandboxTest />} />
-    </Routes>
-  </BrowserRouter>,
+  <StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/sandbox" element={<SandboxTest />} />
+      </Routes>
+    </BrowserRouter>
+  </StrictMode>
 )
