@@ -1,5 +1,5 @@
 const tf = require('../tensorflow/node_modules/@tensorflow/tfjs');
-
+console.log(tf.version)
 //path to heart.csv (this dataset only contains numerical values)
 const path = require('path');
 const csvPath = path.resolve('./Datasets/Heart Disease Dataset/heart.csv');

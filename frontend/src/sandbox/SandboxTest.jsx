@@ -4,6 +4,7 @@ import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
 import * as backend from '../backend/backend.js'
+import * as dataloader from '../backend/dataloader.js' //Added by Justin.
 
 var count = 0;
 var draggables = [];
@@ -95,6 +96,24 @@ function RecalcPos() {
     });
 }
 
+function chooseDatasets(){
+    console.log("chooseDatasets button clicked!")
+    
+    dataloader.checkTfVersion();
+    
+    //This will be used to display datasets for user to choose from.
+    //dataloader.getDatasets();
+
+    //Temporarily hardcoded chosen dataset.
+    //let chosen_dataset = "heart.csv"
+
+    //Display chosen dataset for dev purposes. More than likely won't need this in the end produc.t
+    //dataloader.printCSV(chosen_dataset);
+
+    //Obtain information about the dataset. 
+    //dataloader.loadCSV();
+}
+
 function SandboxTest() {
     /*
     useEffect(() => {
@@ -115,6 +134,7 @@ function SandboxTest() {
             <button onClick={() => createBackend()}>Create Backend</button>
             <button onClick={() => createModel()}>Create Model</button>
             <button onClick={() => train()}>Train</button>
+            <button onClick={() => chooseDatasets()}>Choose Dataset</button> {/*Added by Justin*/}
             {/*
 
             // I don't know if we still need this
