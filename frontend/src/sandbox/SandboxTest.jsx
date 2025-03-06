@@ -97,6 +97,11 @@ function SandboxTest() {
     const [list, setList] = useState([]);
     const [draggables, setDraggables] = useState([]);
 
+    // This gets executed when the DOM is updated
+    useEffect(() => {
+        UpdateDraggablePos();
+    })
+
     // localized test div add
     function AddTestDiv() {
         setList([
