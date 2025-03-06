@@ -8,8 +8,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, './localhost-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, './localhost.pem')),
+      key: fs.readFileSync(path.resolve(__dirname, './cert/localhost-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, './cert/localhost.pem')),
     },
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
