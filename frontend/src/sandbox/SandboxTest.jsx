@@ -4,20 +4,11 @@ import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
 import * as backend from '../backend/backend.js'
+import snapPoints from './snapPoints.js';
 
 var count = 0;
 var draggables = [];
-var controller = new SandboxController("poo");
-var controller1 = new SandboxController("pee");
 
-// Define test draggable
-/*
-function TestDraggable() {
-    const draggable = document.getElementById("draggable");
-    //let testdrag = new PlainDraggable(draggable);
-    draggables.push(new PlainDraggable(draggable));
-}
-*/
 let backend_worker = null
 
 function createBackend() {
@@ -64,81 +55,127 @@ function train() {
 }
 
 // Programmatically add draggable
-function AddDraggable() {
-    //console.log("creating count" + count + " draggable element");
-    let newDiv = document.createElement("div"); // Create the div
-    newDiv.id = "drag" + count;                 // Set the id of the div for referencing
-    newDiv.className = "testdraggable";         // Set the classname of the div for CSS
-    const newDivContent = document.createTextNode("Drag" + count);  // Create the content for the div
-    newDiv.appendChild(newDivContent);          // Set the content of the div
-
-    // Add to the stage
-    const stageDiv = document.getElementById("stage");  // Get the stage div from document
-    stageDiv.appendChild(newDiv);                       // Add the new div to the stage
-    const poop = document.getElementById("drag" + count);   // Get the div
-    draggables.push(new PlainDraggable(poop));          // Make the div draggable
-    //let poopdrag = new PlainDraggable(poop);
-    count += 1;                                         // Iterate the count
-
-    // Need to run the PlainDraggable.position() method on all existing draggables
-    // This recalculates the bounds that the draggables can move in
-    // Without doing this, the bounds will be incorrect on some draggables
-    RecalcPos();
-}
-
-// Recalculate position for all draggables
-// Required for bounds to function properly
-function RecalcPos() {
-    draggables.forEach((thing) => {
-        thing.position();
-    });
-}
-
 function SandboxTest() {
-    /*
+    const [elements, setElements] = useState([]);
+    const containerRef = useRef(null);
+    const elementRefs = useRef(new Map());
+  
+    function getSnapPoints(el) {
+      if (!el) return [];
+      const rect = el.getBoundingClientRect();
+      return [
+        { x: rect.left, y: rect.top + rect.height / 2 }, // Left-center
+        { x: rect.right, y: rect.top + rect.height / 2 }, // Right-center
+        { x: rect.left + rect.width / 2, y: rect.top }, // Top-center
+        { x: rect.left + rect.width / 2, y: rect.bottom }, // Bottom-center
+      ];
+    }
+  
+    function findClosestSnapPoint(el, elementsList) {
+      const elSnapPoints = getSnapPoints(el);
+      let closestPoint = null;
+      let minDistance = 20; // Max snap distance
+  
+      elementsList.forEach((otherEl) => {
+        if (otherEl === el) return;
+        const otherSnapPoints = getSnapPoints(otherEl);
+  
+        elSnapPoints.forEach((elPoint) => {
+          otherSnapPoints.forEach((otherPoint) => {
+            const distance = Math.hypot(elPoint.x - otherPoint.x, elPoint.y - otherPoint.y);
+            if (distance < minDistance) {
+              minDistance = distance;
+              closestPoint = { elPoint, otherPoint };
+            }
+          });
+        });
+      });
+  
+      return closestPoint;
+    }
+  
     useEffect(() => {
-        TestDraggable();
-    })
-    */
-    useEffect(() => {
-        controller.test();
-        controller1.test();
-    })
-
-    return(
-        <>
-            <div>
-                <Link to="/">Go Back</Link>
-            </div>
-            <button onClick={() => AddDraggable()}>Add Draggable</button>
-            <button onClick={() => createBackend()}>Create Backend</button>
-            <button onClick={() => createModel()}>Create Model</button>
-            <button onClick={() => train()}>Train</button>
-            {/*
-
-            // I don't know if we still need this
-            // Maybe the svg stuff can be reused
-
-            <svg>
-                <a>
-                    <path id="lineAB" d="M 100 350 l 150 -300" stroke="red" strokeWidth="4"/>
-                    <path id="lineBC" d="M 250 50 l 150 300" stroke="red" strokeWidth="4"/>
-                    <path id="lineMID" d="M 175 200 l 150 0" stroke="green" strokeWidth="4"/>
-                    <path id="lineAC" d="M 100 350 q 150 -300 300 0" stroke="blue" strokeWidth="4" fill="none"/>
-                </a>
-                <a>
-                    <rect id="rect1" onClick={() => test("rect")} width="100" height="100" x="10" y="10" rx="10" ry="10" fill="white" />
-                    <circle id="nodeConnector1" className="nodeConnector" onClick={() => test("circle")} r="4" cx="110" cy="60" />
-                </a>
-            </svg>
-            */}
-            <div id="stage" className="teststage">
-                {/*
-                <div id="draggable" className="testdraggable">Drag Me</div>
-                */}
-            </div>
-        </>
+      elements.forEach((id) => {
+        const el = elementRefs.current.get(id);
+        if (!el) return;
+  
+        const draggable = new PlainDraggable(el);
+        draggable.onMove = function () {
+          const allElements = Array.from(elementRefs.current.values());
+          const snap = findClosestSnapPoint(el, allElements);
+  
+          if (snap) {
+            const dx = snap.otherPoint.x - snap.elPoint.x;
+            const dy = snap.otherPoint.y - snap.elPoint.y;
+            draggable.left += dx;
+            draggable.top += dy;
+          }
+        };
+      });
+    }, [elements]);
+  
+    function addElement() {
+      const newId = elements.length ? elements[elements.length - 1] + 1 : 1;
+      setElements(function (prev) {
+        return [...prev, newId];
+      });
+    }
+  
+    return (
+      <div>
+        <button
+          onClick={addElement}
+          style={{
+            padding: "10px",
+            backgroundColor: "#3B82F6",
+            color: "white",
+            borderRadius: "5px",
+            marginBottom: "10px",
+          }}
+        >
+          Add Draggable Element
+        </button>
+        <div
+          ref={containerRef}
+          style={{
+            position: "relative",
+            width: "400px",
+            height: "300px",
+            backgroundColor: "#F3F4F6",
+            border: "1px solid gray",
+            padding: "10px",
+          }}
+        >
+          {elements.map(function (id) {
+            return (
+              <div
+                key={id}
+                ref={function (el) {
+                  if (el) elementRefs.current.set(id, el);
+                }}
+                style={{
+                  position: "absolute",
+                  width: "60px",
+                  height: "60px",
+                  backgroundColor: "#10B981",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "5px",
+                  boxShadow: "2px 2px 5px rgba(0,0,0,0.3)",
+                  cursor: "pointer",
+                  top: "50px",
+                  left: id * 70,
+                }}
+              >
+                {id}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     );
-}
+  }
 
 export default SandboxTest
