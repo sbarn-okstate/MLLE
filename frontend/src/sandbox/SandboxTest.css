@@ -24,6 +24,19 @@
     border-radius: 2px;
 }
 
+.nodeHandle {
+    background-color: black;
+    position: absolute;
+    align-items: center;
+    width: 90%;
+    height: 20px;
+}
+
+.nodeDragText {
+    display: inline;
+    color: white;
+}
+
 svg {
     background-color: rgb(139, 139, 139);
 }
