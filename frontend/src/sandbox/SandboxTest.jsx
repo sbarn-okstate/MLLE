@@ -27,11 +27,10 @@ function createBackend() {
 
 function createModel() {
     //FIXME: This is just a test
-    console.log("Button 2 pressed!");
-    let test_model = [
+    let test_model = [  //replace with actual model
         {
             type: "dense",
-            inputShape: [5],
+            inputShape: [1], //retrieve from input dataset
             units: 128,
             activation: "relu"
         },

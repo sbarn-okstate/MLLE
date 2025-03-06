@@ -56,11 +56,8 @@ export async function trainModel(xs, ys, worker) {
     
         await tf.ready();  // Ensure TensorFlow.js is initialized
 
-        xs = tf.tensor2d(xs, [xs.length, 1]);
-        ys = tf.tensor2d(ys, [ys.length, 1]);
-    
-        xs = tf.randomNormal([100, 1]);
-        ys = tf.randomNormal([100, 1]);
+        xs = tf.randomNormal([100, 1]);//test values
+        ys = tf.randomNormal([100, 1]);//test values
 
         postMessage({ func: "sharedBuffer", args: {sharedBuffer, layerSizes }});
 
@@ -108,5 +105,5 @@ function saveWeightsToSharedMemory() {
         });
     });
 
-    postMessage({ action: "weightsUpdated" });
+    postMessage({ func: "weightsUpdated" });
 }
