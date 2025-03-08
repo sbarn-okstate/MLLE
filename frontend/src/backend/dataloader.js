@@ -17,7 +17,7 @@ export async function checkTfVersion(){
 }
 
 //Displays available Datasets
-export async function getDatasets(){
+export async function displayDatasets(){
     //test example. Must be changed later. 
     let available_datasets = ["Example Dataset 1", "Example Dataset 2", "Example Dataset 3"]
     console.log("Please select from the", available_datasets.length, "available datasets: ");
@@ -26,14 +26,7 @@ export async function getDatasets(){
         console.log(available_datasets[i]);
     }
 }
-export async function checkIfFileExists(filename){
-    try{
-        console.log("Hey")
-    }
-    catch(error){
-        console.log(filename, "was not founded. Error: ", error)
-    }
-}
+
 //Outputs chosen dataset. May discard this in the end product.
 export async function printCSV(filename) {
     try{
@@ -48,14 +41,78 @@ export async function printCSV(filename) {
 
 }
 
-//Obtain information about dataset. 
+//Obtain information about dataset.
+//As of 3/8/2025 1:43 AM, this function should be able to dynamically
+//grab the amount of feature columns of a dataset. 
+//Will need to do further testing. 
+//It is currently working for test(). 
 export async function loadCSV(filename){
     let csvUrl = `/datasets/${filename}`;
+    //Here we create a CSVDataset. 
+    let csvDataset = tf.data.csv(csvUrl);
 
-    // Loading Dataset
-    const csvDataset = tf.data.csv(csvUrl, {
+    //Obtain all of the names of each column of the dataset in the csv file.
+    const colNames = await csvDataset.columnNames();
+    const numOfFeatures = colNames.length - 1; //Obtain how many features there are.
+    let featureNames = []; //Obtain the feature names. 
+    let labelName; //Obtain the name of the label column. 
+
+    for (let i = 0; i < colNames.length; i++){
+        if (i != numOfFeatures){
+            featureNames.push(colNames[i]);
+        }
+        //For when we reach the label column. 
+        else{
+            //labelName.push(colNames[i]);
+            labelName = colNames[i]
+        }
+    } 
+
+    //rewriting csvDataset to include label column. 
+    csvDataset = tf.data.csv(csvUrl,{
         columnConfigs:{
-            target: {
+            [labelName]:{ //having the square brackets allow for us to have found a label and add our own there.
+                isLabel: true
+            }
+        },
+        hasHeader: true,
+        delimiter: ','
+    });
+}
+
+
+//Below is a workbench-like function. 
+//Some of the code is borrowed from tfjs tutorials. 
+//As of 1:36 Am 3/8/2025, Justin was able to dynamically read a .csv
+//that would assume the last column is a label column. 
+export async function test(){
+    //Here we assume that there is the last column is the label input. 
+    const csvUrl = 'https://storage.googleapis.com/tfjs-examples/multivariate-linear-regression/data/boston-housing-train.csv';
+
+    //Here we create a CSVDataset. 
+    let csvDataset = tf.data.csv(csvUrl);
+
+    //Obtain all of the names of each column of the dataset in the csv file.
+    const colNames = await csvDataset.columnNames();
+    const numOfFeatures = colNames.length - 1; //Obtain how many features there are.
+    let featureNames = []; //Obtain the feature names. 
+    let labelName; //Obtain the name of the label column. 
+
+    for (let i = 0; i < colNames.length; i++){
+        if (i != numOfFeatures){
+            featureNames.push(colNames[i]);
+        }
+        //For when we reach the label column. 
+        else{
+            //labelName.push(colNames[i]);
+            labelName = colNames[i]
+        }
+    } 
+
+    //rewriting csvDataset to include label column. 
+    csvDataset = tf.data.csv(csvUrl,{
+        columnConfigs:{
+            [labelName]:{ //having the square brackets allow for us to have found a label and add our own there.
                 isLabel: true
             }
         },
@@ -63,31 +120,90 @@ export async function loadCSV(filename){
         delimiter: ','
     });
 
-    // Get column names (features and label)
-    const columnNames = await csvDataset.columnNames();
-    const labelName = 'target'; // Label name
-    const featureNames = columnNames.filter(name => name !== labelName); // Exclude the label from features
+    // console.log("featureNames:", featureNames);
+    // console.log("labelName:", labelName);
 
+  // Prepare the Dataset for training.
+  const flattenedDataset =
+    csvDataset
+    .map(({xs, ys}) =>
+      {
+        // Convert xs(features) and ys(labels) from object form (keyed by
+        // column name) to array form.
+        return {xs:Object.values(xs), ys:Object.values(ys)};
+      })
+    .batch(10);
 
-    // Number of features is the number of column names minus one for the label column.
-    const numOfFeatures = featureNames.length;
+  // Define the model.
+  const model = tf.sequential();
+  model.add(tf.layers.dense({
+    inputShape: [numOfFeatures],
+    units: 1
+  }));
+  model.compile({
+    optimizer: tf.train.sgd(0.000001),
+    loss: 'meanSquaredError'
+  });
 
-    // Convert dataset to array
-    const dataArray = await csvDataset.toArray();
+  // Fit the model using the prepared Dataset
+  return model.fitDataset(flattenedDataset, {
+    epochs: 10,
+    callbacks: {
+      onEpochEnd: async (epoch, logs) => {
+        console.log(epoch + ':' + logs.loss);
+      }
+    }
+  });
 
-    // Extract features and labels separately
-    const xs = dataArray.map(row => featureNames.map(f => row.xs[f])); // Extract features
-    const ys = dataArray.map(row => row.ys.target); // Extract labels
-
-    // Convert to tensors
-    const xTensor = tf.tensor2d(xs);
-    const yTensor = tf.tensor2d(ys, [ys.length, 1]);
-
-    // Print tensors
-    xTensor.print();
-    yTensor.print();
-    console.log("Number of features:", numOfFeatures)
-    console.log("Features Names:", featureNames);
-    console.log("Label Name:", labelName)
 }
-//Find a way to pass information from the dataset. 
+
+/*
+//The below code is from a tfjs tutorial. 
+export async function test_tf_tutorial(){
+    const csvUrl =
+    'https://storage.googleapis.com/tfjs-examples/multivariate-linear-regression/data/boston-housing-train.csv';
+    
+   // We want to predict the column "medv", which represents a median value of
+   // a home (in $1000s), so we mark it as a label.
+    const csvDataset = tf.data.csv(
+    csvUrl);
+
+    console.log(csvDataset)
+
+  // Number of features is the number of column names minus one for the label
+  // column.
+  const numOfFeatures = (await csvDataset.columnNames()).length - 1;
+
+  // Prepare the Dataset for training.
+  const flattenedDataset =
+    csvDataset
+    .map(({xs, ys}) =>
+      {
+        // Convert xs(features) and ys(labels) from object form (keyed by
+        // column name) to array form.
+        return {xs:Object.values(xs), ys:Object.values(ys)};
+      })
+    .batch(10);
+
+  // Define the model.
+  const model = tf.sequential();
+  model.add(tf.layers.dense({
+    inputShape: [numOfFeatures],
+    units: 1
+  }));
+  model.compile({
+    optimizer: tf.train.sgd(0.000001),
+    loss: 'meanSquaredError'
+  });
+
+  // Fit the model using the prepared Dataset
+  return model.fitDataset(flattenedDataset, {
+    epochs: 10,
+    callbacks: {
+      onEpochEnd: async (epoch, logs) => {
+        console.log(epoch + ':' + logs.loss);
+      }
+    }
+  });
+}
+*/

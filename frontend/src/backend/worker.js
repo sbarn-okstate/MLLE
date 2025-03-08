@@ -17,7 +17,10 @@ self.onmessage = async (event) => {
     }
     if (func === "chooseDataset"){
         await dataloader.checkTfVersion();
-        //await dataloader.printCSV(filename);
-        await dataloader.loadCSV(args);
+        await dataloader.displayDatasets();
+        //await dataloader.printCSV(args);
+        //await dataloader.loadCSV(args);
+        await dataloader.test();
+        //await dataloader.test_tf_tutorial();
     }
 };

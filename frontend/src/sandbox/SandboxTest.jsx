@@ -99,7 +99,7 @@ function RecalcPos() {
 function chooseDatasets(){
     //console.log("chooseDatasets button clicked!")
     let filename = "heart.csv"
-    filename = "fail"
+    filename = "preprocessed_car_price_dataset.csv"
     backend_worker.postMessage({func: 'chooseDataset', args: filename})    
 
     //Below will no longer be in here anymore. 
