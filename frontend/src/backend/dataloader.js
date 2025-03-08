@@ -6,6 +6,7 @@ Justin Moua
 4. Will be checked to see what model will be used for it.
 */
 
+
 export async function checkTfVersion(){
     try{
         await tf.ready()
@@ -46,8 +47,15 @@ export async function printCSV(filename) {
 //grab the amount of feature columns of a dataset. 
 //Will need to do further testing. 
 //It is currently working for test(). 
+
+//We'll havea a select amount of datasets for them to choose from. 
+//So perhaps we can have something like the dataset's name being passed
+//Along with what model it could best be used for.
+
 export async function loadCSV(filename){
-    let csvUrl = `/datasets/${filename}`;
+
+  
+  let csvUrl = `/datasets/${filename}`;
     //Here we create a CSVDataset. 
     let csvDataset = tf.data.csv(csvUrl);
 
@@ -85,6 +93,10 @@ export async function loadCSV(filename){
 //Some of the code is borrowed from tfjs tutorials. 
 //As of 1:36 Am 3/8/2025, Justin was able to dynamically read a .csv
 //that would assume the last column is a label column. 
+
+export async function test2(){
+  
+}
 export async function test(){
     //Here we assume that there is the last column is the label input. 
     const csvUrl = 'https://storage.googleapis.com/tfjs-examples/multivariate-linear-regression/data/boston-housing-train.csv';
