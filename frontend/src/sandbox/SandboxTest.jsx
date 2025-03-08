@@ -97,9 +97,12 @@ function RecalcPos() {
 }
 
 function chooseDatasets(){
-    console.log("chooseDatasets button clicked!")
-    
-    dataloader.checkTfVersion();
+    //console.log("chooseDatasets button clicked!")
+    let filename = "heart.csv"
+    filename = "fail"
+    backend_worker.postMessage({func: 'chooseDataset', args: filename})    
+
+    //Below will no longer be in here anymore. 
     
     //This will be used to display datasets for user to choose from.
     //dataloader.getDatasets();

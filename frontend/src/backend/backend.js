@@ -17,7 +17,7 @@ export function createBackendWorker() {
 
             if (typeof message === "object" && message !== null) {
                 const {func, args} = message;
-
+                
                 switch (func){
                     default:
                         console.log('Unknown function call from backend worker:', func);
