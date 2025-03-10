@@ -17,11 +17,18 @@ self.onmessage = async (event) => {
         await trainModel(args.xs, args.ys, self);
     }
     if (func === "chooseDataset"){
-        await dataloader.checkTfVersion();
-        await dataloader.displayDatasets();
-        //await dataloader.printCSV(args);
-        //await dataloader.loadCSV(args);
-        await dataloader.test();
-        //await dataloader.test_tf_tutorial();
+        //args is a 1x2 array [file name, problem type]
+        //await dataloader.checkTfVersion();
+        
+        //Currently loads dataset. 
+        //Ideally this would pop up a variety of datasets
+        //for the user to choose from which csvDataset would
+        //store.
+        csvDataset = await dataloader.loadCSV(args);
+
+        //converts features and labels to tensors.
+        await dataloader.toTensor(csvDataset);
+
+        console.log("worker.js:",csvDataset);
     }
 };

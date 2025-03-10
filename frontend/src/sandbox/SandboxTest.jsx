@@ -97,24 +97,69 @@ function RecalcPos() {
 }
 
 function chooseDatasets(){
-    //console.log("chooseDatasets button clicked!")
-    let filename = "heart.csv"
-    filename = "preprocessed_car_price_dataset.csv"
-    backend_worker.postMessage({func: 'chooseDataset', args: filename})    
 
-    //Below will no longer be in here anymore. 
-    
-    //This will be used to display datasets for user to choose from.
-    //dataloader.getDatasets();
+    //Made as function for easier readability. 
+    function displayDatasetsToConsole(availableDatasets){
+        //Below is only displayed in the console.
 
-    //Temporarily hardcoded chosen dataset.
-    //let chosen_dataset = "heart.csv"
+        //Would like to display these datasets as buttons, scrollable list,
+        //or some form of clickable object for the user to select from.
+        console.log("Available Datasets:\n--------------------");
+        availableDatasets.forEach((value, key) => {
+            console.log(`File Name: ${key}\n    - Problem Type: ${value}`);
+        });
+        console.log("--------------------");
+    }
 
-    //Display chosen dataset for dev purposes. More than likely won't need this in the end produc.t
-    //dataloader.printCSV(chosen_dataset);
+    //Made as function for easier readability. 
+    function displayDatasetsToUi(availableDatasets){
+        //============DISPLAY DATASETS TO GUI STARTS HERE==========
+        //Below is displayed in the frontend UI
+        // create a new div element
+        const newDiv = document.createElement("div");
+        newDiv.appendChild(document.createTextNode("Please choose a dataset from below:"));
+        newDiv.appendChild(document.createElement("br"));
+        newDiv.appendChild(document.createElement("br"));
 
-    //Obtain information about the dataset. 
-    //dataloader.loadCSV();
+        // and give it some content
+        availableDatasets.forEach((value, key) => {
+            const foundedFileName = document.createTextNode(`File Name: ${key} | Problem Type: ${value}\n`);
+            newDiv.appendChild(foundedFileName);
+            newDiv.appendChild(document.createElement("br"));
+            newDiv.appendChild(document.createElement("br"));
+        });
+        // add the text node to the newly created div
+
+
+        // add the newly created element and its content into the DOM
+        const currentDiv = document.getElementById("div1");
+        document.body.insertBefore(newDiv, currentDiv);
+        //============DISPLAY DATASETS TO GUI ENDS HERE==========
+    }
+  
+    //Obtain all available datasets.
+        //Might be better to read from MLLE\frontend\public\datasets. But I researched online and there doesn't seem to be a sure way of doing so
+        //unless we are doing things from the server side via Node.JS. Maybe it can be done later in our end product, implementing a database. - Justin
+    let availableDatasets = new Map(); //In the form of {file name, problem type}
+    availableDatasets.set("boston-housing-train.csv", "regr");
+    availableDatasets.set("heart.csv", "clsf");
+    availableDatasets.set("iris_training.csv", "img clsf");
+
+    //Display available datasets to choose from.
+    displayDatasetsToConsole(availableDatasets);
+    displayDatasetsToUi(availableDatasets)
+
+    //User selects dataset here.
+        //We obtain the respective dataset's file name and problem type.
+    let fileName = "heart.csv"; //This will later be replaced with some sort of checker. 
+    let problemType = availableDatasets.get(fileName);
+
+    //Output selected dataset to user.
+    console.log("You have selected", fileName + "!"); //Displayed to console, not UI.
+    console.log(fileName + "'s problem type is:", problemType); //Displayed to console, not UI.
+
+    //Begin obtaining dataset to be imported. This is done via csvDataset.
+    backend_worker.postMessage({func: 'chooseDataset', args: [fileName, problemType]});
 }
 
 function SandboxTest() {
