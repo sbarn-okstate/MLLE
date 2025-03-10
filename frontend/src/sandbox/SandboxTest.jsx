@@ -4,6 +4,7 @@ import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
 import * as backend from '../backend/backend.js'
+import * as dataloader from '../backend/dataloader.js' //Added by Justin.
 import snapPoints from './snapPoints.js';
 
 var count = 0;

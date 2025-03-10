@@ -20,7 +20,7 @@ export function createBackendWorker() {
 
             if (typeof message === "object" && message !== null) {
                 const {func, args} = message;
-
+                
                 switch (func){
                     case "sharedBuffer":
                         sharedBuffer = args.sharedBuffer;
