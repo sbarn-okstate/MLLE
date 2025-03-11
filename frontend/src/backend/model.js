@@ -50,7 +50,7 @@ export async function prepareModel(layers, self) {
 }
 
 
-export async function trainModel(fileName, problemType, self, batchSize=100) {
+export async function trainModel(fileName, problemType, self, batchSize=32) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -59,29 +59,27 @@ export async function trainModel(fileName, problemType, self, batchSize=100) {
         
         self.postMessage('Preparing dataset...');
         let csvDataset = await loadCSV(fileName);
+        let dataArray = await csvDataset.toArray();
         await tf.ready();
-
-        const processedDataset =
-            csvDataset
-            .map(({xs, ys}) =>
+        tf.util.shuffle(dataArray);
+        const processedDataset = dataArray.map(({xs, ys}) =>
             {
-                // Convert xs(features) and ys(labels) from object form (keyed by
-                // column name) to array form.
                 return {xs:Object.values(xs), ys:Object.values(ys)};
             })
-            .shuffle(10000)
-            .batch(batchSize);
+            
+         // Separate xs and ys into two arrays
+         const xsArray = processedDataset.map(d => d.xs);
+         const ysArray = processedDataset.map(d => d.ys);
+ 
+         // Convert xs and ys to tensors
+         const xsTensor = tf.tensor2d(xsArray);
+         const ysTensor = tf.tensor2d(ysArray);
  
         self.postMessage("Dataset processed, training...");
-
-        /*
-        await processedDataset.forEachAsync(({ xs, ys }) => {
-            xs.print();
-            ys.print();
-        }); */
         
-        await model.fitDataset(processedDataset, {
+        await model.fit(xsTensor, ysTensor, {
             epochs: 10,
+            batchSize: batchSize,
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
                     self.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
