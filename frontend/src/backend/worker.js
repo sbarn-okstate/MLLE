@@ -1,4 +1,12 @@
-// worker.js
+/* worker.js
+ *
+ * AUTHOR(S): Samuel Barney
+ *
+ * PURPOSE:This is the interface for the backend worker that is used
+ * in the worker thread to receive messages from the main thread.
+ * 
+ * NOTES: None
+ */
 
 import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
 

@@ -1,4 +1,12 @@
-// backend.js
+/* backend.js
+ *
+ * AUTHOR(S): Samuel Barney
+ *
+ * PURPOSE:This is the interface for the backend worker that is used
+ * in the main thread to recieve messages from the worker thread.
+ * 
+ * NOTES: None
+ */
 
 let backend_worker = null;
 let sharedBuffer;
