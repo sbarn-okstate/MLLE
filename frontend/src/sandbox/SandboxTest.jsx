@@ -4,7 +4,8 @@ import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
 import Stage from './components/Stage.jsx';
-import * as backend from '../backend/backend.js'
+import * as backend from '../backend/backend.js';
+import snapPoints from './snapPoints.js';
 
 let backend_worker = null
 
@@ -15,26 +16,21 @@ function createBackend() {
 
 function createModel() {
     //FIXME: This is just a test
-    console.log("Button 2 pressed!");
-    let test_model = [
+    let test_model = [  //replace with actual model
         {
             type: "dense",
-            inputShape: [5],
-            units: 128,
-            activation: "relu"
-        },
-        {
-            type: "dropout",
-            rate: 0.2
-        },
-        {
-            type: "dense",
-            units: 64,
+            inputShape: [2], //retrieve from input dataset
+            units: 2,
             activation: "relu"
         },
         {
             type: "dense",
-            units: 32,
+            units: 8,
+            activation: "relu"
+        },
+        {
+            type: "dense",
+            units: 2,
             activation: "relu"
         },
         {
@@ -47,9 +43,9 @@ function createModel() {
 
 function train() {
     //FIXME: This is just a test
-    let xs = [1,2,3,4,5]  // Input data
-    let ys = [1,3,5,7,9]; // Expected output 
-    backend_worker.postMessage({func: 'trainModel', args: {xs: xs, ys: ys}});
+    let fileName = 'synthetic_normal_binary_classification.csv';
+    let problemType = 'classification';
+    backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
 }
 
 function SandboxTest() {
@@ -97,5 +93,4 @@ function SandboxTest() {
         </>
     );
 }
-
 export default SandboxTest
