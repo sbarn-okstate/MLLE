@@ -9,7 +9,7 @@ const TestDiv = forwardRef(({ name }, ref) => {
             </div>
             <p>Layer type: 
                 <span>
-                    <select name="type" id="layertype">
+                    <select name={name + "type"} id={name + "layertype"}>
                         <option value="dense">Dense</option>
                         <option value="dropout">Dropout</option>
                     </select>

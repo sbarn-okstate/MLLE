@@ -10,10 +10,63 @@ export default function Stage({elements, drags, setDrags}) {
         divRefs.current.forEach(div => {
             if (div) {
                 // Only create new PlainDraggable instances if the ref is set
-                setDrags(prev => [...prev, new PlainDraggable(div)]);
+                var draggable = new PlainDraggable(div);
+
+                // Add the onMove callback
+                draggable.onMove = function () {
+                    //const allElements = Array.from(elements.current.values());
+                    const snap = findClosestSnapPoint(div, elements);
+          
+                    if (snap) {
+                        const dx = snap.otherPoint.x - snap.elPoint.x;
+                        const dy = snap.otherPoint.y - snap.elPoint.y;
+                        draggable.left += dx;
+                        draggable.top += dy;
+                    }
+                };
+
+                setDrags(prev => [...prev, draggable]);
             }
         });
     }, [elements, setDrags]);
+
+    // assign snapping points to element
+    function getSnapPoints(el) {
+        if (!el) return [];
+        // troubleshoot
+        console.log(`el type: ${typeof el}`);
+        const rect = el.getBoundingClientRect();
+            return [
+                { x: rect.left, y: rect.top + rect.height / 2 }, // Left-center
+                { x: rect.right, y: rect.top + rect.height / 2 }, // Right-center
+                { x: rect.left + rect.width / 2, y: rect.top }, // Top-center
+                { x: rect.left + rect.width / 2, y: rect.bottom }, // Bottom-center
+            ];
+        }
+
+    // custom snapping behavior
+    function findClosestSnapPoint(el, elementsList) {
+        const elSnapPoints = getSnapPoints(el);
+        let closestPoint = null;
+        let minDistance = 20; // Max snap distance
+    
+        elementsList.forEach((otherEl) => {
+        if (otherEl === el) return;
+        const otherSnapPoints = getSnapPoints(otherEl);
+    
+        elSnapPoints.forEach((elPoint) => {
+            otherSnapPoints.forEach((otherPoint) => {
+                const distance = Math.hypot(elPoint.x - otherPoint.x, elPoint.y - otherPoint.y);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestPoint = { elPoint, otherPoint };
+                    }
+                });
+            });
+        });
+    
+        return closestPoint;
+    }
 
     return (
         <div id="stage" className="teststage">

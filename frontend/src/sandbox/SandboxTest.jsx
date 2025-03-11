@@ -6,9 +6,6 @@ import SandboxController from './SandboxController.jsx';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js'
 
-//var count = 0;
-//var draggables = [];
-
 let backend_worker = null
 
 function createBackend() {
@@ -53,43 +50,6 @@ function train() {
     let xs = [1,2,3,4,5]  // Input data
     let ys = [1,3,5,7,9]; // Expected output 
     backend_worker.postMessage({func: 'trainModel', args: {xs: xs, ys: ys}});
-}
-
-// Programmatically add draggable
-/*
-function AddDraggable() {
-    //console.log("creating count" + count + " draggable element");
-    //let newDiv = document.createElement("div"); // Create the div
-    //newDiv.id = "drag" + count;                 // Set the id of the div for referencing
-    //newDiv.className = "testdraggable";         // Set the classname of the div for CSS
-    //const newDivContent = document.createTextNode("Drag" + count);  // Create the content for the div
-    //newDiv.appendChild(newDivContent);          // Set the content of the div
-
-    //item.push({<TestDiv name={"drag" + count}></TestDiv>});
-
-    // Add to the stage
-    //const stageDiv = document.getElementById("stage");  // Get the stage div from document
-    //stageDiv.appendChild(newDiv);                       // Add the new div to the stage
-    //const poop = document.getElementById("drag" + count);   // Get the div
-    draggables.push(new PlainDraggable(newDiv));          // Make the div draggable
-    //let poopdrag = new PlainDraggable(poop);
-    count += 1;                                         // Iterate the count
-
-    // Need to run the PlainDraggable.position() method on all existing draggables
-    // This recalculates the bounds that the draggables can move in
-    // Without doing this, the bounds will be incorrect on some draggables
-    RecalcPos();
-}
-*/
-
-
-
-// Recalculate position for all draggables
-// Required for bounds to function properly
-function RecalcPos() {
-    draggables.forEach((thing) => {
-        thing.position();
-    });
 }
 
 function SandboxTest() {
