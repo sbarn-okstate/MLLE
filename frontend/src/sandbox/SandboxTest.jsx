@@ -23,21 +23,17 @@ function createModel() {
         {
             type: "dense",
             inputShape: [2], //retrieve from input dataset
-            units: 128,
-            activation: "relu"
-        },
-        {
-            type: "dropout",
-            rate: 0.2
-        },
-        {
-            type: "dense",
-            units: 64,
+            units: 16,
             activation: "relu"
         },
         {
             type: "dense",
-            units: 32,
+            units: 8,
+            activation: "relu"
+        },
+        {
+            type: "dense",
+            units: 2,
             activation: "relu"
         },
         {

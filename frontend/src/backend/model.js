@@ -19,7 +19,7 @@ export async function prepareModel(layers, self) {
         model.add(tf.layers.dense({
             units:      layer.units      || defaults.DENSE.units,
             activation: layer.activation || defaults.DENSE.activation,
-            inputShape: firstLayer ? (layer.inputShape) : undefined
+            inputShape: firstLayer ? layer.inputShape : undefined
         }));
         }
         if (layer.type === 'conv2d') {
@@ -28,7 +28,7 @@ export async function prepareModel(layers, self) {
             kernelSize: layer.kernelSize || defaults.CONV.kernalSize,
             activation: layer.activation || defaults.CONV.activation,
             inputShape: layer.inputShape || defaults.CONV.inputShape,
-            inputShape: firstLayer ? (layer.inputShape) : undefined
+            inputShape: firstLayer ? layer.inputShape : undefined
         }));
         }
         if (layer.type === 'dropout') {
@@ -46,11 +46,11 @@ export async function prepareModel(layers, self) {
 
     self.postMessage('Model prepared... creating shared buffer.');
     initSharedBuffer();
-    self.postMessage('Shared buffer created.');
+    self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
 
-export async function trainModel(fileName, problemType, worker) {
+export async function trainModel(fileName, problemType, self, batchSize=100) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -59,32 +59,40 @@ export async function trainModel(fileName, problemType, worker) {
         
         self.postMessage('Preparing dataset...');
         let csvDataset = await loadCSV(fileName);
-        let processedDataset = csvDataset
-        .map(({ xs, ys }) => ({
-            xs: Object.values(xs),
-            ys: Object.values(ys)
-        }))
-        .batch(32)
-        .shuffle(100);
+        await tf.ready();
 
+        const processedDataset =
+            csvDataset
+            .map(({xs, ys}) =>
+            {
+                // Convert xs(features) and ys(labels) from object form (keyed by
+                // column name) to array form.
+                return {xs:Object.values(xs), ys:Object.values(ys)};
+            })
+            .shuffle(10000)
+            .batch(batchSize);
+ 
         self.postMessage("Dataset processed, training...");
 
-        await tf.ready();  // Ensure TensorFlow.js is initialized
-
-        // Train the model lazily using the processed dataset
-        await model.fit(processedDataset, {
-            epochs: 500,
+        /*
+        await processedDataset.forEachAsync(({ xs, ys }) => {
+            xs.print();
+            ys.print();
+        }); */
+        
+        await model.fitDataset(processedDataset, {
+            epochs: 10,
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
-                    worker.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
+                    self.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
                     saveWeightsToSharedMemory();
-                }
+                },
             }
         });
   
-        worker.postMessage('Training complete!');
+        self.postMessage('Training complete!');
     } catch (error) {
-        worker.postMessage(`Error during training: ${error.message}`);
+        self.postMessage(`Error during training: ${error.message}`);
     }
   }
 
@@ -116,7 +124,7 @@ function saveWeightsToSharedMemory() {
         });
     });
 
-    postMessage({ func: "weightsUpdated" });
+    self.postMessage({ func: "weightsUpdated" });
 }
 
 
