@@ -29,6 +29,10 @@ export default function Stage({elements, drags, setDrags}) {
                 // Set the handle
                 draggable.handle = handleRefs.current[index];
 
+                // Do not override the cursor
+                draggable.draggableCursor = false;
+                draggable.draggingCursor = false;
+
                 setDrags(prev => [...prev, draggable]);
             }
         });
