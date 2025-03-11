@@ -1,14 +1,51 @@
-.nodeConnector {
-    fill: green;
-    stroke-width: 2;
-    stroke: lime;
+/* replacement for body, which is defined in index.css */
+.sandboxContainer {
+    margin: 0;
+    display: flex;
+    place-items: start;
+    min-width: 320px;
+    min-height: 100vh;
+}
+
+.bottomBar {
+    overflow: hidden;
+    position: fixed;
+    display: inline-flex;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    backdrop-filter: blur(4px);
+    z-index: 90000; /* Always on top! */
+    background-color: rgba(69, 69, 69, 0.65);
+}
+
+.sandboxButton {
+    height: 3em;
+    width: 10em;
+    border-radius: 100px;
+    background-color: rgba(104, 104, 104, 0.375);
+    border-color: grey;
+    color: black;
+    border-style: solid;
+    transition: all 0.2s ease-in;
+}
+
+.sandboxButton:hover {
+    background-color: rgb(56, 56, 56);
+    color: white;
+    transition: all 0.2s ease-in;
+}
+
+.sandboxButton:active {
+    background-color: rgb(123, 183, 33);
+    transition: all 0.1s ease-in;
 }
 
 .teststage {
     background-color: grey;
     position: absolute;
-    width: 500px;
-    height: 500px;
+    width: 100%;
+    height: 100%;
 }
 
 .testdraggable {

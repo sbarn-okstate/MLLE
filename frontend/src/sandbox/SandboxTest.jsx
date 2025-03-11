@@ -80,16 +80,24 @@ function SandboxTest() {
 
     return(
         <>
-            <div>
-                <Link to="/">Go Back</Link>
+            <div className="sandboxContainer">
+                <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos}/>
+                <div className="bottomBar">
+                    <Link to="/"><button className="sandboxButton">Go Back</button></Link>
+                    <div style={
+                        {
+                            width:"100%",
+                            paddingRight: "20px",
+                            display: "inline-flex",
+                            justifyContent: "flex-end",
+                        }}>
+                        <button className="sandboxButton" onClick={() => AddTestDiv()}>Add Draggable</button>
+                        <button className="sandboxButton" onClick={() => createBackend()}>Create Backend</button>
+                        <button className="sandboxButton" onClick={() => createModel()}>Create Model</button>
+                        <button className="sandboxButton" onClick={() => train()}>Train</button>
+                    </div>
+                </div>
             </div>
-            <button onClick={() => AddTestDiv()}>Add Draggable</button>
-            <button onClick={() => createBackend()}>Create Backend</button>
-            <button onClick={() => createModel()}>Create Model</button>
-            <button onClick={() => train()}>Train</button>
-
-            <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos}/>
-            
         </>
     );
 }
