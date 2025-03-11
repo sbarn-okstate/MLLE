@@ -15,7 +15,7 @@ export default function Stage({elements, drags, setDrags}) {
                 // Add the onMove callback
                 draggable.onMove = function () {
                     //const allElements = Array.from(elements.current.values());
-                    const snap = findClosestSnapPoint(div, elements);
+                    const snap = findClosestSnapPoint(div, divRefs);
           
                     if (snap) {
                         const dx = snap.otherPoint.x - snap.elPoint.x;
@@ -34,7 +34,7 @@ export default function Stage({elements, drags, setDrags}) {
     function getSnapPoints(el) {
         if (!el) return [];
         // troubleshoot
-        console.log(`el type: ${typeof el}`);
+        //console.log(`el type: ${typeof el}`);
         const rect = el.getBoundingClientRect();
             return [
                 { x: rect.left, y: rect.top + rect.height / 2 }, // Left-center
@@ -50,7 +50,7 @@ export default function Stage({elements, drags, setDrags}) {
         let closestPoint = null;
         let minDistance = 20; // Max snap distance
     
-        elementsList.forEach((otherEl) => {
+        elementsList.current.forEach((otherEl) => {
         if (otherEl === el) return;
         const otherSnapPoints = getSnapPoints(otherEl);
     
