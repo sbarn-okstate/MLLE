@@ -3,8 +3,7 @@ import { Link } from "react-router";
 import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
-import * as backend from '../backend/backend.js'
-import * as dataloader from '../backend/dataloader.js' //Added by Justin.
+import * as backend from '../backend/backend.js';
 import snapPoints from './snapPoints.js';
 
 var count = 0;
@@ -23,7 +22,7 @@ function createModel() {
         {
             type: "dense",
             inputShape: [2], //retrieve from input dataset
-            units: 16,
+            units: 2,
             activation: "relu"
         },
         {
