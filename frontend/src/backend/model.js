@@ -7,13 +7,12 @@ let sharedBuffer = null;
 let weightArray = null;
 let layerSizes = []; // Stores offsets for each layer's weights
 
-let data = null;
-
 export async function prepareModel(layers, self) {
-    await tf.ready();  // Ensure TensorFlow.js is initialized
+    await tf.ready();  // ensure TensorFlow.js is initialized
     model = tf.sequential();
     let firstLayer = true;
 
+    // construct model based on input layers
     for (let layer of layers) {
         if (layer.type === 'dense') {
         model.add(tf.layers.dense({
@@ -50,7 +49,7 @@ export async function prepareModel(layers, self) {
 }
 
 
-export async function trainModel(fileName, problemType, self, batchSize=32) {
+export async function trainModel(fileName, problemType, self, batchSize=32, epochs=100) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -58,29 +57,35 @@ export async function trainModel(fileName, problemType, self, batchSize=32) {
         }
         
         self.postMessage('Preparing dataset...');
+
         let csvDataset = await loadCSV(fileName);
         let dataArray = await csvDataset.toArray();
+
         await tf.ready();
+
         tf.util.shuffle(dataArray);
         const processedDataset = dataArray.map(({xs, ys}) =>
             {
                 return {xs:Object.values(xs), ys:Object.values(ys)};
             })
             
-         // Separate xs and ys into two arrays
+         // separate xs and ys into two arrays
          const xsArray = processedDataset.map(d => d.xs);
          const ysArray = processedDataset.map(d => d.ys);
  
-         // Convert xs and ys to tensors
+         // convert xs and ys to tensors
          const xsTensor = tf.tensor2d(xsArray);
          const ysTensor = tf.tensor2d(ysArray);
  
-        self.postMessage("Dataset processed, training...");
+        self.postMessage("Dataset processed.");
         
         await model.fit(xsTensor, ysTensor, {
-            epochs: 10,
+            epochs: epochs,
             batchSize: batchSize,
             callbacks: {
+                onTrainingBegin: () => {
+                    self.postMessage('Training started...');
+                },
                 onEpochEnd: (epoch, logs) => {
                     self.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
                     saveWeightsToSharedMemory();
