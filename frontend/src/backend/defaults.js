@@ -1,4 +1,12 @@
-// defaults.js
+/* defaults.js
+ *
+ * AUTHOR(S): Samuel Barney
+ *
+ * PURPOSE: This file contains the default values for model layers
+ * and model compilation.
+ * 
+ * NOTES: None
+ */
 
 export const DENSE = {
     type: 'dense',
