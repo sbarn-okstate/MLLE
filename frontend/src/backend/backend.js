@@ -54,7 +54,6 @@ function getLayerWeights() {
     });
 }
 
-
 export function getBackendWorker(){
     if (!backend_worker) createBackendWorker();
     return backend_worker;
