@@ -29,7 +29,7 @@ export function createBackendWorker() {
                         console.log("Shared buffer initialized.");
                         break;
                     case "weightsUpdated":
-                        // console.log("Weights updated:", getLayerWeights());
+                        console.log("Weights updated:", getLayerWeights());
                         break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
