@@ -1,10 +1,10 @@
 import React, { forwardRef } from "react";
 
 // Forward ref to pass the ref down to the DOM element
-const TestDiv = forwardRef(({ name }, ref) => {
+function TestDiv({ name , ref, handleRef }) {
     return (
         <div ref={ref} id={name} className="testdraggable">
-            <div className="nodeHandle">
+            <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Drag here.</p>
             </div>
             <p>Layer type: 
@@ -17,6 +17,6 @@ const TestDiv = forwardRef(({ name }, ref) => {
             </p>
         </div>
     );
-});
+};
 
 export default TestDiv;

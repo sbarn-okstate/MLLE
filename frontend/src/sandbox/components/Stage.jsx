@@ -4,10 +4,11 @@ import PlainDraggable from "plain-draggable";
 
 export default function Stage({elements, drags, setDrags}) {
     const divRefs = useRef([]);
+    const handleRefs = useRef([]);
 
     useEffect(() => {
         // This useEffect runs after the components are rendered
-        divRefs.current.forEach(div => {
+        divRefs.current.forEach((div, index) => {
             if (div) {
                 // Only create new PlainDraggable instances if the ref is set
                 var draggable = new PlainDraggable(div);
@@ -24,6 +25,9 @@ export default function Stage({elements, drags, setDrags}) {
                         draggable.top += dy;
                     }
                 };
+
+                // Set the handle
+                draggable.handle = handleRefs.current[index];
 
                 setDrags(prev => [...prev, draggable]);
             }
@@ -76,7 +80,8 @@ export default function Stage({elements, drags, setDrags}) {
                         <TestDiv 
                             key={item.name} 
                             name={item.name} 
-                            ref={el => divRefs.current[index] = el} // Set ref for each TestDiv
+                            ref={el => divRefs.current[index] = el}
+                            handleRef={el => handleRefs.current[index] = el} // Set handle ref for each TestDiv
                         />
                     );
                 })

@@ -12,7 +12,9 @@
 }
 
 .testdraggable {
+    position: absolute;
     background-color: red;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     display: inline-block;
     padding: 2px;
     border-radius: 5px;
@@ -28,6 +30,7 @@
     background-color: black;
     position: absolute;
     align-items: center;
+    border-radius: 2px;
     width: 90%;
     height: 20px;
 }
