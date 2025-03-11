@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import test from "../../assets/test.png";
 
 // Forward ref to pass the ref down to the DOM element
 function TestDiv({ name , ref, handleRef }) {
@@ -15,6 +16,7 @@ function TestDiv({ name , ref, handleRef }) {
                     </select>
                 </span>
             </p>
+            <img src={test} width="100" height="100" style={{borderRadius: "5px"}}/>
         </div>
     );
 };
