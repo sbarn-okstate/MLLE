@@ -1,4 +1,11 @@
-// model.js
+/* model.js
+ *
+ * AUTHOR(S): Samuel Barney, Justin Moua
+ *
+ * PURPOSE: FIXME
+ * 
+ * NOTES: None
+ */
 
 import * as defaults from './defaults.js'
 
