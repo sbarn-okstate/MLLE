@@ -22,7 +22,7 @@ function createModel() {
     let test_model = [  //replace with actual model
         {
             type: "dense",
-            inputShape: [1], //retrieve from input dataset
+            inputShape: [2], //retrieve from input dataset
             units: 128,
             activation: "relu"
         },
@@ -50,9 +50,9 @@ function createModel() {
 
 function train() {
     //FIXME: This is just a test
-    let xs = [1,2,3,4,5]  // Input data
-    let ys = [1,3,5,7,9]; // Expected output 
-    backend_worker.postMessage({func: 'trainModel', args: {xs: xs, ys: ys}});
+    let fileName = 'synthetic_normal_binary_classification.csv';
+    let problemType = 'classification';
+    backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
 }
 
 // Programmatically add draggable
@@ -123,60 +123,54 @@ function SandboxTest() {
     }
   
     return (
-      <div>
-        <button
-          onClick={addElement}
-          style={{
-            padding: "10px",
-            backgroundColor: "#3B82F6",
-            color: "white",
-            borderRadius: "5px",
-            marginBottom: "10px",
-          }}
-        >
-          Add Draggable Element
-        </button>
-        <div
-          ref={containerRef}
-          style={{
-            position: "relative",
-            width: "400px",
-            height: "300px",
-            backgroundColor: "#F3F4F6",
-            border: "1px solid gray",
-            padding: "10px",
-          }}
-        >
-          {elements.map(function (id) {
-            return (
-              <div
-                key={id}
-                ref={function (el) {
-                  if (el) elementRefs.current.set(id, el);
-                }}
-                style={{
-                  position: "absolute",
-                  width: "60px",
-                  height: "60px",
-                  backgroundColor: "#10B981",
-                  color: "white",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "5px",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.3)",
-                  cursor: "pointer",
-                  top: "50px",
-                  left: id * 70,
-                }}
-              >
-                {id}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
+      <div style={{ textAlign: "center" }}>
+          {/* Buttons for different functions */}
+          <div style={{ marginBottom: "10px" }}>
+              <button onClick={createBackend} className="action-button">Create Backend</button>
+              <button onClick={createModel} className="action-button">Create Model</button>
+              <button onClick={train} className="action-button">Train Model</button>
+              <button onClick={addElement} className="action-button">Add Draggable Element</button>
+          </div>
 
+          <div
+              ref={containerRef}
+              style={{
+                  position: "relative",
+                  width: "400px",
+                  height: "300px",
+                  backgroundColor: "#F3F4F6",
+                  border: "1px solid gray",
+                  padding: "10px",
+                  margin: "auto"
+              }}
+          >
+              {elements.map((id) => (
+                  <div
+                      key={id}
+                      ref={(el) => {
+                          if (el) elementRefs.current.set(id, el);
+                      }}
+                      style={{
+                          position: "absolute",
+                          width: "60px",
+                          height: "60px",
+                          backgroundColor: "#10B981",
+                          color: "white",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "5px",
+                          boxShadow: "2px 2px 5px rgba(0,0,0,0.3)",
+                          cursor: "pointer",
+                          top: "50px",
+                          left: id * 70,
+                      }}
+                  >
+                      {id}
+                  </div>
+              ))}
+          </div>
+      </div>
+  );
+}
 export default SandboxTest

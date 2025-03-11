@@ -29,8 +29,8 @@ export async function checkTfVersion(){
 export async function loadCSV(chosenDataset){ //returns csvDataset.
     //chosenDataset is an array of two values. [file name, problem type]
     
-    let fileName = chosenDataset[0];
-    let problemType = chosenDataset[1];
+    let fileName = chosenDataset.fileName;
+    let problemType = chosenDataset.problemType;
     let csvUrl = `/datasets/${fileName}`; //Finds where the dataset is located. Looks in MLLE/frontend/public/datasets/${filename}.
     
     let csvDataset = tf.data.csv(csvUrl); //Here we create a CSVDataset. 

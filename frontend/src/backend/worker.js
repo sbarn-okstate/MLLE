@@ -10,11 +10,11 @@ self.onmessage = async (event) => {
     const { func, args } = event.data;
 
     if (func === "prepareModel") {
-        await prepareModel(args);
+        await prepareModel(args, self);
     }
 
     if (func === "trainModel") {
-        await trainModel(args.xs, args.ys, self);
+        await trainModel(args.fileName, args.problemType, self);
     }
     if (func === "chooseDataset"){
         //args is a 1x2 array [file name, problem type]
