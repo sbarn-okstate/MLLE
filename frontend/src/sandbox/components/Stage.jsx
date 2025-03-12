@@ -1,3 +1,13 @@
+/* SandboxTest.jsx
+  *
+  * AUTHOR(S): Mark Taylor, Samuel Barney
+  *
+  * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
+  *          well.
+  * 
+  * NOTES: We need to look into better snapping mechanics
+  */
+
 import { useEffect, useRef } from "react";
 import TestDiv from './TestDiv.jsx';
 import PlainDraggable from "plain-draggable";

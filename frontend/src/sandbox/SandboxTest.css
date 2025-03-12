@@ -1,3 +1,13 @@
+/* SandboxTest.css
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Stylesheet for the SandboxTest page
+  * 
+  * NOTES: This file should be renamed at some point in
+  *        conjunction with SandboxTest.jsx
+  */
+
 /* replacement for body, which is defined in index.css */
 .sandboxContainer {
     margin: 0;

@@ -1,3 +1,12 @@
+/* SandboxTest.jsx
+  *
+  * AUTHOR(S): Mark Taylor, Samuel Barney
+  *
+  * PURPOSE: Page for the Sandbox to occupy.
+  * 
+  * NOTES: This file should be renamed at some point
+  */
+
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
 import PlainDraggable from "plain-draggable";

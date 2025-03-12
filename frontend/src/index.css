@@ -1,3 +1,12 @@
+/* index.jsx
+  *
+  * AUTHOR(S): Vite Team and Contributers
+  *
+  * PURPOSE: Root stylesheet for the webapp
+  * 
+  * NOTES: We could rock our own unique stylesheet if we have time.
+  */
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
