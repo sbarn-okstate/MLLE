@@ -27,7 +27,7 @@ export default function NodeDrawer() {
                     <div className="DELETEME"/>
                     <div className="DELETEME"/>
                 </div>
-                <div className="nodeDrawerHandle" onClick={() => NodeHandleClick()}>
+                <div className="nodeDrawerHandle" tabindex="0" onClick={() => NodeHandleClick()} onKeyDown={(event) => { if (event.key == "Enter" || event.key == " ") NodeHandleClick()}}>
                     <p style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>
                 </div>
             </div>
