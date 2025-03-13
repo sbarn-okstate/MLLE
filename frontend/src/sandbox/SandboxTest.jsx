@@ -101,6 +101,7 @@ function SandboxTest() {
                             paddingRight: "20px",
                             display: "inline-flex",
                             justifyContent: "flex-end",
+                            gap: "10px"
                         }}>
                         <button className="sandboxButton" onClick={() => AddTestDiv()}>Add Draggable</button>
                         <button className="sandboxButton" onClick={() => createBackend()}>Create Backend</button>

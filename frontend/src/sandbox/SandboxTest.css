@@ -13,6 +13,13 @@
     --nodeDrawerCollapsePos: -250px
 }
 
+.DELETEME {
+    width: 100px;
+    height: 100px;
+    background-color: palevioletred;
+    border-radius: 5px;
+}
+
 .drawerDiv {
     height: 100%;
     position: absolute;
@@ -30,6 +37,10 @@
 }
 
 .nodeDrawer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
     position: relative;
     width: var(--nodeDrawerWidth);
     height: 100%;
@@ -48,9 +59,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: pink;
+    background-color: rgb(57, 57, 57);
     clip-path: xywh(0px 0px 100% 100% round 0px 5px 5px 0px);
     z-index: 89001;
+    transition: all 0.2s ease-in;
+}
+
+.nodeDrawerHandle:hover {
+    background-color: rgb(78, 78, 78);
+    transition: all 0.2s ease-in;
+}
+
+.nodeDrawerHandle:active {
+    background-color: rgb(123, 183, 33);
+    transition: all 0.1s ease-in;
 }
 
 /* replacement for body, which is defined in index.css */
@@ -82,6 +104,7 @@
     border-color: grey;
     color: white;
     border-style: solid;
+    user-select: none;
     transition: all 0.2s ease-in;
 }
 

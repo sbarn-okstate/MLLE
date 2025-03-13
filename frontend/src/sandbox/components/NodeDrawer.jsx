@@ -21,12 +21,14 @@ export default function NodeDrawer() {
         <>
             <div className={drawerCollapse}>
                 <div className="nodeDrawer">
-                    <p style={{color: "white"}}> {/* placeholder crap */}
-                        blah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blahblah blah blah
-                    </p>
+                    <div className="DELETEME"/>
+                    <div className="DELETEME"/>
+                    <div className="DELETEME"/>
+                    <div className="DELETEME"/>
+                    <div className="DELETEME"/>
                 </div>
                 <div className="nodeDrawerHandle" onClick={() => NodeHandleClick()}>
-                    <p style={{color: "black", textAlign: "center", userSelect: "none"}}>{handleText}</p>
+                    <p style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>
                 </div>
             </div>
         </>
