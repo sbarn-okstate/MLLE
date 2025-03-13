@@ -62,6 +62,7 @@ function SandboxTest() {
     const [count, setCount] = useState(0);
     const [list, setList] = useState([]);
     const [draggables, setDraggables] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     // This gets executed when the DOM is updated
     useEffect(() => {
@@ -91,8 +92,8 @@ function SandboxTest() {
     return(
         <>
             <div className="sandboxContainer">
-                <NodeDrawer/>
-                <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos}/>
+                <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
+                <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos} drawerOpen={drawerOpen}/>
                 <div className="bottomBar">
                     <Link to="/"><button className="sandboxButton">Go Back</button></Link>
                     <div style={

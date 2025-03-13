@@ -1,20 +1,19 @@
 import { useState } from "react";
 
-export default function NodeDrawer() {
+export default function NodeDrawer({drawerOpen, setDrawerOpen}) {
     const [drawerCollapse, setDrawerCollapse] = useState("drawerDivCollapsed");
     const [handleText, setHandleText] = useState("→");
-    var collapsed = true;
 
     function NodeHandleClick() {
-        if (collapsed === false) {
-            setDrawerCollapse("drawerDivCollapsed");
-            setHandleText("→");
-        } else {
+        if (drawerOpen === false) {
             setDrawerCollapse("drawerDiv");
             setHandleText("←");
+        } else {
+            setDrawerCollapse("drawerDivCollapsed");
+            setHandleText("→");
         }
 
-        collapsed = !collapsed;
+        setDrawerOpen(!drawerOpen);
     }
 
     return(
@@ -27,7 +26,7 @@ export default function NodeDrawer() {
                     <div className="DELETEME"/>
                     <div className="DELETEME"/>
                 </div>
-                <div className="nodeDrawerHandle" tabindex="0" onClick={() => NodeHandleClick()} onKeyDown={(event) => { if (event.key == "Enter" || event.key == " ") NodeHandleClick()}}>
+                <div className="nodeDrawerHandle" tabIndex="0" onClick={() => NodeHandleClick()} onKeyDown={(event) => { if (event.key == "Enter" || event.key == " ") NodeHandleClick()}}>
                     <p style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>
                 </div>
             </div>
