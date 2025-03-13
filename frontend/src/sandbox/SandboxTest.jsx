@@ -15,6 +15,7 @@ import SandboxController from './SandboxController.jsx';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
 import snapPoints from './snapPoints.js';
+import NodeDrawer from './components/NodeDrawer.jsx';
 
 let backend_worker = null
 
@@ -90,6 +91,7 @@ function SandboxTest() {
     return(
         <>
             <div className="sandboxContainer">
+                <NodeDrawer/>
                 <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos}/>
                 <div className="bottomBar">
                     <Link to="/"><button className="sandboxButton">Go Back</button></Link>
