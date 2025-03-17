@@ -35,27 +35,35 @@ function createModel() {
         },
         {
             type: "dense",
-            units: 8,
-            activation: "relu"
-        },
-        {
-            type: "dense",
-            units: 2,
-            activation: "relu"
-        },
-        {
-            type: "dense",
             units: 1,
+            activation: "sigmoid"
         }
     ];
     backend_worker.postMessage({func: 'prepareModel', args: test_model})
 }
 
-function train() {
+function startTraining(setTrainingState) {
+    createModel();
     //FIXME: This is just a test
-    let fileName = 'synthetic_normal_binary_classification.csv';
+    let fileName = 'synthetic_normal_binary_classification_500.csv';
     let problemType = 'classification';
     backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
+    setTrainingState('training');
+}
+
+function pauseTraining(setTrainingState) {
+    backend_worker.postMessage({func: 'pauseTraining'});
+    setTrainingState('paused');
+}
+
+function resumeTraining(setTrainingState) {
+    backend_worker.postMessage({func: 'resumeTraining'});
+    setTrainingState('training');
+}
+
+function stopTraining(setTrainingState) {
+    backend_worker.postMessage({func: 'stopTraining'});
+    setTrainingState('stopped');
 }
 
 function SandboxTest() {
@@ -63,6 +71,7 @@ function SandboxTest() {
     const [list, setList] = useState([]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [trainingState, setTrainingState] = useState('stopped');
 
     // This gets executed when the DOM is updated
     useEffect(() => {
@@ -106,8 +115,21 @@ function SandboxTest() {
                         }}>
                         <button className="sandboxButton" onClick={() => AddTestDiv()}>Add Draggable</button>
                         <button className="sandboxButton" onClick={() => createBackend()}>Create Backend</button>
-                        <button className="sandboxButton" onClick={() => createModel()}>Create Model</button>
-                        <button className="sandboxButton" onClick={() => train()}>Train</button>
+                        {trainingState === 'stopped' && (
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
+                        )}
+                        {trainingState === 'training' && (
+                            <>
+                                <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState)}>Pause Training</button>
+                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState)}>Stop Training</button>
+                            </>
+                        )}
+                        {trainingState === 'paused' && (
+                            <>
+                                <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
+                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState)}>Stop Training</button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

@@ -10,17 +10,29 @@
 
 import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
 
-import { prepareModel, trainModel } from './model.js';
+import { prepareModel, trainModel, pauseTraining, resumeTraining, stopTraining } from './model.js';
 
 let csvDataset; //Will probably need this here so webworker can make use of the dataset. Need to have dataloader return something to it.
 self.onmessage = async (event) => {
     const { func, args } = event.data;
 
-    if (func === "prepareModel") {
-        await prepareModel(args, self);
-    }
-
-    if (func === "trainModel") {
-        await trainModel(args.fileName, args.problemType, self);
+    switch (func) {
+        case "prepareModel":
+            await prepareModel(args, self);
+            break;
+        case "trainModel":
+            await trainModel(args.fileName, args.problemType, self);
+            break;
+        case "pauseTraining":
+            await pauseTraining();
+            break;
+        case "resumeTraining":
+            await resumeTraining();
+            break;
+        case "stopTraining":
+            await stopTraining();
+            break;
+        default:
+            console.error(`Unknown function: ${func}`);
     }
 };

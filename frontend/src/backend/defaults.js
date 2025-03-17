@@ -28,6 +28,6 @@ export const DROPOUT = {
 };
 
 export const COMPILE = {
-    loss: 'meanSquaredError',
+    loss: 'binaryCrossentropy',
     optimizer: 'adam'
 };
