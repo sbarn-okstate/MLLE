@@ -5,7 +5,11 @@
  * PURPOSE: This file contains the default values for model layers
  * and model compilation.
  * 
- * NOTES: None
+ * NOTES: FIXME -> different datasets need different input shapes and loss functions.
+ * Also we need a way to automatically make the last layer have 1 output unit and 
+ * a sigmoid activation function (at least for classification problems).
+ * Some of these changes should be made in the model.js file, but it may also be good to 
+ * add a dataset_default.js file to handle some of these changes.
  */
 
 export const DENSE = {
