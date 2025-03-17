@@ -1,4 +1,11 @@
-// class test
+/* SandboxController.jsx
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Controller portion of MVC for sandbox.
+  * 
+  * NOTES: I don't know if we are going to use this.
+  */
 
 // information to send format
 /*
