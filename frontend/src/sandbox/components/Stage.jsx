@@ -1,15 +1,39 @@
+/* SandboxTest.jsx
+  *
+  * AUTHOR(S): Mark Taylor, Samuel Barney
+  *
+  * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
+  *          well.
+  * 
+  * NOTES: We need to look into better snapping mechanics
+  */
+
 import { useEffect, useRef } from "react";
 import TestDiv from './TestDiv.jsx';
 import PlainDraggable from "plain-draggable";
 
-export default function Stage({elements, drags, setDrags}) {
+export default function Stage({elements, drags, setDrags, drawerOpen}) {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
+    const drag = useRef([]);
+
+    // draggables do not know about state variables? so the need an external helper
+    function extAction(ref) {
+        console.log(`an element has called for external action: ${typeof ref}`);
+    }
 
     useEffect(() => {
         // This useEffect runs after the components are rendered
         divRefs.current.forEach((div, index) => {
-            if (div) {
+            // We need to make sure that we do not recreate the draggable object
+            if ((drag.current[index] != 1)) {
+                drag.current.push(1);
+                console.log(`length: ${drag.current}`);
+
+                // Subscribe to mouse move event listener
+                let mouse;
+                addEventListener("mousemove", (event) => {mouse = event});
+
                 // Only create new PlainDraggable instances if the ref is set
                 var draggable = new PlainDraggable(div);
 
@@ -25,6 +49,27 @@ export default function Stage({elements, drags, setDrags}) {
                         draggable.top += dy;
                     }
                 };
+
+                // Draggables can be given a starting position as offset from top-left corner
+                draggable.top = 100;
+                draggable.left = 150;
+
+                // Visually above everything for dragging into node drawer for deletion
+                draggable.onDrag = function () {
+                    draggable.zIndex = 99000;
+                }
+
+                // Maybe we can do a bounds check for if it's over the drawer?
+                draggable.onDragEnd = function() {
+                    // Get mouse coords
+                    console.log(`dropped with mouse pos (${mouse.x}, ${mouse.y})`);
+                    if (mouse.x < 250) {
+                        // somehow remove this
+                        console.error(`TODO: Implement despawning div!`);
+                        
+                        //extAction(divRefs[index]);
+                    }
+                }
 
                 // Set the handle
                 draggable.handle = handleRefs.current[index];
@@ -86,6 +131,7 @@ export default function Stage({elements, drags, setDrags}) {
                             name={item.name} 
                             ref={el => divRefs.current[index] = el}
                             handleRef={el => handleRefs.current[index] = el} // Set handle ref for each TestDiv
+                            action={extAction}
                         />
                     );
                 })

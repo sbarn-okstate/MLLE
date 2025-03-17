@@ -1,3 +1,13 @@
+/* Welcome.jsx
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Landing page for the webapp.
+  * 
+  * NOTES: Maybe at some point we just go directly to the sandbox? Would we
+  *        need this page?
+  */
+
 import { Link } from "react-router";
 import './Welcome.css'
 

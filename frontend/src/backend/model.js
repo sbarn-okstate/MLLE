@@ -13,6 +13,7 @@ let model = null;
 let sharedBuffer = null;
 let weightArray = null;
 let layerSizes = []; // Stores offsets for each layer's weights
+let pauseResumeCallback;
 
 export async function prepareModel(layers, self) {
     await tf.ready();  // ensure TensorFlow.js is initialized
@@ -55,37 +56,36 @@ export async function prepareModel(layers, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-
-export async function trainModel(fileName, problemType, self, batchSize=32, epochs=100) {
+export async function trainModel(fileName, problemType, self, batchSize = 64, epochs = 1000) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
             return;
         }
-        
-        self.postMessage('Preparing dataset...');
 
+        self.postMessage('Preparing dataset...');
         let csvDataset = await loadCSV(fileName);
         let dataArray = await csvDataset.toArray();
 
         await tf.ready();
 
         tf.util.shuffle(dataArray);
-        const processedDataset = dataArray.map(({xs, ys}) =>
-            {
-                return {xs:Object.values(xs), ys:Object.values(ys)};
-            })
-            
-         // separate xs and ys into two arrays
-         const xsArray = processedDataset.map(d => d.xs);
-         const ysArray = processedDataset.map(d => d.ys);
- 
-         // convert xs and ys to tensors
-         const xsTensor = tf.tensor2d(xsArray);
-         const ysTensor = tf.tensor2d(ysArray);
- 
+        const processedDataset = dataArray.map(({ xs, ys }) => {
+            return { xs: Object.values(xs), ys: Object.values(ys) };
+        });
+
+        // Separate xs and ys into two arrays
+        const xsArray = processedDataset.map(d => d.xs);
+        const ysArray = processedDataset.map(d => d.ys);
+
+        // Convert xs and ys to tensors
+        const xsTensor = tf.tensor2d(xsArray);
+        const ysTensor = tf.tensor2d(ysArray);
+
         self.postMessage("Dataset processed.");
-        
+
+        pauseResumeCallback = new PauseResumeCallback();
+
         await model.fit(xsTensor, ysTensor, {
             epochs: epochs,
             batchSize: batchSize,
@@ -97,15 +97,36 @@ export async function trainModel(fileName, problemType, self, batchSize=32, epoc
                     self.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
                     saveWeightsToSharedMemory();
                 },
+                onTrainingEnd: () => {
+                    self.postMessage('Training complete!');
+                },
+                onBatchEnd: async (batch, logs) => {
+                    await pauseResumeCallback.onBatchEnd(batch, logs);
+                }
             }
         });
-  
-        self.postMessage('Training complete!');
     } catch (error) {
         self.postMessage(`Error during training: ${error.message}`);
     }
-  }
+}
 
+export function pauseTraining() {
+    if (pauseResumeCallback) {
+        pauseResumeCallback.pause();
+    }
+}
+
+export function resumeTraining() {
+    if (pauseResumeCallback) {
+        pauseResumeCallback.resume();
+    }
+}
+
+export function stopTraining() {
+    if (pauseResumeCallback) {
+        pauseResumeCallback.stop();
+    }
+}
 
 function initSharedBuffer(){
     const bufferSize = calculateBufferSize();
@@ -137,6 +158,34 @@ function saveWeightsToSharedMemory() {
     self.postMessage({ func: "weightsUpdated" });
 }
 
+class PauseResumeCallback extends tf.Callback {
+    constructor() {
+        super();
+        this.isPaused = false;
+        this.isStopped = false;
+    }
+
+    async onBatchEnd(batch, logs) {
+        while (this.isPaused) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        if (this.isStopped) {
+            throw new Error('Training stopped');
+        }
+    }
+
+    pause() {
+        this.isPaused = true;
+    }
+
+    resume() {
+        this.isPaused = false;
+    }
+
+    stop() {
+        this.isStopped = true;
+    }
+}
 
 /* Justin Moua */
 
@@ -178,7 +227,7 @@ async function loadCSV(fileName){ //returns csvDataset.
     return csvDataset;
 }
 
-async function toTensor(csvdataset){
-  console.log("Converting to tensor.");
-  
-}
+
+
+
+

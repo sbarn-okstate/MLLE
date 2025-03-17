@@ -1,3 +1,12 @@
+/* TestDiv.jsx
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Test node component for sandbox enviroment.
+  * 
+  * NOTES: Once actual nodes are created, this should be removed.
+  */
+
 import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 

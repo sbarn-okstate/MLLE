@@ -1,7 +1,15 @@
+/* SandboxTest.jsx
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Root of frontend. Creates routes for URL.
+  * 
+  * NOTES: I think StrictMode should be removed for shipping builds.
+  */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from "react-router";
-import App from './App.jsx'
 import Welcome from './Welcome.jsx'
 import SandboxTest from './sandbox/SandboxTest.jsx';
 import './index.css'
