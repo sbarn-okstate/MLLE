@@ -8,7 +8,7 @@
   */
 
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router";
+import { data, Link } from "react-router";
 import PlainDraggable from "plain-draggable";
 import './SandboxTest.css';
 import SandboxController from './SandboxController.jsx';
@@ -26,20 +26,20 @@ function createBackend() {
 
 function createModel() {
     //FIXME: This is just a test
-    let test_model = [  //replace with actual model
+    const dataset = 'synthetic_normal_binary_classification_500.csv';
+    let layers = [  //replace with actual model
         {
             type: "dense",
-            inputShape: [2], //retrieve from input dataset
-            units: 2,
+            units: 3,
             activation: "relu"
         },
         {
             type: "dense",
-            units: 1,
-            activation: "sigmoid"
+            units: 2,
+            activation: "relu"
         }
     ];
-    backend_worker.postMessage({func: 'prepareModel', args: test_model})
+    backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
 function startTraining(setTrainingState) {
@@ -78,6 +78,8 @@ function SandboxTest() {
         UpdateDraggablePos();
     })
 
+    createBackend(); //creates backend worker
+
     // localized test div add
     function AddTestDiv() {
         setList([
@@ -114,7 +116,6 @@ function SandboxTest() {
                             gap: "10px"
                         }}>
                         <button className="sandboxButton" onClick={() => AddTestDiv()}>Add Draggable</button>
-                        <button className="sandboxButton" onClick={() => createBackend()}>Create Backend</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
                         )}
