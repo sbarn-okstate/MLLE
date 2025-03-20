@@ -35,3 +35,6 @@ export const COMPILE = {
     loss: 'binaryCrossentropy',
     optimizer: 'adam'
 };
+
+export const LOSS = 'binaryCrossentropy';
+export const OPTIMIZER = 'adam';
