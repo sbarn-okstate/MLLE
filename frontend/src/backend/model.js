@@ -4,10 +4,12 @@
  *
  * PURPOSE: FIXME
  * 
- * NOTES: None
+ * NOTES: FIXME->prepareModel and trainModel use different argument names for the dataset filename
  */
 
 import * as defaults from './defaults.js'
+import { datasetDefaults } from './dataset-defaults.js';
+import { data } from 'react-router';
 
 let model = null;
 let sharedBuffer = null;
@@ -15,27 +17,26 @@ let weightArray = null;
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
 
-export async function prepareModel(layers, self) {
+export async function prepareModel({layers, dataset}, self) {
     await tf.ready();  // ensure TensorFlow.js is initialized
     model = tf.sequential();
-    let firstLayer = true;
 
-    // construct model based on input layers
+    // add input layer
+    model.add(tf.layers.inputLayer({ inputShape: datasetDefaults[dataset].inputShape }));
+
+    // construct model based on layers argument
     for (let layer of layers) {
         if (layer.type === 'dense') {
         model.add(tf.layers.dense({
             units:      layer.units      || defaults.DENSE.units,
-            activation: layer.activation || defaults.DENSE.activation,
-            inputShape: firstLayer ? layer.inputShape : undefined
+            activation: layer.activation || defaults.DENSE.activation
         }));
         }
         if (layer.type === 'conv2d') {
         model.add(tf.layers.conv2d({
             filters:    layer.filters    || defaults.CONV.units,
             kernelSize: layer.kernelSize || defaults.CONV.kernalSize,
-            activation: layer.activation || defaults.CONV.activation,
-            inputShape: layer.inputShape || defaults.CONV.inputShape,
-            inputShape: firstLayer ? layer.inputShape : undefined
+            activation: layer.activation || defaults.CONV.activation
         }));
         }
         if (layer.type === 'dropout') {
@@ -43,12 +44,18 @@ export async function prepareModel(layers, self) {
             rate: layer.rate || defaults.DROPOUT.rate
         }));
         }
-        firstLayer = false;
     }
 
+    // add output layer
+    model.add(tf.layers.dense({
+        units:      datasetDefaults[dataset].outputShape[0],
+        activation: datasetDefaults[dataset].lastLayerActivation
+    }));
+
+    // define loss and optimizer
     model.compile({
-        loss: undefined      || defaults.COMPILE.loss,
-        optimizer: undefined || defaults.COMPILE.optimizer
+        loss: undefined      || datasetDefaults[dataset].loss || defaults.LOSS,
+        optimizer: undefined || datasetDefaults[dataset].optimizer || defaults.OPTIMIZER
     });
 
     self.postMessage('Model prepared... creating shared buffer.');
