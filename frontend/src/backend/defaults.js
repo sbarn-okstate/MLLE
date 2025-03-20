@@ -38,3 +38,8 @@ export const COMPILE = {
 
 export const LOSS = 'binaryCrossentropy';
 export const OPTIMIZER = 'adam';
+
+export const OUTPUT = {
+    units: 1,
+    activation: 'sigmoid'
+};

@@ -48,13 +48,13 @@ export async function prepareModel({layers, dataset}, self) {
 
     // add output layer
     model.add(tf.layers.dense({
-        units:      datasetDefaults[dataset].outputShape[0],
-        activation: datasetDefaults[dataset].lastLayerActivation
+        units:      datasetDefaults[dataset].outputShape[0]      || defaults.OUTPUT.units,
+        activation: datasetDefaults[dataset].lastLayerActivation || defaults.OUTPUT.activation
     }));
 
     // define loss and optimizer
     model.compile({
-        loss: undefined      || datasetDefaults[dataset].loss || defaults.LOSS,
+        loss: undefined      || datasetDefaults[dataset].loss      || defaults.LOSS,
         optimizer: undefined || datasetDefaults[dataset].optimizer || defaults.OPTIMIZER
     });
 
