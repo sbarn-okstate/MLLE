@@ -85,7 +85,9 @@ function SandboxTest() {
         setList([
             ...list,
             {
-                name: "drag" + count
+                name: "drag" + count,
+                type: "all" //all is the default type, can be changed to "l", "r", "t", "b", "lr", "tb", "all".
+                            //type defines where the draggable's snap points are.
             }
         ])
 
