@@ -81,18 +81,36 @@ function SandboxTest() {
     createBackend(); //creates backend worker
 
     // localized test div add
-    function AddTestDiv() {
-        setList([
-            ...list,
-            {
-                name: "drag" + count,
-                type: "all" //all is the default type, can be changed to "l", "r", "t", "b", "lr", "tb", "all".
-                            //type defines where the draggable's snap points are.
-            }
-        ])
+    function AddObject(type = "all") {
+        // Map layer types to their corresponding snap point configurations
+        const snapPointMap = {
+            dataset: "r",         // Dataset can only snap at the bottom
+            dense: "lr",          // Dense layer snaps left and right
+            activation: "lr",     // Activation layer snaps left and right
+            convolution: "lr",    // Convolution layer snaps top and bottom
+            output: "l",          // Output layer can only snap at the top
+            all: "all"            // Default to all snap points
+        };
+
+        // Determine the snap points for the given type
+        const snapPoints = snapPointMap[type] || "all";
+
+        // Add the new object to the list
+        setList(prevList => {
+            const updatedList = [
+                ...prevList,
+                {
+                    name: "drag" + count,
+                    type: type,
+                    snapType: snapPoints
+                }
+            ];
+            console.log("Updated list:", updatedList); // Debugging log
+            return updatedList;
+        });
 
         setCount(count + 1);
-    }
+    };
 
     // Recalculate position for all draggables
     // Required for bounds to function properly
@@ -100,13 +118,19 @@ function SandboxTest() {
         draggables.forEach((thing) => {
             thing.position();
         });
-    }
+    };
 
     return(
         <>
             <div className="sandboxContainer">
                 <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
-                <Stage elements={list} drags={draggables} setDrags={setDraggables} updateDrags={UpdateDraggablePos} drawerOpen={drawerOpen}/>
+                <Stage 
+                    elements={list} 
+                    drags={draggables} 
+                    setDrags={setDraggables} 
+                    updateDrags={UpdateDraggablePos} 
+                    drawerOpen={drawerOpen}
+                />
                 <div className="bottomBar">
                     <Link to="/"><button className="sandboxButton">Go Back</button></Link>
                     <div style={
@@ -117,7 +141,11 @@ function SandboxTest() {
                             justifyContent: "flex-end",
                             gap: "10px"
                         }}>
-                        <button className="sandboxButton" onClick={() => AddTestDiv()}>Add Draggable</button>
+                        <button className="sandboxButton" onClick={() => AddObject("dataset")}>Add Dataset</button>
+                        <button className="sandboxButton" onClick={() => AddObject("dense")}>Add Dense Layer</button>
+                        <button className="sandboxButton" onClick={() => AddObject("activation")}>Add Activation Layer</button>
+                        <button className="sandboxButton" onClick={() => AddObject("convolution")}>Add Convolution Layer</button>
+                        <button className="sandboxButton" onClick={() => AddObject("output")}>Add Output Layer</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
                         )}

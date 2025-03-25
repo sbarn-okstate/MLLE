@@ -9,8 +9,16 @@
   */
 
 import { useEffect, useRef } from "react";
-import TestDiv from './TestDiv.jsx';
+import {
+    DatasetObject,
+    DenseLayerObject,
+    ActivationLayerObject,
+    ConvolutionLayerObject,
+    OutputLayerObject
+ } from './LayerObjects.jsx';
+
 import PlainDraggable from "plain-draggable";
+
 
 export default function Stage({elements, drags, setDrags, drawerOpen}) {
     const divRefs = useRef([]);
@@ -36,6 +44,9 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
     }
 
     useEffect(() => {
+        console.log("divRefs:", divRefs.current);
+        console.log("handleRefs:", handleRefs.current);
+
         // This useEffect runs after the components are rendered
         divRefs.current.forEach((div, index) => {
             if (!drag.current[index]) {
@@ -46,13 +57,15 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
                 addEventListener("mousemove", (event) => {mouse = event});
                 
                 // Get the type of the object from the elements array
-                const type = elements[index]?.type || "all"; // Default to "all" if type is not specified
+                const type = elements[index]?.snapType || "all"; // Default to "all" if type is not specified
+
+                // Create a new PlainDraggable instance
+                const draggable = new PlainDraggable(div);
 
                 const newObject = createNewObject(div, index, type);
                 activeObjects.current.push(newObject);
 
-                // Create a new PlainDraggable instance
-                const draggable = new PlainDraggable(div);
+                
 
                 // Define draggable behavior
                 draggable.onMove = function () {
@@ -69,8 +82,6 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
 
                         // Explicitly update the draggable's position
                         draggable.position();
-
-                        console.log("Snapping preview:", currentObject, "to", snap.otherObject);
                     }
                 };
 
@@ -126,8 +137,8 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
                 };
 
                 // Set initial position
-                draggable.top = 100;
-                draggable.left = 150;
+                draggable.top = 300;
+                draggable.left = 300;
 
                 // Visually above everything for dragging into node drawer for deletion
                 draggable.onDrag = function () {
@@ -258,21 +269,39 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
             snapPoints,
         };
     }
+
+    function renderObject(type, props) {
+        const { key, ...restProps } = props; // Extract the key from props
+        //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
+        //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
+        console.log("Rendering object:", type);
+        switch (type) {
+            case "dataset":
+                return <DatasetObject key={key} {...restProps} />;
+            case "dense":
+                return <DenseLayerObject key={key} {...restProps} />;
+            case "activation":
+                return <ActivationLayerObject key={key} {...restProps} />;
+            case "convolution":
+                return <ConvolutionLayerObject key={key} {...restProps} />;
+            case "output":
+                return <OutputLayerObject key={key} {...restProps} />;
+            default:
+                return null;
+        }
+    }
+
     return (
         <div id="stage" className="teststage">
-            {
-                elements.map((item, index) => {
-                    return (
-                        <TestDiv 
-                            key={item.name} 
-                            name={item.name} 
-                            ref={el => divRefs.current[index] = el}
-                            handleRef={el => handleRefs.current[index] = el} // Set handle ref for each TestDiv
-                            action={extAction}
-                        />
-                    );
+            {elements.map((item, index) => (
+                renderObject(item.type, {
+                    key: item.name,
+                    name: item.name,
+                    ref: el => (divRefs.current[index] = el),
+                    handleRef: el => (handleRefs.current[index] = el),
+                    action: extAction
                 })
-            }
+            ))}
         </div>
     );
 }
