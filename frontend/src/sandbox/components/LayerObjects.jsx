@@ -11,11 +11,11 @@ import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className="testdraggable">
+        <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Drag here.</p>
+                <p className="nodeDragText">Dataset</p>
             </div>
             <p>Dataset: 
                 <span>
@@ -26,17 +26,17 @@ export function DatasetObject({ name, ref, handleRef }) {
                     </select>
                 </span>
             </p>
-            <img src={test} width="100" height="150" style={{ borderRadius: "5px" }} />
+            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
         </div>
     );
 };
 
 // Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef }) {
+export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable"}) {
     return (
-        <div ref={ref} id={name} className="testdraggable">
+        <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Drag here.</p>
+                <p className="nodeDragText">Dense Layer</p>
             </div>
             <p>Number of Nodes: 
                 <span>
@@ -57,11 +57,11 @@ export function DenseLayerObject({ name, ref, handleRef }) {
 };
 
 // Activation Layer Object
-export function ActivationLayerObject({ name, ref, handleRef }) {
+export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className="testdraggable">
+        <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Drag here.</p>
+                <p className="nodeDragText">Activation Layer</p>
             </div>
             <p>Activation Function: 
                 <span>
@@ -79,11 +79,11 @@ export function ActivationLayerObject({ name, ref, handleRef }) {
 };
 
 // Convolution Layer Object
-export function ConvolutionLayerObject({ name, ref, handleRef }) {
+export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className="testdraggable">
+        <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Drag here.</p>
+                <p className="nodeDragText">Convolution Layer</p>
             </div>
             <p>Filter Size: 
                 <span>
@@ -100,14 +100,14 @@ export function ConvolutionLayerObject({ name, ref, handleRef }) {
 };
 
 // Output Layer Object
-export function OutputLayerObject({ name, ref, handleRef }) {
+export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className="testdraggable">
+        <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Drag here.</p>
+                <p className="nodeDragText">Output</p>
             </div>
             <p>Output Layer</p>
-            <img src={test} width="100" height="80" style={{ borderRadius: "5px" }} />
+            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
         </div>
     );
 };

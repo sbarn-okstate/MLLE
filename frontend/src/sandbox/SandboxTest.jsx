@@ -123,7 +123,7 @@ function SandboxTest() {
     return(
         <>
             <div className="sandboxContainer">
-                <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
+                <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
                 <Stage 
                     elements={list} 
                     drags={draggables} 
@@ -141,11 +141,6 @@ function SandboxTest() {
                             justifyContent: "flex-end",
                             gap: "10px"
                         }}>
-                        <button className="sandboxButton" onClick={() => AddObject("dataset")}>Add Dataset</button>
-                        <button className="sandboxButton" onClick={() => AddObject("dense")}>Add Dense Layer</button>
-                        <button className="sandboxButton" onClick={() => AddObject("activation")}>Add Activation Layer</button>
-                        <button className="sandboxButton" onClick={() => AddObject("convolution")}>Add Convolution Layer</button>
-                        <button className="sandboxButton" onClick={() => AddObject("output")}>Add Output Layer</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
                         )}
