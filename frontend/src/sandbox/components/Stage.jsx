@@ -16,7 +16,7 @@ import {
     ConvolutionLayerObject,
     OutputLayerObject
  } from './LayerObjects.jsx';
-
+import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
 
 
@@ -293,12 +293,13 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
 
     return (
         <div id="stage" className="teststage">
+            <StartNode ref={el => (divRefs.current[0] = el)} handleRef={el => (handleRefs.current[0] = el)} name={"startNode"} />
             {elements.map((item, index) => (
                 renderObject(item.type, {
                     key: item.name,
                     name: item.name,
-                    ref: el => (divRefs.current[index] = el),
-                    handleRef: el => (handleRefs.current[index] = el),
+                    ref: el => (divRefs.current[index + 1] = el),
+                    handleRef: el => (handleRefs.current[index + 1] = el),
                     action: extAction
                 })
             ))}
