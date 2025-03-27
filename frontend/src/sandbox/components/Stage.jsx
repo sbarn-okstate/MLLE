@@ -8,7 +8,7 @@
   * NOTES: We need to look into better snapping mechanics
   */
 
-import { useEffect, useRef } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -18,9 +18,10 @@ import {
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
+import snapPoints from "../snapPoints.js";
 
 
-export default function Stage({elements, drags, setDrags, drawerOpen}) {
+const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
@@ -37,6 +38,12 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         ]
     }
     */
+
+    // 2. Expose startNode and activeObjects via the ref
+    useImperativeHandle(ref, () => ({
+        getStartNode: () => activeObjects.current.find(obj => obj.id === "startNode"),
+        getActiveObjects: () => activeObjects.current,
+    }));
 
     // draggables do not know about state variables? so the need an external helper
     function extAction(ref) {
@@ -56,16 +63,14 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
                 let mouse;
                 addEventListener("mousemove", (event) => {mouse = event});
                 
-                // Get the type of the object from the elements array
-                const type = elements[index]?.snapType || "all"; // Default to "all" if type is not specified
-
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                const newObject = createNewObject(div, index, type);
+                // Get the type of the object from the elements array
+                const type = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
+                const name = elements[index-1]?.name || `object${index}`;   
+                const newObject = createNewObject(div, index, type, name);
                 activeObjects.current.push(newObject);
-
-                
 
                 // Define draggable behavior
                 draggable.onMove = function () {
@@ -90,41 +95,10 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
                     const snap = findClosestSnapPoint(currentObject, activeObjects);
 
                     if (snap) {
-                        // Finalize the links
-                        if (snap.currentPoint.type === "left") {
-                            currentObject.leftLink = snap.otherObject;
-                            snap.otherObject.rightLink = currentObject;
-                        } else if (snap.currentPoint.type === "right") {
-                            currentObject.rightLink = snap.otherObject;
-                            snap.otherObject.leftLink = currentObject;
-                        } else if (snap.currentPoint.type === "top") {
-                            currentObject.topLink = snap.otherObject;
-                            snap.otherObject.bottomLink = currentObject;
-                        } else if (snap.currentPoint.type === "bottom") {
-                            currentObject.bottomLink = snap.otherObject;
-                            snap.otherObject.topLink = currentObject;
-                        }
-
+                        updateLinks(currentObject, snap);
                         console.log("Snapped:", currentObject, "to", snap.otherObject);
                     } else {
-                        // Clear links if no snap occurred
-                        if (currentObject.leftLink) {
-                            currentObject.leftLink.rightLink = null;
-                            currentObject.leftLink = null;
-                        }
-                        if (currentObject.rightLink) {
-                            currentObject.rightLink.leftLink = null;
-                            currentObject.rightLink = null;
-                        }
-                        if (currentObject.topLink) {
-                            currentObject.topLink.bottomLink = null;
-                            currentObject.topLink = null;
-                        }
-                        if (currentObject.bottomLink) {
-                            currentObject.bottomLink.topLink = null;
-                            currentObject.bottomLink = null;
-                        }
-
+                        clearLinks(currentObject);
                         console.log("Unsnapped:", currentObject);
                     }
 
@@ -158,8 +132,52 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         });
     }, [elements, setDrags]);
 
+    function updateLinks(currentObject, snap) {
+        if (snap.currentPoint.type === "left") {
+            currentObject.leftLink = snap.otherObject;
+            snap.otherObject.rightLink = currentObject;
+        } else if (snap.currentPoint.type === "right") {
+            currentObject.rightLink = snap.otherObject;
+            snap.otherObject.leftLink = currentObject;
+        } else if (snap.currentPoint.type === "top") {
+            currentObject.topLink = snap.otherObject;
+            snap.otherObject.bottomLink = currentObject;
+        } else if (snap.currentPoint.type === "bottom") {
+            currentObject.bottomLink = snap.otherObject;
+            snap.otherObject.topLink = currentObject;
+        }
+    }
+
+    function clearLinks(currentObject) {
+        if (currentObject.leftLink) {
+            currentObject.leftLink.rightLink = null;
+            currentObject.leftLink = null;
+        }
+        if (currentObject.rightLink) {
+            currentObject.rightLink.leftLink = null;
+            currentObject.rightLink = null;
+        }
+        if (currentObject.topLink) {
+            currentObject.topLink.bottomLink = null;
+            currentObject.topLink = null;
+        }
+        if (currentObject.bottomLink) {
+            currentObject.bottomLink.topLink = null;
+            currentObject.bottomLink = null;
+        }
+    }
     // custom snapping behavior
     function findClosestSnapPoint(currentObject, activeObjects) {
+        if (!currentObject || !currentObject.element) {
+            console.error("findClosestSnapPoint: currentObject or its element is undefined.");
+            return null;
+        }
+    
+        if (!currentObject.snapPoints) {
+            console.error("findClosestSnapPoint: snapPoints is undefined for currentObject:", currentObject);
+            return null;
+        }
+    
         // Cache the current object's bounding rect
         const currentRect = currentObject.element.getBoundingClientRect();
     
@@ -234,7 +252,7 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         return closestPoint;
     }
 
-    function createNewObject(div, index, type = "all") {
+    function createNewObject(div, index, type = "all", name = `object${index}`) {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -261,6 +279,7 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
     
         return {
             id: `object${index}`,
+            name: name,
             element: div,
             leftLink: null,
             rightLink: null,
@@ -270,11 +289,29 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         };
     }
 
+    // Add the startNode to activeObjects during rendering
+    const initializeStartNode = (element) => {
+        if (!element) return; // Ensure the element is valid
+        if (!activeObjects.current.find(obj => obj.id === "startNode")) {
+            const startNode = {
+                id: "startNode",
+                name: "startNode",
+                element: element, // Assign the DOM element for the StartNode
+                leftLink: null,
+                rightLink: null,
+                topLink: null,
+                bottomLink: null,
+                snapPoints: [{ type: "right" }, { type: "left" }]
+            };
+            activeObjects.current.push(startNode);
+        }
+    };
+
     function renderObject(type, props) {
         const { key, ...restProps } = props; // Extract the key from props
         //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
         //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
-        console.log("Rendering object:", type);
+        //console.log("Rendering object:", type);
         switch (type) {
             case "dataset":
                 return <DatasetObject key={key} {...restProps} />;
@@ -293,16 +330,25 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
 
     return (
         <div id="stage" className="teststage">
-            <StartNode ref={el => (divRefs.current[0] = el)} handleRef={el => (handleRefs.current[0] = el)} name={"startNode"} />
+            <StartNode
+                ref={(el) => {
+                    divRefs.current[0] = el;
+                    initializeStartNode(el); // Initialize the startNode during rendering
+                }}
+                handleRef={(el) => (handleRefs.current[0] = el)}
+                name={"startNode"}
+            />
             {elements.map((item, index) => (
                 renderObject(item.type, {
                     key: item.name,
                     name: item.name,
-                    ref: el => (divRefs.current[index + 1] = el),
-                    handleRef: el => (handleRefs.current[index + 1] = el),
+                    ref: (el) => (divRefs.current[index + 1] = el),
+                    handleRef: (el) => (handleRefs.current[index + 1] = el),
                     action: extAction
                 })
             ))}
         </div>
     );
-}
+});
+
+export default Stage;

@@ -50,7 +50,7 @@ export function createBackendWorker() {
         }
         return;
     }
-    console.log('Backend worker already created.');
+    //console.log('Backend worker already created.');
 }
 
 function getLayerWeights() {
