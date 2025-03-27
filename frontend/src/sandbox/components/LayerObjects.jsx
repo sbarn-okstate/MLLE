@@ -11,7 +11,11 @@ import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef }) {
+export function DatasetObject({ name, ref, handleRef, onDatasetChange}) {
+    const handleChange = (event) => {
+        const selectedValue = event.target.value;
+        onDatasetChange(name, selectedValue); // Pass the selected value to the parent
+    };
     return (
         <div ref={ref} id={name} className="testdraggable">
             <div ref={handleRef} className="nodeHandle">
@@ -19,7 +23,7 @@ export function DatasetObject({ name, ref, handleRef }) {
             </div>
             <p>Dataset: 
                 <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
+                    <select name={name + "dataset"} id={name + "dataset"} onChange={handleChange}>
                         <option value="dataset1.csv">Dataset 1</option>
                         <option value="dataset2.csv">Dataset 2</option>
                         <option value="dataset3.csv">Dataset 3</option>

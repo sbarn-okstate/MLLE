@@ -1,6 +1,6 @@
-/* SandboxTest.jsx
+/* Stage.jsx
   *
-  * AUTHOR(S): Mark Taylor, Samuel Barney
+  * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
   * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
   *          well.
@@ -8,7 +8,7 @@
   * NOTES: We need to look into better snapping mechanics
   */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -20,14 +20,24 @@ import {
 import PlainDraggable from "plain-draggable";
 
 
-export default function Stage({elements, drags, setDrags, drawerOpen}) {
+export default function Stage({activeObjects, elements, drags, setDrags, drawerOpen}) {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const activeObjects = useRef([]);
+    const [selectedDatasets, setSelectedDatasets] = useState({}); // Store selected datasets
+
+    const handleDatasetChange = (name, value) => {
+        setSelectedDatasets((prev) => ({
+            ...prev,
+            [name]: value, // Update the dataset for the specific object
+        }));
+        console.log("Updated Datasets in Stage:", { ...selectedDatasets, [name]: value });
+    };
+    //const activeObjects = useRef([]);
     /*
     {   activeObjects object structure
         id: "object1", // Unique identifier
+        type: "dataset", // Type of the object (Not entirely necessary to have but I included it for clarity when debugging)
         element: div, // Reference to the DOM element
         leftLink: null, // Reference to the object snapped to the left
         rightLink: null, // Reference to the object snapped to the right
@@ -43,7 +53,7 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         console.log(`an element has called for external action: ${typeof ref}`);
     }
 
-    useEffect(() => {
+    useEffect(() => { 
         console.log("divRefs:", divRefs.current);
         console.log("handleRefs:", handleRefs.current);
 
@@ -57,15 +67,38 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
                 addEventListener("mousemove", (event) => {mouse = event});
                 
                 // Get the type of the object from the elements array
-                const type = elements[index]?.snapType || "all"; // Default to "all" if type is not specified
+                const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified
+                const objectType = elements[index]?.type; //Grabs the type of the object. (Dataset, Dense, etc.)
+
+                //Check if there is an object of objectType in activeObjects. - Justin Moua
+                let foundedObject = 0;
+                for (let i = 0; i < activeObjects.current.length; i++) {
+                    if (activeObjects.current[i].type === objectType) {
+                        foundedObject = 1;
+                    }
+                }
+
+                //If there is an object of objectType in the array. - Justin Moua
+                if (foundedObject === 1) {
+                    let objectTypeTracker = 0;
+                    //Check how many objects of objectType are in the array.
+                    for (let i = 0; i < activeObjects.current.length; i++) { 
+                        if (activeObjects.current[i].type === objectType) {
+                            objectTypeTracker = objectTypeTracker + 1;
+                            //console.log("objectTypeTracker: ", objectTypeTracker);
+                        }
+                    }
+                    const newObject = createNewObject(objectType, div, objectTypeTracker, snapType); //Creates a new object with the type and div element
+                    activeObjects.current.push(newObject); //Adds the new object to the activeObjects array
+                }
+                // if activeObjects consists of no objects of objectType. (This is mainly for the first object of a chosen objectType)
+                else {
+                    const newObject = createNewObject(objectType, div, 0, snapType); //Creates a new object with the type and div element
+                    activeObjects.current.push(newObject); //Adds the new object to the activeObjects array
+                }
 
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
-
-                const newObject = createNewObject(div, index, type);
-                activeObjects.current.push(newObject);
-
-                
 
                 // Define draggable behavior
                 draggable.onMove = function () {
@@ -233,8 +266,9 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
     
         return closestPoint;
     }
-
-    function createNewObject(div, index, type = "all") {
+    //some variable assigned to every object like left link and right link that contains object info.
+    //is it a dense layer, what kind of layer is it? how many neurons?
+    function createNewObject(objectType, div, index, type = "all") {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -260,7 +294,8 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         }
     
         return {
-            id: `object${index}`,
+            id: `${objectType}${index}`, //index is respective to the object type
+            type: objectType,
             element: div,
             leftLink: null,
             rightLink: null,
@@ -275,9 +310,10 @@ export default function Stage({elements, drags, setDrags, drawerOpen}) {
         //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
         //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
         console.log("Rendering object:", type);
+        console.log("Props:", restProps);
         switch (type) {
             case "dataset":
-                return <DatasetObject key={key} {...restProps} />;
+                return <DatasetObject key={key} {...restProps} onDatasetChange={handleDatasetChange} />;
             case "dense":
                 return <DenseLayerObject key={key} {...restProps} />;
             case "activation":

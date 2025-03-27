@@ -1,10 +1,11 @@
 /* SandboxTest.jsx
   *
-  * AUTHOR(S): Mark Taylor, Samuel Barney
+  * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES: This file should be renamed at some point
+  *        activeObjects was moved from Stage.jsx to SandboxTest.jsx so startTraning() can access object & layer info - JM
   */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -42,7 +43,9 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState) {
+
+function startTraining(setTrainingState, activeObjects) {
+    console.log("Active Objects:", activeObjects);
     createModel();
     //FIXME: This is just a test
     let fileName = 'synthetic_normal_binary_classification_500.csv';
@@ -67,6 +70,7 @@ function stopTraining(setTrainingState) {
 }
 
 function SandboxTest() {
+    const activeObjects = useRef([]);
     const [count, setCount] = useState(0);
     const [list, setList] = useState([]);
     const [draggables, setDraggables] = useState([]);
@@ -95,12 +99,16 @@ function SandboxTest() {
         // Determine the snap points for the given type
         const snapPoints = snapPointMap[type] || "all";
 
+        // Find the next available sequential number for the given type
+        const existingObjectsOfType = list.filter(obj => obj.type === type);
+        const nextIndex = existingObjectsOfType.length;
+        
         // Add the new object to the list
         setList(prevList => {
             const updatedList = [
                 ...prevList,
                 {
-                    name: "drag" + count,
+                    name: `${type}${nextIndex}`,
                     type: type,
                     snapType: snapPoints
                 }
@@ -125,6 +133,7 @@ function SandboxTest() {
             <div className="sandboxContainer">
                 <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
                 <Stage 
+                    activeObjects={activeObjects}
                     elements={list} 
                     drags={draggables} 
                     setDrags={setDraggables} 
@@ -146,8 +155,8 @@ function SandboxTest() {
                         <button className="sandboxButton" onClick={() => AddObject("activation")}>Add Activation Layer</button>
                         <button className="sandboxButton" onClick={() => AddObject("convolution")}>Add Convolution Layer</button>
                         <button className="sandboxButton" onClick={() => AddObject("output")}>Add Output Layer</button>
-                        {trainingState === 'stopped' && (
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
+                        {trainingState === 'stopped' && ( //button element is rendered if trainingState is stopped. Otherwise nothing renders.
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, activeObjects)}>Start Training</button>
                         )}
                         {trainingState === 'training' && (
                             <>
