@@ -5,7 +5,7 @@
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES:
-  * FIXME, in verifyChain, objects don't have a type trait so I had to use object.name.startsWith
+  * FIXME, in validateModel, objects don't have a type trait so I had to use object.name.startsWith
   * to determine the type of object. This is a temporary solution and should be fixed.
   */
 
@@ -45,12 +45,16 @@ function createModel() {
 }
 
 function startTraining(setTrainingState) {
-    createModel();
-    //FIXME: This is just a test
-    let fileName = 'synthetic_normal_binary_classification_500.csv';
-    let problemType = 'classification';
-    backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
-    setTrainingState('training');
+    if (validModel) {
+        createModel();
+        //FIXME: This is just a test
+        let fileName = 'synthetic_normal_binary_classification_500.csv';
+        let problemType = 'classification';
+        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
+        setTrainingState('training');
+    } else {
+        console.error("Chain of objects not validated!");
+    }
 }
 
 function pauseTraining(setTrainingState) {
@@ -76,6 +80,7 @@ function SandboxTest() {
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [trainingState, setTrainingState] = useState('stopped');
+    const [modelState, setModelState] = useState('invalid');
 
     const stageRef = useRef(null); // Reference to the stage component
 
@@ -85,9 +90,9 @@ function SandboxTest() {
     })
 
     createBackend(); //creates backend worker
-    // Function to verify the chain of linked objects
+    // Function to validate the chain of linked objects
 
-    const verifyChain = () => {
+    const validateModel = () => {
         if (!stageRef.current) {
             console.error("Stage reference is not available!");
             return [];
@@ -136,7 +141,12 @@ function SandboxTest() {
             }
     
             chain.push(objectData);
-            currentObject = currentObject.rightLink; // Move to the next object
+            if (!currentObject.rightLink && currentObject.name.startsWith("output")) {
+                setModelState('valid');
+                break;
+            } else {
+                currentObject = currentObject.rightLink; // Move to the next object
+            }
         }
 
         console.log("Chain of objects:", chain);
@@ -204,7 +214,7 @@ function SandboxTest() {
                             justifyContent: "flex-end",
                             gap: "10px"
                         }}>
-                        <button className="sandboxButton" onClick={verifyChain}>Verify Chain</button>
+                        <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
                         )}
