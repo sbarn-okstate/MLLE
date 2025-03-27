@@ -32,7 +32,7 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
 };
 
 // Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable"}) {
+export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -51,14 +51,14 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                     />
                 </span>
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}} value={text}/>
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Activation Layer Object
-export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -74,14 +74,14 @@ export function ActivationLayerObject({ name, ref, handleRef, classNameOverride 
                     </select>
                 </span>
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}} value={text}/>
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Convolution Layer Object
-export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -96,7 +96,7 @@ export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride
                     </select>
                 </span>
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}} value={text}/>
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
