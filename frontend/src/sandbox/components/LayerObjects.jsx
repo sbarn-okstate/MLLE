@@ -26,7 +26,7 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
                     </select>
                 </span>
             </p>
-            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
@@ -51,7 +51,8 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                     />
                 </span>
             </p>
-            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
@@ -73,7 +74,8 @@ export function ActivationLayerObject({ name, ref, handleRef, classNameOverride 
                     </select>
                 </span>
             </p>
-            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
@@ -94,7 +96,8 @@ export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride
                     </select>
                 </span>
             </p>
-            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
+            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
@@ -107,7 +110,7 @@ export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "t
                 <p className="nodeDragText">Output</p>
             </div>
             <p>Output Layer</p>
-            <img src={test} width="100" height="100" style={{ borderRadius: "5px" }} />
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
