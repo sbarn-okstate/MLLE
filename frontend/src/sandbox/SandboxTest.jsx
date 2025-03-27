@@ -1,6 +1,6 @@
 /* SandboxTest.jsx
   *
-  * AUTHOR(S): Mark Taylor, Samuel Barney
+  * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
   * PURPOSE: Page for the Sandbox to occupy.
   * 
@@ -73,6 +73,7 @@ function stopTraining(setTrainingState) {
 }
 
 function SandboxTest() {
+    const activeObjects = useRef([]);
     const [count, setCount] = useState(0);
     const [list, setList] = useState([
         { name: "startNode", type: "startNode", snapType: "lr" }, // Add startNode here
@@ -114,11 +115,10 @@ function SandboxTest() {
     
         // Traverse the left link for the dataset object
         let currentObject = startNode.leftLink;
-        if (currentObject && currentObject.name) {
-            const datasetValue = getFieldValue(currentObject.name + "dataset");
+        if (currentObject.objectType === "dataset") {
+            const datasetValue = getFieldValue(currentObject.id);
             chain.push({
-                name: currentObject.name,
-                type: "dataset",
+                objectType: currentObject.objectType,
                 value: datasetValue,
             });
         } else {
@@ -129,19 +129,19 @@ function SandboxTest() {
         // Traverse the right link for other objects
         currentObject = startNode.rightLink;
         while (currentObject) {
-            const objectData = { name: currentObject.name, type: currentObject.type };
+            const objectData = { objectType: currentObject.objectType };
     
             // Read specific field values based on the object type
-            if (currentObject.name.startsWith("dense")) {
-                objectData.nodes = getFieldValue(currentObject.name + "nodes");
-            } else if (currentObject.name.startsWith("activation")) {
-                objectData.activation = getFieldValue(currentObject.name + "activation");
-            } else if (currentObject.name.startsWith("convolution")) {
-                objectData.filter = getFieldValue(currentObject.name + "filter");
+            if (currentObject.objectType === "dense"){
+                objectData.nodes = getFieldValue(currentObject.id);
+            } else if (currentObject.objectType === "activation") {
+                objectData.activation = getFieldValue(currentObject.id);
+            } else if (currentObject.objectType === "convolution") {
+                objectData.filter = getFieldValue(currentObject.id);
             }
     
             chain.push(objectData);
-            if (!currentObject.rightLink && currentObject.name.startsWith("output")) {
+            if (!currentObject.rightLink && currentObject.objectType == "output") {
                 setModelState('valid');
                 break;
             } else {
@@ -173,7 +173,7 @@ function SandboxTest() {
             const updatedList = [
                 ...prevList,
                 {
-                    name: type + count,
+                    id: type + count,
                     type: type,
                     snapType: snapPoints
                 }
