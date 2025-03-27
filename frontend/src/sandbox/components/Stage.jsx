@@ -24,14 +24,15 @@ export default function Stage({activeObjects, elements, drags, setDrags, drawerO
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const [selectedDatasets, setSelectedDatasets] = useState({}); // Store selected datasets
+    const [modelInformation, setModelInformation] = useState({}); // Store selected datasets
 
-    const handleDatasetChange = (name, value) => {
-        setSelectedDatasets((prev) => ({
+    //Used in LayerObjects.jsx to update the selected datasets in the Stage component
+    const handleDatasetChange = (name, value) => { //passed onto return <DatasetObject key={key} {...restProps} onDatasetChange={handleDatasetChange} />;
+        setModelInformation((prev) => ({
             ...prev,
             [name]: value, // Update the dataset for the specific object
         }));
-        console.log("Updated Datasets in Stage:", { ...selectedDatasets, [name]: value });
+        console.log("Updated Datasets in Stage:", { ...modelInformation, [name]: value });
     };
     //const activeObjects = useRef([]);
     /*
@@ -315,11 +316,11 @@ export default function Stage({activeObjects, elements, drags, setDrags, drawerO
             case "dataset":
                 return <DatasetObject key={key} {...restProps} onDatasetChange={handleDatasetChange} />;
             case "dense":
-                return <DenseLayerObject key={key} {...restProps} />;
+                return <DenseLayerObject key={key} {...restProps} onNumOfNodesChange={handleDatasetChange}/>;
             case "activation":
-                return <ActivationLayerObject key={key} {...restProps} />;
+                return <ActivationLayerObject key={key} {...restProps} onActivationLayerChange={handleDatasetChange}/>;
             case "convolution":
-                return <ConvolutionLayerObject key={key} {...restProps} />;
+                return <ConvolutionLayerObject key={key} {...restProps} onFilterSizeChange={handleDatasetChange} />;
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
             default:

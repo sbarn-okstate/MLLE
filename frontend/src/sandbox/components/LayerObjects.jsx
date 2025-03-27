@@ -11,6 +11,8 @@ import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 
 // Dataset Object
+//      onDatasetChange is a function from Stage.jsx (parent of LayerObjects.jsx)
+//      that takes the name of the dataset object and the selected value.
 export function DatasetObject({ name, ref, handleRef, onDatasetChange}) {
     const handleChange = (event) => {
         const selectedValue = event.target.value;
@@ -36,7 +38,11 @@ export function DatasetObject({ name, ref, handleRef, onDatasetChange}) {
 };
 
 // Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef }) {
+export function DenseLayerObject({ name, ref, handleRef, onNumOfNodesChange }) {
+    const handleChange = (event) => {
+        const selectedValue = event.target.value;
+        onNumOfNodesChange(name, selectedValue); // Pass the selected value to the parent
+    };
     return (
         <div ref={ref} id={name} className="testdraggable">
             <div ref={handleRef} className="nodeHandle">
@@ -52,6 +58,7 @@ export function DenseLayerObject({ name, ref, handleRef }) {
                         max="1024"
                         defaultValue="128"
                         style={{ width: "60px" }}
+                        onChange={handleChange}
                     />
                 </span>
             </p>
@@ -61,7 +68,11 @@ export function DenseLayerObject({ name, ref, handleRef }) {
 };
 
 // Activation Layer Object
-export function ActivationLayerObject({ name, ref, handleRef }) {
+export function ActivationLayerObject({ name, ref, handleRef, onActivationLayerChange }) {
+    const handleChange = (event) => {
+        const selectedValue = event.target.value;
+        onActivationLayerChange(name, selectedValue); // Pass the selected value to the parent
+    };
     return (
         <div ref={ref} id={name} className="testdraggable">
             <div ref={handleRef} className="nodeHandle">
@@ -69,7 +80,7 @@ export function ActivationLayerObject({ name, ref, handleRef }) {
             </div>
             <p>Activation Function: 
                 <span>
-                    <select name={name + "activation"} id={name + "activation"}>
+                    <select name={name + "activation"} id={name + "activation"} onChange={handleChange}> 
                         <option value="relu">ReLU</option>
                         <option value="sigmoid">Sigmoid</option>
                         <option value="tanh">Tanh</option>
@@ -83,7 +94,11 @@ export function ActivationLayerObject({ name, ref, handleRef }) {
 };
 
 // Convolution Layer Object
-export function ConvolutionLayerObject({ name, ref, handleRef }) {
+export function ConvolutionLayerObject({ name, ref, handleRef, onFilterSizeChange }) {
+    const handleChange = (event) => {
+        const selectedValue = event.target.value;
+        onFilterSizeChange(name, selectedValue); // Pass the selected value to the parent
+    };
     return (
         <div ref={ref} id={name} className="testdraggable">
             <div ref={handleRef} className="nodeHandle">
@@ -91,7 +106,7 @@ export function ConvolutionLayerObject({ name, ref, handleRef }) {
             </div>
             <p>Filter Size: 
                 <span>
-                    <select name={name + "filter"} id={name + "filter"}>
+                    <select name={name + "filter"} id={name + "filter"} onChange={handleChange}>
                         <option value="3x3">3x3</option>
                         <option value="5x5">5x5</option>
                         <option value="7x7">7x7</option>
