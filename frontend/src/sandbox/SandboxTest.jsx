@@ -45,7 +45,7 @@ function createModel() {
 }
 
 function startTraining(setTrainingState) {
-    if (validModel) {
+    if (true) { //FIXME: check if model is valid
         createModel();
         //FIXME: This is just a test
         let fileName = 'synthetic_normal_binary_classification_500.csv';
