@@ -4,7 +4,9 @@
   *
   * PURPOSE: Page for the Sandbox to occupy.
   * 
-  * NOTES: This file should be renamed at some point
+  * NOTES:
+  * FIXME, in verifyChain, objects don't have a type trait so I had to use object.name.startsWith
+  * to determine the type of object. This is a temporary solution and should be fixed.
   */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -90,28 +92,50 @@ function SandboxTest() {
             console.error("Stage reference is not available!");
             return [];
         }
-
-        // Get the startNode from the Stage component
+    
         const startNode = stageRef.current.getStartNode();
         if (!startNode) {
             console.error("Start node not found!");
             return [];
         }
-
+    
         const chain = [];
-
+    
+        // Helper function to get field values
+        const getFieldValue = (fieldId) => {
+            const field = document.getElementById(fieldId);
+            return field ? field.value : null;
+        };
+    
         // Traverse the left link for the dataset object
         let currentObject = startNode.leftLink;
-        if (currentObject && currentObject.name.startsWith("dataset")) {
-            chain.push(currentObject.name); // Add the object name to the chain
+        if (currentObject && currentObject.name) {
+            const datasetValue = getFieldValue(currentObject.name + "dataset");
+            chain.push({
+                name: currentObject.name,
+                type: "dataset",
+                value: datasetValue,
+            });
         } else {
             console.error("No dataset object linked to the left of the start node!");
             return chain;
         }
+    
         // Traverse the right link for other objects
         currentObject = startNode.rightLink;
         while (currentObject) {
-            chain.push(currentObject.name); // Add the object ID to the chain
+            const objectData = { name: currentObject.name, type: currentObject.type };
+    
+            // Read specific field values based on the object type
+            if (currentObject.name.startsWith("dense")) {
+                objectData.nodes = getFieldValue(currentObject.name + "nodes");
+            } else if (currentObject.name.startsWith("activation")) {
+                objectData.activation = getFieldValue(currentObject.name + "activation");
+            } else if (currentObject.name.startsWith("convolution")) {
+                objectData.filter = getFieldValue(currentObject.name + "filter");
+            }
+    
+            chain.push(objectData);
             currentObject = currentObject.rightLink; // Move to the next object
         }
 
