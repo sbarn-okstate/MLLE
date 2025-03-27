@@ -154,9 +154,9 @@ function SandboxTest() {
     };
 
     // localized test div add
-    function AddObject(type = "all") {
+    function AddObject(objectType = "all") {
         // Map layer types to their corresponding snap point configurations
-        const snapPointMap = {
+        const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
@@ -165,7 +165,7 @@ function SandboxTest() {
             all: "all"            // Default to all snap points
         };
 
-        const snapPoints = snapPointMap[type] || "all";
+        const snapType = snapTypeMap[objectType] || "all";
         // Determine the snap points for the given type
         //console.log("Snap points:", snapPoints); // Debugging log
         // Add the new object to the list
@@ -173,9 +173,9 @@ function SandboxTest() {
             const updatedList = [
                 ...prevList,
                 {
-                    id: type + count,
-                    type: type,
-                    snapType: snapPoints
+                    id: count,
+                    objectType,
+                    snapType
                 }
             ];
             console.log("Updated list:", updatedList); // Debugging log
