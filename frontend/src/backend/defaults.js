@@ -15,15 +15,14 @@
 export const DENSE = {
     type: 'dense',
     units: 1,
-    activation: 'relu'
+    activation: null
 };
 
 export const CONV = {
     type: 'conv',
     filters: 32,
     kernelSize: 3,
-    activation: 'relu',
-    inputShape: null
+    activation: null
 };
 
 export const DROPOUT = {

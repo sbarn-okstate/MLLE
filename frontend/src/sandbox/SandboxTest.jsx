@@ -20,6 +20,7 @@ import snapPoints from './snapPoints.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
 
 let backend_worker = null
+let model = null
 
 function createBackend() {
     backend.createBackendWorker();
@@ -28,27 +29,16 @@ function createBackend() {
 
 function createModel() {
     //FIXME: This is just a test
-    const dataset = 'synthetic_normal_binary_classification_500.csv';
-    let layers = [  //replace with actual model
-        {
-            type: "dense",
-            units: 3,
-            activation: "relu"
-        },
-        {
-            type: "dense",
-            units: 2,
-            activation: "relu"
-        }
-    ];
+    const dataset = model[0].dataset;
+    let layers = model.slice(1);
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState) {
-    if (true) { //FIXME: check if model is valid
+function startTraining(setTrainingState, modelState) {
+    if (modelState === 'valid') { //FIXME: check if model is valid
         createModel();
         //FIXME: This is just a test
-        let fileName = 'synthetic_normal_binary_classification_500.csv';
+        let fileName = model[0].dataset;
         let problemType = 'classification';
         backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
         setTrainingState('training');
@@ -97,8 +87,9 @@ function SandboxTest() {
         if (!stageRef.current) {
             console.error("Stage reference is not available!");
             return [];
-        }
-    
+        } 
+        setModelState('invalid');
+
         const startNode = stageRef.current.getStartNode();
         if (!startNode) {
             console.error("Start node not found!");
@@ -110,16 +101,20 @@ function SandboxTest() {
         // Helper function to get field values
         const getFieldValue = (fieldId) => {
             const field = document.getElementById(fieldId);
+            
+            if (field && field.type && field.type === "number") {
+                return Number(field.value); // Convert to a number
+            }
             return field ? field.value : null;
         };
     
         // Traverse the left link for the dataset object
         let currentObject = startNode.leftLink;
         if (currentObject.objectType === "dataset") {
-            const datasetValue = getFieldValue(currentObject.id);
+            const datasetValue = getFieldValue(currentObject.name + "dataset");
             chain.push({
-                objectType: currentObject.objectType,
-                value: datasetValue,
+                type: currentObject.objectType,
+                dataset: datasetValue,
             });
         } else {
             console.error("No dataset object linked to the left of the start node!");
@@ -129,26 +124,58 @@ function SandboxTest() {
         // Traverse the right link for other objects
         currentObject = startNode.rightLink;
         while (currentObject) {
-            const objectData = { objectType: currentObject.objectType };
-    
-            // Read specific field values based on the object type
-            if (currentObject.objectType === "dense"){
-                objectData.nodes = getFieldValue(currentObject.id);
-            } else if (currentObject.objectType === "activation") {
-                objectData.activation = getFieldValue(currentObject.id);
-            } else if (currentObject.objectType === "convolution") {
-                objectData.filter = getFieldValue(currentObject.id);
+            const objectData = { type: currentObject.objectType };
+            
+            // Handle activation function not preceded by a layer
+            if (currentObject.objectType === "activation") {
+                console.log("Invalid activation function");
+                setModelState('invalid');
+                break;
             }
-    
-            chain.push(objectData);
+ 
+            // Handle Dense Layer
+            if (currentObject.objectType === "dense"){
+                objectData.units = getFieldValue(currentObject.name + "units");
+            } 
+            // Handle Stacked Neurons
+            else if (currentObject.objectType === "neuron") {
+                let units = 1;
+                let nextNeuron = currentObject.topLink
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.topLink;
+                }
+                nextNeuron = currentObject.bottomLink;
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.bottomLink;
+                }
+                objectData.units = units;
+                objectData.type = "dense";
+            } 
+            // Handle Convolution Layer
+            else if (currentObject.objectType === "convolution") {
+                objectData.filter = getFieldValue(currentObject.name + "filter");
+            }
+            
+            // Handle Activation Function following any layer
+            if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
+                objectData.activation = getFieldValue(currentObject.name + "activation");
+                currentObject = currentObject.rightLink; // move to activation object
+            }
+
+            // Handle Output Layer
             if (!currentObject.rightLink && currentObject.objectType == "output") {
                 setModelState('valid');
+                console.log("Model validated successfully!");
                 break;
             } else {
                 currentObject = currentObject.rightLink; // Move to the next object
             }
+            chain.push(objectData);
         }
 
+        model = chain;
         console.log("Chain of objects:", chain);
         return chain;
     };
@@ -162,6 +189,7 @@ function SandboxTest() {
             activation: "lr",     // Activation layer snaps left and right
             convolution: "lr",    // Convolution layer snaps top and bottom
             output: "l",          // Output layer can only snap at the top
+            neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
         };
 
@@ -216,7 +244,7 @@ function SandboxTest() {
                         }}>
                         <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState)}>Start Training</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState)}>Start Training</button>
                         )}
                         {trainingState === 'training' && (
                             <>
