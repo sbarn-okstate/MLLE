@@ -126,24 +126,45 @@ function SandboxTest() {
         while (currentObject) {
             const objectData = { type: currentObject.objectType };
             
+            // Handle activation function not preceded by a layer
             if (currentObject.objectType === "activation") {
                 console.log("Invalid activation function");
                 setModelState('invalid');
                 break;
             }
-            console.log(currentObject.id);
-            // Read specific field values based on the object type
+ 
+            // Handle Dense Layer
             if (currentObject.objectType === "dense"){
                 objectData.units = getFieldValue(currentObject.name + "units");
-            } else if (currentObject.objectType === "convolution") {
+            } 
+            // Handle Stacked Neurons
+            else if (currentObject.objectType === "neuron") {
+                let units = 1;
+                let nextNeuron = currentObject.topLink
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.topLink;
+                }
+                nextNeuron = currentObject.bottomLink;
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.bottomLink;
+                }
+                objectData.units = units;
+                objectData.type = "dense";
+            } 
+            // Handle Convolution Layer
+            else if (currentObject.objectType === "convolution") {
                 objectData.filter = getFieldValue(currentObject.name + "filter");
             }
             
+            // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
                 objectData.activation = getFieldValue(currentObject.name + "activation");
                 currentObject = currentObject.rightLink; // move to activation object
             }
 
+            // Handle Output Layer
             if (!currentObject.rightLink && currentObject.objectType == "output") {
                 setModelState('valid');
                 console.log("Model validated successfully!");
@@ -168,6 +189,7 @@ function SandboxTest() {
             activation: "lr",     // Activation layer snaps left and right
             convolution: "lr",    // Convolution layer snaps top and bottom
             output: "l",          // Output layer can only snap at the top
+            neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
         };
 

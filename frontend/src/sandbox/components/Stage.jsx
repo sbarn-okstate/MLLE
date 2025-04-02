@@ -15,6 +15,7 @@ import {
     DenseLayerObject,
     ActivationLayerObject,
     ConvolutionLayerObject,
+    NeuronObject,
     OutputLayerObject
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
@@ -324,6 +325,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 return <ConvolutionLayerObject key={key} {...restProps} />;
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
+            case "neuron":
+                return <NeuronObject key={key} {...restProps} />;
             default:
                 return null;
         }

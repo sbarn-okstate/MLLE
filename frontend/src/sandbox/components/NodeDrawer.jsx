@@ -13,6 +13,7 @@ import {
     DenseLayerObject,
     ActivationLayerObject,
     ConvolutionLayerObject,
+    NeuronObject,
     OutputLayerObject
  } from './LayerObjects.jsx';
 
@@ -38,6 +39,8 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                 <div className="nodeDrawer">
                     <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("dataset")}}><DatasetObject classNameOverride={"drawerNode"} /></div>
                     <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("dense")}}><DenseLayerObject classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("neuron")}}><NeuronObject classNameOverride={"drawerNode"} /></div>
+
                     <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation")}}><ActivationLayerObject classNameOverride={"drawerNode"} /></div>
                     <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("convolution")}}><ConvolutionLayerObject classNameOverride={"drawerNode"} /></div>
                     <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("output")}}><OutputLayerObject classNameOverride={"drawerNode"} /></div>

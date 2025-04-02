@@ -57,6 +57,31 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
     );
 };
 
+// Neuron Object
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                width: "60px", // Set width to 50px
+                height: "60px", // Set height to 50px
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#4CAF50", // Optional: Add a background color
+                border: "2px solid #2E7D32", // Optional: Add a border
+                borderRadius: "5px", // Optional: Slightly rounded corners
+                cursor: "grab", // Indicate draggable behavior
+                userSelect: "none", // Prevent text selection
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Neuron</p>
+            </div>
+        </div>
+    );
+}
+
+
 // Activation Layer Object
 export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
