@@ -57,7 +57,13 @@ export async function prepareModel({layers, dataset}, self) {
         loss: undefined      || datasetDefaults[dataset].loss      || defaults.LOSS,
         optimizer: undefined || datasetDefaults[dataset].optimizer || defaults.OPTIMIZER
     });
+    
+    // Get the model summary as a string
+    const modelSummary = getModelSummaryAsString(model);
 
+    // Post the summary to the frontend
+
+    self.postMessage(modelSummary);
     self.postMessage('Model prepared... creating shared buffer.');
     initSharedBuffer();
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
@@ -234,7 +240,23 @@ async function loadCSV(fileName){ //returns csvDataset.
     return csvDataset;
 }
 
+function getModelSummaryAsString(model) {
+    let summary = "";
 
+    // Temporarily override console.log
+    const originalConsoleLog = console.log;
+    console.log = (message) => {
+        summary += message + "\n"; // Append each line of the summary to the string
+    };
+
+    // Call model.summary() to capture its output
+    model.summary();
+
+    // Restore the original console.log
+    console.log = originalConsoleLog;
+
+    return summary;
+}
 
 
 

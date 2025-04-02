@@ -342,7 +342,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             {elements.map((item, index) => (
                 renderObject(item.objectType, {
                     key: index,
-                    name: item.objectType,
+                    name: item.name,
                     ref: (el) => (divRefs.current[index + 1] = el),
                     handleRef: (el) => (handleRefs.current[index + 1] = el),
                     action: extAction
