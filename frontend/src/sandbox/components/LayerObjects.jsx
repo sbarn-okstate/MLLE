@@ -9,6 +9,10 @@
 
 import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
+import "./LayerObjects.css";
+
+import closedLink from "../../assets/closed.png";
+import openLink from "../../assets/open.png";
 
 // Dataset Object
 export function DatasetObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
@@ -58,25 +62,41 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable", activeLinks = {} }) {
+    const { top, right, bottom, left } = activeLinks;
+
     return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                width: "60px", // Set width to 50px
-                height: "60px", // Set height to 50px
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#4CAF50", // Optional: Add a background color
-                border: "2px solid #2E7D32", // Optional: Add a border
-                borderRadius: "5px", // Optional: Slightly rounded corners
-                cursor: "grab", // Indicate draggable behavior
-                userSelect: "none", // Prevent text selection
-            }}
-            >
+        <div
+            ref={ref}
+            id={name}
+            className={`${classNameOverride} neuron-container`}
+        >
+            {/* Draggable handle in the center */}
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Neuron</p>
             </div>
+
+            {/* Link indicators */}
+            <img
+                src={top ? closedLink : openLink}
+                alt="Top Link"
+                className="link-indicator top-link"
+            />
+            <img
+                src={right ? closedLink : openLink}
+                alt="Right Link"
+                className="link-indicator right-link"
+            />
+            <img
+                src={bottom ? closedLink : openLink}
+                alt="Bottom Link"
+                className="link-indicator bottom-link"
+            />
+            <img
+                src={left ? closedLink : openLink}
+                alt="Left Link"
+                className="link-indicator left-link"
+            />
         </div>
     );
 }

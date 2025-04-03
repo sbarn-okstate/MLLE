@@ -206,7 +206,7 @@ function SandboxTest() {
                     snapType
                 }
             ];
-            console.log("Updated list:", updatedList); // Debugging log
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 
