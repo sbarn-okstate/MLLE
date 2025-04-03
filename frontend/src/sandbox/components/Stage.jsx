@@ -8,7 +8,7 @@
   * NOTES: We need to look into better snapping mechanics
   */
 
-import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState } from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -26,6 +26,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const handleRefs = useRef([]);
     const drag = useRef([]);
     const activeObjects = useRef([]);
+    const [objectTexts, setObjectTexts] = useState([]); 
+
     /*
     {   activeObjects object structure
         id: "object1", // Unique identifier
@@ -344,7 +346,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                     name: item.name,
                     ref: (el) => (divRefs.current[index + 1] = el),
                     handleRef: (el) => (handleRefs.current[index + 1] = el),
-                    action: extAction
+                    action: extAction,
+                    // put text prop here
                 })
             ))}
         </div>
