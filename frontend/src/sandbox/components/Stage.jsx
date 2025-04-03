@@ -9,7 +9,7 @@
   * FIXME: activeObjects isn't the same across objects
   */
 
-import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState } from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -27,7 +27,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const [activeObjects, setActiveObjects] = React.useState([]);
+    const [activeObjects, setActiveObjects] = useState([]);
     /*
     {   activeObjects object structure
         id: "object1", // Unique identifier
@@ -300,14 +300,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             id: index,
             objectType: objectType,
             element: div,
-            leftLink: null,
+            leftLink: null, //add false or 0 state when no link and snap point should be inactive
             rightLink: null,
             topLink: null,
             bottomLink: null,
             snapPoints,
         };
     
-        setActiveObjects(prev => [...prev, newObject]);
+        setActiveObjects((prev) => [...prev, newObject]);
         return newObject;
     }
 
