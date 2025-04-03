@@ -20,7 +20,7 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
             <p>Dataset: 
                 <span>
                     <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="dataset1.csv">Dataset 1</option>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
                         <option value="dataset2.csv">Dataset 2</option>
                         <option value="dataset3.csv">Dataset 3</option>
                     </select>
@@ -42,11 +42,11 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                 <span>
                     <input
                         type="number"
-                        name={name + "nodes"}
-                        id={name + "nodes"}
+                        name={name + "units"}
+                        id={name + "units"}
                         min="1"
-                        max="1024"
-                        defaultValue="128"
+                        max="16"
+                        defaultValue="2"
                         style={{ width: "60px" }}
                     />
                 </span>
@@ -56,6 +56,31 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
         </div>
     );
 };
+
+// Neuron Object
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                width: "60px", // Set width to 50px
+                height: "60px", // Set height to 50px
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#4CAF50", // Optional: Add a background color
+                border: "2px solid #2E7D32", // Optional: Add a border
+                borderRadius: "5px", // Optional: Slightly rounded corners
+                cursor: "grab", // Indicate draggable behavior
+                userSelect: "none", // Prevent text selection
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Neuron</p>
+            </div>
+        </div>
+    );
+}
+
 
 // Activation Layer Object
 export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {

@@ -6,6 +6,7 @@
   *          well.
   * 
   * NOTES: We need to look into better snapping mechanics
+  * FIXME: multiple objects can snap to the same points on the start block
   */
 
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import {
     DenseLayerObject,
     ActivationLayerObject,
     ConvolutionLayerObject,
+    NeuronObject,
     OutputLayerObject
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
@@ -69,9 +71,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const draggable = new PlainDraggable(div);
 
                 // Get the type of the object from the elements array
-                const type = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
-                const name = elements[index-1]?.name || `object${index}`;   
-                const newObject = createNewObject(div, index, type, name);
+                const snapType = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
+                const objectType = elements[index-1]?.objectType || `object${index}`;   
+                const newObject = createNewObject(objectType, div, index, snapType);
                 activeObjects.current.push(newObject);
 
                 // Define draggable behavior
@@ -254,34 +256,34 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return closestPoint;
     }
 
-    function createNewObject(div, index, type = "all", name = `object${index}`) {
+    function createNewObject(objectType, div, index, snapType = "all") {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
-        if (type === "all") {
+        if (snapType === "all") {
             snapPoints.push({ type: "left" });
             snapPoints.push({ type: "right" });
             snapPoints.push({ type: "top" });
             snapPoints.push({ type: "bottom" });
         }
         else {
-            if (type.includes("l")) {
+            if (snapType.includes("l")) {
                 snapPoints.push({ type: "left" });
             }
-            if (type.includes("r")) {
+            if (snapType.includes("r")) {
                 snapPoints.push({ type: "right" });
             }
-            if (type.includes("t")) {
+            if (snapType.includes("t")) {
                 snapPoints.push({ type: "top" });
             }
-            if (type.includes("b")) {
+            if (snapType.includes("b")) {
                 snapPoints.push({ type: "bottom" });
             }
         }
     
         return {
-            id: `object${index}`,
-            name: name,
+            id: index,
+            objectType: objectType,
             element: div,
             leftLink: null,
             rightLink: null,
@@ -297,7 +299,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         if (!activeObjects.current.find(obj => obj.id === "startNode")) {
             const startNode = {
                 id: "startNode",
-                name: "startNode",
+                objectType: "startNode",
                 element: element, // Assign the DOM element for the StartNode
                 leftLink: null,
                 rightLink: null,
@@ -309,12 +311,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         }
     };
 
-    function renderObject(type, props) {
+    function renderObject(objectType, props) {
         const { key, ...restProps } = props; // Extract the key from props
         //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
         //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
         //console.log("Rendering object:", type);
-        switch (type) {
+        switch (objectType) {
             case "dataset":
                 return <DatasetObject key={key} {...restProps} />;
             case "dense":
@@ -325,6 +327,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 return <ConvolutionLayerObject key={key} {...restProps} />;
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
+            case "neuron":
+                return <NeuronObject key={key} {...restProps} />;
             default:
                 return null;
         }
@@ -341,8 +345,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 name={"startNode"}
             />
             {elements.map((item, index) => (
-                renderObject(item.type, {
-                    key: item.name,
+                renderObject(item.objectType, {
+                    key: index,
                     name: item.name,
                     ref: (el) => (divRefs.current[index + 1] = el),
                     handleRef: (el) => (handleRefs.current[index + 1] = el),
