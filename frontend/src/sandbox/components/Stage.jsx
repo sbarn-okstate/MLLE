@@ -13,10 +13,17 @@ import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react
 import {
     DatasetObject,
     DenseLayerObject,
-    ActivationLayerObject,
-    ConvolutionLayerObject,
+    //ActivationLayerObject,
+    // ConvolutionLayerObject,
     NeuronObject,
-    OutputLayerObject
+    OutputLayerObject,
+    ReluObject,
+    SigmoidObject,
+    TanhObject,
+    SoftmaxObject,
+    ConvolutionLayer3x3Object,
+    ConvolutionLayer5x5Object,
+    ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
@@ -319,14 +326,28 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 return <DatasetObject key={key} {...restProps} />;
             case "dense":
                 return <DenseLayerObject key={key} {...restProps} />;
-            case "activation":
-                return <ActivationLayerObject key={key} {...restProps} />;
-            case "convolution":
-                return <ConvolutionLayerObject key={key} {...restProps} />;
+            // case "activation":
+            //     return <ActivationLayerObject key={key} {...restProps} />;
+            // case "convolution":
+            //     return <ConvolutionLayerObject key={key} {...restProps} />;
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
             case "neuron":
                 return <NeuronObject key={key} {...restProps} />;
+            case "relu":
+                return <ReluObject key={key} {...restProps} />;
+            case "sigmoid":
+                return <SigmoidObject key={key} {...restProps} />;
+            case "tanh":
+                return <TanhObject key={key} {...restProps} />;
+            case "softmax":
+                return <SoftmaxObject key={key} {...restProps} />;
+            case "3x3":
+                return <ConvolutionLayer3x3Object key={key} {...restProps} />;
+            case "5x5":
+                return <ConvolutionLayer5x5Object key={key} {...restProps} />;
+            case "7x7":
+                return <ConvolutionLayer7x7Object key={key} {...restProps} />;
             default:
                 return null;
         }
