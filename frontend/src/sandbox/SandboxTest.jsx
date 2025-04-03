@@ -187,7 +187,14 @@ function SandboxTest() {
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
+            relu: "lr",
+            sigmoid: "lr",
+            tanh: "lr",
+            softma: "lr",
             convolution: "lr",    // Convolution layer snaps top and bottom
+            filter3x3: "lr",
+            filter5x5: "lr",
+            filter7x7: "lr",
             output: "l",          // Output layer can only snap at the top
             neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points

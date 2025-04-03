@@ -70,9 +70,9 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution") }}><ConvolutionLayerObject filterSize={"5x5"} classNameOverride={"drawerNode"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution") }}><ConvolutionLayerObject filterSize={"7x7"} classNameOverride={"drawerNode"} /></div>
                     */}
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("3x3") }}><ConvolutionLayer3x3Object classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("5x5") }}><ConvolutionLayer5x5Object classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("7x7") }}><ConvolutionLayer7x7Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("filter3x3") }}><ConvolutionLayer3x3Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("filter5x5") }}><ConvolutionLayer5x5Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("filter7x7") }}><ConvolutionLayer7x7Object classNameOverride={"drawerNode"} /></div>
 
                     {/*=====Output draggable=====*/}
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("output") }}><OutputLayerObject classNameOverride={"drawerNode"} /></div>
