@@ -1,6 +1,6 @@
 /* SandboxTest.jsx
   *
-  * AUTHOR(S): Mark Taylor, Samuel Barney
+  * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
   * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
   *          well.
@@ -16,13 +16,29 @@ import {
     ActivationLayerObject,
     ConvolutionLayerObject,
     NeuronObject,
-    OutputLayerObject
+    OutputLayerObject,
+    ReluObject,
+    SigmoidObject,
+    TanhObject,
+    SoftmaxObject,
+    ConvolutionLayer3x3Object,
+    ConvolutionLayer5x5Object,
+    ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
 import snapPoints from "../snapPoints.js";
 
-
+//Stage is a component that handles the rendering and interaction of elements on a stage.
+//SandboxTest.jsx uses this component~
+//elements is passed in as a prop from SandboxTest.jsx
+//and contains the following:
+//  {
+//      id: count,
+//      objectType,
+//      subType,
+//      snapType
+//  }
 const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
@@ -65,7 +81,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             if (!drag.current[index]) {
                 drag.current[index] = 1;
 
-
                 // Subscribe to mouse move event listener
                 let mouse;
                 addEventListener("mousemove", (event) => {mouse = event});
@@ -73,9 +88,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("elements:", elements);
-                console.log("div:", div);
-                console.log("index:", index-1);
                 // Get the type of the object from the elements array
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
@@ -277,7 +289,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return closestPoint;
     }
 
-    function createNewObject(objectType, div, index, snapType = "all") {
+    function createNewObject(objectType, subType, div, index, snapType = "all") {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -296,6 +308,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         const newObject = {
             id: index,
             objectType: objectType,
+            subType: subType,
             element: div,
             leftLink: null,
             rightLink: null,
@@ -310,7 +323,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return newObject;
     }
 
-    function renderObject(objectType, props) {
+    //No need to pass subType because objectType is enough to determine the type of object to render.
+    function renderObject(objectType, subType, props) {
         const { key, ...restProps } = props; // Extract the key from props
         const currentObject = activeObjectsState.find(obj => obj.id === props.name);
 
@@ -331,9 +345,27 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             case "dense":
                 return <DenseLayerObject key={key} {...restProps} />;
             case "activation":
-                return <ActivationLayerObject key={key} {...restProps} />;
+                //return <ActivationLayerObject key={key} {...restProps} />;
+                switch (subType) {
+                    case "relu":
+                        return <ReluObject key={key} {...restProps} />;
+                    case "sigmoid":
+                        return <SigmoidObject key={key} {...restProps} />;
+                    case "tanh":
+                        return <TanhObject key={key} {...restProps} />;
+                    case "softmax":
+                        return <SoftmaxObject key={key} {...restProps} />;
+                }
             case "convolution":
-                return <ConvolutionLayerObject key={key} {...restProps} />;
+                //return <ConvolutionLayerObject key={key} {...restProps} />;
+                switch (subType) {
+                    case "3x3":
+                        return <ConvolutionLayer3x3Object key={key} {...restProps} />;
+                    case "5x5":
+                        return <ConvolutionLayer5x5Object key={key} {...restProps} />;
+                    case "7x7":
+                        return <ConvolutionLayer7x7Object key={key} {...restProps} />;
+                }
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
             case "neuron":
@@ -346,7 +378,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     return (
         <div id="stage" className="teststage">
             {elements.map((item, index) => (
-                renderObject(item.objectType, {
+                renderObject(item.objectType, item.subType,{
                     key: index,
                     name: item.id,
                     ref: (el) => (divRefs.current[index] = el),
