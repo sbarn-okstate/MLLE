@@ -1,18 +1,23 @@
 /* TestDiv.jsx
   *
-  * AUTHOR(S): Mark Taylor
+  * AUTHOR(S): Mark Taylor, Justin Moua
   *
-  * PURPOSE: Drawer for selecting nodes to place on stage.
+  * PURPOSE: Drawer for selecting nodes to place on stage. 
   * 
   * NOTES: Idealy, this is drag and drop thing.
+  * 
+  * - Is called by SandboxTest.jsx
+  *     - Contains the following functions:
+  *         - NodeDrawer: The main function that creates the drawer.
+  *             - NodeHandleClick: Function that handles the opening and closing of the drawer.
   */
 
 import { useState } from "react";
 import {
     DatasetObject,
     DenseLayerObject,
-    //ActivationLayerObject,
-    // ConvolutionLayerObject,
+    ActivationLayerObject,
+    ConvolutionLayerObject,
     NeuronObject,
     OutputLayerObject,
     ReluObject,
@@ -24,6 +29,10 @@ import {
     ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
 
+//createNodeFunction is a parameter that has the "AddObject" function
+//from SandboxTest.jsx passed to it.
+//The return statements in particular is where 
+//we see objectType and subType being passed to the function.
 export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunction}) {
     const [drawerCollapse, setDrawerCollapse] = useState("drawerDivCollapsed");
     const [handleText, setHandleText] = useState("→");
@@ -53,26 +62,27 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
 
                     {/*=====Activation layer draggables=====*/}
                     {/*The following does not work well.
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation")}}><ActivationLayerObject activationName={"ReLU"} classNameOverride={"drawerNode"} /></div>
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation")}}><ActivationLayerObject activationName={"Sigmoid"} classNameOverride={"drawerNode"} /></div>
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation")}}><ActivationLayerObject activationName={"Tanh"} classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("activation") }}><ActivationLayerObject activationName={"Softmax"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "relu")}}><ActivationLayerObject activationName={"relu"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "sigmoid")}}><ActivationLayerObject activationName={"sigmoid"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "tanh")}}><ActivationLayerObject activationName={"tanh"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("activation", "softmax") }}><ActivationLayerObject activationName={"softmax"} classNameOverride={"drawerNode"} /></div>
                     */}
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("relu")}}><ReluObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("sigmoid")}}><SigmoidObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("tanh")}}><TanhObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("softmax")}}><SoftmaxObject activationName={"Softmax"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "relu")}}><ReluObject classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "sigmoid")}}><SigmoidObject classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "tanh")}}><TanhObject classNameOverride={"drawerNode"} /></div>
+                    <div style={{zIndex: 89001}} onClick={() => {createNodeFunction("activation", "softmax")}}><SoftmaxObject activationName={"Softmax"} classNameOverride={"drawerNode"} /></div>
 
 
                     {/*=====Convolution layer draggables=====*/}
                     {/*The following does not work well.
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution") }}><ConvolutionLayerObject filterSize={"3x3"} classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution") }}><ConvolutionLayerObject filterSize={"5x5"} classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution") }}><ConvolutionLayerObject filterSize={"7x7"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "3x3") }}><ConvolutionLayerObject filterSize={"3x3"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "5x5") }}><ConvolutionLayerObject filterSize={"5x5"} classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "7x7") }}><ConvolutionLayerObject filterSize={"7x7"} classNameOverride={"drawerNode"} /></div>
                     */}
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("3x3") }}><ConvolutionLayer3x3Object classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("5x5") }}><ConvolutionLayer5x5Object classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("7x7") }}><ConvolutionLayer7x7Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "3x3") }}><ConvolutionLayer3x3Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "5x5") }}><ConvolutionLayer5x5Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("convolution", "7x7") }}><ConvolutionLayer7x7Object classNameOverride={"drawerNode"} /></div>
+
 
                     {/*=====Output draggable=====*/}
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("output") }}><OutputLayerObject classNameOverride={"drawerNode"} /></div>
