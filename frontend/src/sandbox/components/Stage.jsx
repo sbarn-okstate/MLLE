@@ -94,7 +94,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
                 const newObject = createNewObject(objectType, subType, div, index, snapType);
 
-                console.log("Active Objects:", activeObjectsRef.current);
+                //console.log("Active Objects:", activeObjectsRef.current);
 
                 // Define draggable behavior
                 draggable.onMove = function () {
