@@ -77,26 +77,34 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
             </div>
 
             {/* Link indicators */}
-            <img
-                src={top ? closedLink : openLink}
-                alt="Top Link"
-                className="link-indicator top-link"
-            />
-            <img
-                src={right ? closedLink : openLink}
-                alt="Right Link"
-                className="link-indicator right-link"
-            />
-            <img
-                src={bottom ? closedLink : openLink}
-                alt="Bottom Link"
-                className="link-indicator bottom-link"
-            />
-            <img
-                src={left ? closedLink : openLink}
-                alt="Left Link"
-                className="link-indicator left-link"
-            />
+            {top !== 0 && (
+                <img
+                    src={top ? closedLink : openLink}
+                    alt="Top Link"
+                    className="link-indicator top-link"
+                />
+            )}
+            {right !== 0 && (
+                <img
+                    src={right ? closedLink : openLink}
+                    alt="Right Link"
+                    className="link-indicator right-link"
+                />
+            )}
+            {bottom !== 0 && (
+                <img
+                    src={bottom ? closedLink : openLink}
+                    alt="Bottom Link"
+                    className="link-indicator bottom-link"
+                />
+            )}
+            {left !== 0 && (
+                <img
+                    src={left ? closedLink : openLink}
+                    alt="Left Link"
+                    className="link-indicator left-link"
+                />
+            )}
         </div>
     );
 }

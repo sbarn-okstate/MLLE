@@ -103,7 +103,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
                     clearLinks(currentObject);
-                    
+
                     if (snap) {
                         updateLinks(currentObject, snap);
                         //console.log("Snapped:", currentObject, "to", snap.otherObject);
@@ -152,9 +152,17 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 } else if (snap.currentPoint.type === "top") {
                     obj.topLink = snap.otherObject;
                     snap.otherObject.bottomLink = obj;
+
+                    // Set left and right links to 0 when snapping to the top
+                    obj.leftLink = 0;
+                    obj.rightLink = 0;
                 } else if (snap.currentPoint.type === "bottom") {
                     obj.bottomLink = snap.otherObject;
                     snap.otherObject.topLink = obj;
+
+                    // Set left and right links to 0 when snapping to the bottom
+                    obj.leftLink = 0;
+                    obj.rightLink = 0;
                 }
             }
             return obj;
@@ -167,22 +175,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     function clearLinks(currentObject) {
         const updatedObjects = activeObjectsRef.current.map(obj => {
             if (obj === currentObject) {
-                if (obj.leftLink) {
-                    obj.leftLink.rightLink = null;
-                    obj.leftLink = null;
-                }
-                if (obj.rightLink) {
-                    obj.rightLink.leftLink = null;
-                    obj.rightLink = null;
-                }
-                if (obj.topLink) {
-                    obj.topLink.bottomLink = null;
-                    obj.topLink = null;
-                }
-                if (obj.bottomLink) {
-                    obj.bottomLink.topLink = null;
-                    obj.bottomLink = null;
-                }
+                if (obj.leftLink) obj.leftLink.rightLink = null;
+                if (obj.rightLink) obj.rightLink.leftLink = null;
+                if (obj.topLink) obj.topLink.bottomLink = null;
+                if (obj.bottomLink) obj.bottomLink.topLink = null;
+
+                obj.leftLink = null;
+                obj.rightLink = null;
+                obj.topLink = null;
+                obj.bottomLink = null;
             }
             return obj;
         });
@@ -237,10 +238,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             const otherSnapPoints = otherObject.snapPoints
             .filter(point => {
                 // Only consider snap points with null links
-                return (point.type === "left" && !otherObject.leftLink) ||
-                    (point.type === "right" && !otherObject.rightLink) ||
-                    (point.type === "top" && !otherObject.topLink) ||
-                    (point.type === "bottom" && !otherObject.bottomLink);
+                return (point.type === "left" && otherObject.leftLink == null) ||
+                    (point.type === "right" && otherObject.rightLink == null) ||
+                    (point.type === "top" && otherObject.topLink == null) ||
+                    (point.type === "bottom" && otherObject.bottomLink == null);
             })
             .map(point => ({
                 type: point.type,
@@ -314,13 +315,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         const currentObject = activeObjectsState.find(obj => obj.id === props.name);
 
         const activeLinks = currentObject
-            ? {
-                top: !!currentObject.topLink,
-                right: !!currentObject.rightLink,
-                bottom: !!currentObject.bottomLink,
-                left: !!currentObject.leftLink,
-            }
-            : { top: false, right: false, bottom: false, left: false };
+        ? {
+            top: currentObject.topLink !== null && currentObject.topLink !== 0 ? true : currentObject.topLink,
+            right: currentObject.rightLink !== null && currentObject.rightLink !== 0 ? true : currentObject.rightLink,
+            bottom: currentObject.bottomLink !== null && currentObject.bottomLink !== 0 ? true : currentObject.bottomLink,
+            left: currentObject.leftLink !== null && currentObject.leftLink !== 0 ? true : currentObject.leftLink,
+        }
+        : { top: null, right: null, bottom: null, left: null }; // Default to null if no currentObject
 
         switch (objectType) {
             case "startNode":
