@@ -57,18 +57,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
     
     useEffect(() => {
-        //console.log("divRefs:", divRefs.current);
-        //console.log("handleRefs:", handleRefs.current);
+        console.log("divRefs:", divRefs.current);
+        console.log("handleRefs:", handleRefs.current);
 
         // This useEffect runs after the components are rendered
         divRefs.current.forEach((div, index) => {
             if (!drag.current[index]) {
                 drag.current[index] = 1;
 
-                if (index === 0) {
-                    // Skip the first element (StartNode)
-                    return;
-                }
 
                 // Subscribe to mouse move event listener
                 let mouse;
@@ -81,8 +77,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 console.log("div:", div);
                 console.log("index:", index-1);
                 // Get the type of the object from the elements array
-                const snapType = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
-                const objectType = elements[index-1]?.objectType || `object${index}`;   
+                const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
+                const objectType = elements[index]?.objectType || `object${index}`;   
                 const newObject = createNewObject(objectType, div, index, snapType);
                 console.log("Active Objects:", activeObjectsRef.current);
                 // Define draggable behavior
@@ -315,36 +311,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return newObject;
     }
 
-    // Add the startNode to activeObjects during rendering
-    const initializeStartNode = (element) => {
-        if (!element) {
-            console.warn("initializeStartNode called with null element.");
-            return; // Ensure the element is valid
-        }
-    
-        const existingStartNode = activeObjectsRef.current.find(obj => obj.id === "startNode");
-        if (existingStartNode) {
-            console.warn("startNode already exists in activeObjects.");
-            return;
-        }
-    
-        console.log("Initializing startNode...");
-        const startNode = {
-            id: "startNode",
-            objectType: "startNode",
-            element: element, // Assign the DOM element for the StartNode
-            leftLink: null,
-            rightLink: null,
-            topLink: null,
-            bottomLink: null,
-            snapPoints: [{ type: "right" }, { type: "left" }]
-        };
-    
-        const updatedObjects = [...activeObjectsRef.current, startNode];
-        activeObjectsRef.current = updatedObjects; // Update the ref
-        setActiveObjectsState(updatedObjects); // Trigger a re-render
-    };
-
     function renderObject(objectType, props) {
         const { key, ...restProps } = props; // Extract the key from props
         const currentObject = activeObjectsState.find(obj => obj.id === props.name);
@@ -359,6 +325,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             : { top: false, right: false, bottom: false, left: false };
 
         switch (objectType) {
+            case "startNode":
+                return <StartNode key={key} {...restProps} />;
             case "dataset":
                 return <DatasetObject key={key} {...restProps} />;
             case "dense":
@@ -378,20 +346,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
     return (
         <div id="stage" className="teststage">
-            <StartNode
-                ref={(el) => {
-                    divRefs.current[0] = el;
-                    initializeStartNode(el); // Initialize the startNode during rendering
-                }}
-                handleRef={(el) => (handleRefs.current[0] = el)}
-                name={"startNode"}
-            />
             {elements.map((item, index) => (
                 renderObject(item.objectType, {
-                    key: index+1,
+                    key: index,
                     name: item.id,
-                    ref: (el) => (divRefs.current[index + 1] = el),
-                    handleRef: (el) => (handleRefs.current[index + 1] = el),
+                    ref: (el) => (divRefs.current[index] = el),
+                    handleRef: (el) => (handleRefs.current[index] = el),
                     action: extAction
                 })
             ))}

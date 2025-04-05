@@ -66,7 +66,7 @@ function SandboxTest() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(0);
     const [list, setList] = useState([
-        { name: "startNode", type: "startNode", snapType: "lr" }, // Add startNode here
+        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
