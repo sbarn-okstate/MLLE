@@ -91,6 +91,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Get the type of the object from the elements array
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
+                const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
                 const newObject = createNewObject(objectType, div, index, snapType);
                 console.log("Active Objects:", activeObjectsRef.current);
                 // Define draggable behavior
@@ -323,7 +324,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return newObject;
     }
 
-    //No need to pass subType because objectType is enough to determine the type of object to render.
     function renderObject(objectType, subType, props) {
         const { key, ...restProps } = props; // Extract the key from props
         const currentObject = activeObjectsState.find(obj => obj.id === props.name);
