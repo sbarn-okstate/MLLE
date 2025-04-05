@@ -64,7 +64,7 @@ function stopTraining(setTrainingState) {
 
 function SandboxTest() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
         { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
     ]);
