@@ -6,10 +6,10 @@
   *          well.
   * 
   * NOTES: We need to look into better snapping mechanics
-  * FIXME: multiple objects can snap to the same points on the start block
+  * FIXME: activeObjects isn't the same across objects
   */
 
-import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -43,7 +43,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const activeObjects = useRef([]);
+
     /*
     {   activeObjects object structure
         id: "object1", // Unique identifier
@@ -57,17 +57,21 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
     */
 
+    const activeObjectsRef = useRef([]);
+    const [activeObjectsState, setActiveObjectsState] = useState([]);
+
+
     // 2. Expose startNode and activeObjects via the ref
     useImperativeHandle(ref, () => ({
-        getStartNode: () => activeObjects.current.find(obj => obj.id === "startNode"),
-        getActiveObjects: () => activeObjects.current,
+        getStartNode: () => activeObjectsRef.current.find(obj => obj.id === "startNode"),
+        getActiveObjects: () => activeObjectsRef.current,
     }));
 
     // draggables do not know about state variables? so the need an external helper
     function extAction(ref) {
         console.log(`an element has called for external action: ${typeof ref}`);
     }
-
+    
     useEffect(() => {
         console.log("divRefs:", divRefs.current);
         console.log("handleRefs:", handleRefs.current);
@@ -85,17 +89,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const draggable = new PlainDraggable(div);
 
                 // Get the type of the object from the elements array
-                //Elements are passed in as props to the Stage component
-                const snapType = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
-                const objectType = elements[index - 1]?.objectType || `object${index}`;  
-                const subType = elements[index - 1]?.subType || `sub${index}`; // Default to "default" if subType is not 
-                const newObject = createNewObject(objectType, subType, div, index, snapType);
-                activeObjects.current.push(newObject);
-
+                const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
+                const objectType = elements[index]?.objectType || `object${index}`;   
+                const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
+                const newObject = createNewObject(objectType, div, index, snapType);
+                console.log("Active Objects:", activeObjectsRef.current);
                 // Define draggable behavior
                 draggable.onMove = function () {
-                    const currentObject = activeObjects.current.find(obj => obj.element === div);
-                    const snap = findClosestSnapPoint(currentObject, activeObjects);
+                    const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
 
                     if (snap) {
                         const dx = snap.otherPoint.x - snap.currentPoint.x;
@@ -111,15 +113,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 };
 
                 draggable.onDragEnd = function () {
-                    const currentObject = activeObjects.current.find(obj => obj.element === div);
-                    const snap = findClosestSnapPoint(currentObject, activeObjects);
+                    const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
+                    clearLinks(currentObject);
 
                     if (snap) {
                         updateLinks(currentObject, snap);
-                        console.log("Snapped:", currentObject, "to", snap.otherObject);
-                    } else {
-                        clearLinks(currentObject);
-                        console.log("Unsnapped:", currentObject);
+                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
 
                     if (mouse.x < 250) {
@@ -128,6 +128,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                         
                         //extAction(divRefs[index]);
                     }
+
                 };
 
                 // Set initial position
@@ -153,41 +154,58 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }, [elements, setDrags]);
 
     function updateLinks(currentObject, snap) {
-        if (snap.currentPoint.type === "left") {
-            currentObject.leftLink = snap.otherObject;
-            snap.otherObject.rightLink = currentObject;
-        } else if (snap.currentPoint.type === "right") {
-            currentObject.rightLink = snap.otherObject;
-            snap.otherObject.leftLink = currentObject;
-        } else if (snap.currentPoint.type === "top") {
-            currentObject.topLink = snap.otherObject;
-            snap.otherObject.bottomLink = currentObject;
-        } else if (snap.currentPoint.type === "bottom") {
-            currentObject.bottomLink = snap.otherObject;
-            snap.otherObject.topLink = currentObject;
-        }
+        const updatedObjects = activeObjectsRef.current.map(obj => {
+            if (obj === currentObject) {
+                if (snap.currentPoint.type === "left") {
+                    obj.leftLink = snap.otherObject;
+                    snap.otherObject.rightLink = obj;
+                } else if (snap.currentPoint.type === "right") {
+                    obj.rightLink = snap.otherObject;
+                    snap.otherObject.leftLink = obj;
+                } else if (snap.currentPoint.type === "top") {
+                    obj.topLink = snap.otherObject;
+                    snap.otherObject.bottomLink = obj;
+
+                    // Set left and right links to 0 when snapping to the top
+                    obj.leftLink = 0;
+                    obj.rightLink = 0;
+                } else if (snap.currentPoint.type === "bottom") {
+                    obj.bottomLink = snap.otherObject;
+                    snap.otherObject.topLink = obj;
+
+                    // Set left and right links to 0 when snapping to the bottom
+                    obj.leftLink = 0;
+                    obj.rightLink = 0;
+                }
+            }
+            return obj;
+        });
+    
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
 
     function clearLinks(currentObject) {
-        if (currentObject.leftLink) {
-            currentObject.leftLink.rightLink = null;
-            currentObject.leftLink = null;
-        }
-        if (currentObject.rightLink) {
-            currentObject.rightLink.leftLink = null;
-            currentObject.rightLink = null;
-        }
-        if (currentObject.topLink) {
-            currentObject.topLink.bottomLink = null;
-            currentObject.topLink = null;
-        }
-        if (currentObject.bottomLink) {
-            currentObject.bottomLink.topLink = null;
-            currentObject.bottomLink = null;
-        }
+        const updatedObjects = activeObjectsRef.current.map(obj => {
+            if (obj === currentObject) {
+                if (obj.leftLink) obj.leftLink.rightLink = null;
+                if (obj.rightLink) obj.rightLink.leftLink = null;
+                if (obj.topLink) obj.topLink.bottomLink = null;
+                if (obj.bottomLink) obj.bottomLink.topLink = null;
+
+                obj.leftLink = null;
+                obj.rightLink = null;
+                obj.topLink = null;
+                obj.bottomLink = null;
+            }
+            return obj;
+        });
+    
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
     // custom snapping behavior
-    function findClosestSnapPoint(currentObject, activeObjects) {
+    function findClosestSnapPoint(currentObject, activeObjectsRef) {
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -223,7 +241,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         let closestPoint = null;
         let minDistance = 50; // Max snap distance
     
-        activeObjects.current.forEach(otherObject => {
+        activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
     
             // Cache the other object's bounding rect
@@ -233,10 +251,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             const otherSnapPoints = otherObject.snapPoints
             .filter(point => {
                 // Only consider snap points with null links
-                return (point.type === "left" && !otherObject.leftLink) ||
-                    (point.type === "right" && !otherObject.rightLink) ||
-                    (point.type === "top" && !otherObject.topLink) ||
-                    (point.type === "bottom" && !otherObject.bottomLink);
+                return (point.type === "left" && otherObject.leftLink == null) ||
+                    (point.type === "right" && otherObject.rightLink == null) ||
+                    (point.type === "top" && otherObject.topLink == null) ||
+                    (point.type === "bottom" && otherObject.bottomLink == null);
             })
             .map(point => ({
                 type: point.type,
@@ -281,23 +299,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             snapPoints.push({ type: "right" });
             snapPoints.push({ type: "top" });
             snapPoints.push({ type: "bottom" });
-        }
-        else {
-            if (snapType.includes("l")) {
-                snapPoints.push({ type: "left" });
-            }
-            if (snapType.includes("r")) {
-                snapPoints.push({ type: "right" });
-            }
-            if (snapType.includes("t")) {
-                snapPoints.push({ type: "top" });
-            }
-            if (snapType.includes("b")) {
-                snapPoints.push({ type: "bottom" });
-            }
+        } else {
+            if (snapType.includes("l")) snapPoints.push({ type: "left" });
+            if (snapType.includes("r")) snapPoints.push({ type: "right" });
+            if (snapType.includes("t")) snapPoints.push({ type: "top" });
+            if (snapType.includes("b")) snapPoints.push({ type: "bottom" });
         }
     
-        return {
+        const newObject = {
             id: index,
             objectType: objectType,
             subType: subType,
@@ -308,33 +317,29 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             bottomLink: null,
             snapPoints,
         };
+    
+        const updatedObjects = [...activeObjectsRef.current, newObject];
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
+        return newObject;
     }
 
-    // Add the startNode to activeObjects during rendering
-    const initializeStartNode = (element) => {
-        if (!element) return; // Ensure the element is valid
-        if (!activeObjects.current.find(obj => obj.id === "startNode")) {
-            const startNode = {
-                id: "startNode",
-                objectType: "startNode",
-                element: element, // Assign the DOM element for the StartNode
-                leftLink: null,
-                rightLink: null,
-                topLink: null,
-                bottomLink: null,
-                snapPoints: [{ type: "right" }, { type: "left" }]
-            };
-            activeObjects.current.push(startNode);
-        }
-    };
-
-    //No need to pass subType because objectType is enough to determine the type of object to render.
     function renderObject(objectType, subType, props) {
         const { key, ...restProps } = props; // Extract the key from props
-        //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
-        //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
-        //console.log("Rendering object:", type);
+        const currentObject = activeObjectsState.find(obj => obj.id === props.name);
+
+        const activeLinks = currentObject
+        ? {
+            top: currentObject.topLink !== null && currentObject.topLink !== 0 ? true : currentObject.topLink,
+            right: currentObject.rightLink !== null && currentObject.rightLink !== 0 ? true : currentObject.rightLink,
+            bottom: currentObject.bottomLink !== null && currentObject.bottomLink !== 0 ? true : currentObject.bottomLink,
+            left: currentObject.leftLink !== null && currentObject.leftLink !== 0 ? true : currentObject.leftLink,
+        }
+        : { top: null, right: null, bottom: null, left: null }; // Default to null if no currentObject
+
         switch (objectType) {
+            case "startNode":
+                return <StartNode key={key} {...restProps} />;
             case "dataset":
                 return <DatasetObject key={key} {...restProps} />;
             case "dense":
@@ -364,7 +369,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             case "output":
                 return <OutputLayerObject key={key} {...restProps} />;
             case "neuron":
-                return <NeuronObject key={key} {...restProps} />;
+                return <NeuronObject key={key} {...restProps} activeLinks={activeLinks} />;
             default:
                 return null;
         }
@@ -372,20 +377,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
     return (
         <div id="stage" className="teststage">
-            <StartNode
-                ref={(el) => {
-                    divRefs.current[0] = el;
-                    initializeStartNode(el); // Initialize the startNode during rendering
-                }}
-                handleRef={(el) => (handleRefs.current[0] = el)}
-                name={"startNode"}
-            />
             {elements.map((item, index) => (
                 renderObject(item.objectType, item.subType,{
                     key: index,
-                    name: item.name,
-                    ref: (el) => (divRefs.current[index + 1] = el),
-                    handleRef: (el) => (handleRefs.current[index + 1] = el),
+                    name: item.id,
+                    ref: (el) => (divRefs.current[index] = el),
+                    handleRef: (el) => (handleRefs.current[index] = el),
                     action: extAction
                 })
             ))}
