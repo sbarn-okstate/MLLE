@@ -9,7 +9,7 @@
   * FIXME: activeObjects isn't the same across objects
   */
 
-import React, { useImperativeHandle, forwardRef, useRef, useEffect } from "react";
+import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DatasetObject,
     DenseLayerObject,
@@ -27,7 +27,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const [activeObjects, setActiveObjects] = React.useState([]);
+
     /*
     {   activeObjects object structure
         id: "object1", // Unique identifier
@@ -41,10 +41,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
     */
 
+    const activeObjectsRef = useRef([]);
+    const [activeObjectsState, setActiveObjectsState] = useState([]);
+
+
     // 2. Expose startNode and activeObjects via the ref
     useImperativeHandle(ref, () => ({
-        getStartNode: () => activeObjects.find(obj => obj.id === "startNode"),
-        getActiveObjects: () => activeObjects,
+        getStartNode: () => activeObjectsRef.current.find(obj => obj.id === "startNode"),
+        getActiveObjects: () => activeObjectsRef.current,
     }));
 
     // draggables do not know about state variables? so the need an external helper
@@ -60,7 +64,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         divRefs.current.forEach((div, index) => {
             if (!drag.current[index]) {
                 drag.current[index] = 1;
-                console.log("Creating new draggable for index:", index-1);
+
                 if (index === 0) {
                     // Skip the first element (StartNode)
                     return;
@@ -73,7 +77,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("Active Objects:", activeObjects);
+                console.log("Active Objects:", activeObjectsRef);
                 console.log("elements:", elements);
                 console.log("div:", div);
                 console.log("index:", index-1);
@@ -81,11 +85,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const snapType = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index-1]?.objectType || `object${index}`;   
                 const newObject = createNewObject(objectType, div, index, snapType);
-                console.log("Active Objects:", activeObjects);
+                console.log("Active Objects:", activeObjectsRef);
                 // Define draggable behavior
                 draggable.onMove = function () {
-                    const currentObject = activeObjects.find(obj => obj.element === div);
-                    const snap = findClosestSnapPoint(currentObject, activeObjects);
+                    const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
 
                     if (snap) {
                         const dx = snap.otherPoint.x - snap.currentPoint.x;
@@ -101,8 +105,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 };
 
                 draggable.onDragEnd = function () {
-                    const currentObject = activeObjects.find(obj => obj.element === div);
-                    const snap = findClosestSnapPoint(currentObject, activeObjects);
+                    const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
 
                     if (snap) {
                         updateLinks(currentObject, snap);
@@ -118,6 +122,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                         
                         //extAction(divRefs[index]);
                     }
+
                 };
 
                 // Set initial position
@@ -140,61 +145,61 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 setDrags(prev => [...prev, draggable]);
             }
         });
-    }, [elements, setDrags, activeObjects]);
+    }, [elements, setDrags]);
 
     function updateLinks(currentObject, snap) {
-        setActiveObjects(prev => {
-            const updatedObjects = prev.map(obj => {
-                if (obj === currentObject) {
-                    if (snap.currentPoint.type === "left") {
-                        obj.leftLink = snap.otherObject;
-                        snap.otherObject.rightLink = obj;
-                    } else if (snap.currentPoint.type === "right") {
-                        obj.rightLink = snap.otherObject;
-                        snap.otherObject.leftLink = obj;
-                    } else if (snap.currentPoint.type === "top") {
-                        obj.topLink = snap.otherObject;
-                        snap.otherObject.bottomLink = obj;
-                    } else if (snap.currentPoint.type === "bottom") {
-                        obj.bottomLink = snap.otherObject;
-                        snap.otherObject.topLink = obj;
-                    }
+        const updatedObjects = activeObjectsRef.current.map(obj => {
+            if (obj === currentObject) {
+                if (snap.currentPoint.type === "left") {
+                    obj.leftLink = snap.otherObject;
+                    snap.otherObject.rightLink = obj;
+                } else if (snap.currentPoint.type === "right") {
+                    obj.rightLink = snap.otherObject;
+                    snap.otherObject.leftLink = obj;
+                } else if (snap.currentPoint.type === "top") {
+                    obj.topLink = snap.otherObject;
+                    snap.otherObject.bottomLink = obj;
+                } else if (snap.currentPoint.type === "bottom") {
+                    obj.bottomLink = snap.otherObject;
+                    snap.otherObject.topLink = obj;
                 }
-                return obj;
-            });
-            return updatedObjects;
+            }
+            return obj;
         });
+    
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
 
     function clearLinks(currentObject) {
-        setActiveObjects(prev => {
-            const updatedObjects = prev.map(obj => {
-                if (obj === currentObject) {
-                    if (obj.leftLink) {
-                        obj.leftLink.rightLink = null;
-                        obj.leftLink = null;
-                    }
-                    if (obj.rightLink) {
-                        obj.rightLink.leftLink = null;
-                        obj.rightLink = null;
-                    }
-                    if (obj.topLink) {
-                        obj.topLink.bottomLink = null;
-                        obj.topLink = null;
-                    }
-                    if (obj.bottomLink) {
-                        obj.bottomLink.topLink = null;
-                        obj.bottomLink = null;
-                    }
+        const updatedObjects = activeObjectsRef.current.map(obj => {
+            if (obj === currentObject) {
+                if (obj.leftLink) {
+                    obj.leftLink.rightLink = null;
+                    obj.leftLink = null;
                 }
-                return obj;
-            });
-            return updatedObjects;
+                if (obj.rightLink) {
+                    obj.rightLink.leftLink = null;
+                    obj.rightLink = null;
+                }
+                if (obj.topLink) {
+                    obj.topLink.bottomLink = null;
+                    obj.topLink = null;
+                }
+                if (obj.bottomLink) {
+                    obj.bottomLink.topLink = null;
+                    obj.bottomLink = null;
+                }
+            }
+            return obj;
         });
+    
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
     // custom snapping behavior
-    function findClosestSnapPoint(currentObject, activeObjects) {
-        console.log("activeObjects:", activeObjects);
+    function findClosestSnapPoint(currentObject, activeObjectsRef) {
+        console.log("activeObjectsRef:", activeObjectsRef);
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -230,7 +235,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         let closestPoint = null;
         let minDistance = 50; // Max snap distance
     
-        activeObjects.forEach(otherObject => {
+        activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
     
             // Cache the other object's bounding rect
@@ -288,8 +293,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             snapPoints.push({ type: "right" });
             snapPoints.push({ type: "top" });
             snapPoints.push({ type: "bottom" });
-        }
-        else {
+        } else {
             if (snapType.includes("l")) snapPoints.push({ type: "left" });
             if (snapType.includes("r")) snapPoints.push({ type: "right" });
             if (snapType.includes("t")) snapPoints.push({ type: "top" });
@@ -307,42 +311,45 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             snapPoints,
         };
     
-        setActiveObjects(prev => [...prev, newObject]);
+        const updatedObjects = [...activeObjectsRef.current, newObject];
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
         return newObject;
     }
 
     // Add the startNode to activeObjects during rendering
     const initializeStartNode = (element) => {
-        if (!element) return; // Ensure the element is valid
-        setActiveObjects(prev => {
-            // Check if the startNode already exists in the most recent state
-            if (prev.find(obj => obj.id === "startNode")) {
-                console.log("startNode already exists in activeObjects.");
-                return prev; // Return the previous state unchanged
-            }
+        if (!element) {
+            console.warn("initializeStartNode called with null element.");
+            return; // Ensure the element is valid
+        }
     
-            console.log("Initializing startNode...");
-            const startNode = {
-                id: "startNode",
-                objectType: "startNode",
-                element: element, // Assign the DOM element for the StartNode
-                leftLink: null,
-                rightLink: null,
-                topLink: null,
-                bottomLink: null,
-                snapPoints: [{ type: "right" }, { type: "left" }]
-            };
+        const existingStartNode = activeObjectsRef.current.find(obj => obj.id === "startNode");
+        if (existingStartNode) {
+            console.log("startNode already exists in activeObjects.");
+            return;
+        }
     
-            return [...prev, startNode]; // Add the new startNode to the state
-        });
+        console.log("Initializing startNode...");
+        const startNode = {
+            id: "startNode",
+            objectType: "startNode",
+            element: element, // Assign the DOM element for the StartNode
+            leftLink: null,
+            rightLink: null,
+            topLink: null,
+            bottomLink: null,
+            snapPoints: [{ type: "right" }, { type: "left" }]
+        };
+    
+        const updatedObjects = [...activeObjectsRef.current, startNode];
+        activeObjectsRef.current = updatedObjects; // Update the ref
+        setActiveObjectsState(updatedObjects); // Trigger a re-render
     };
 
     function renderObject(objectType, props) {
         const { key, ...restProps } = props; // Extract the key from props
-        //React requires the key prop to be passed directly to the JSX element, not as part of a spread object (...props).
-        //This is because React uses the key prop internally to identify elements in a list, and it cannot extract it from a spread object.
-        //console.log("Rendering object:", type);
-        const currentObject = activeObjects.find(obj => obj.id === key);
+        const currentObject = activeObjectsState.find(obj => obj.id === props.name);
 
         const activeLinks = currentObject
             ? {
