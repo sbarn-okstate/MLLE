@@ -102,13 +102,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 draggable.onDragEnd = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
-
+                    clearLinks(currentObject);
+                    
                     if (snap) {
                         updateLinks(currentObject, snap);
                         //console.log("Snapped:", currentObject, "to", snap.otherObject);
-                    } else {
-                        clearLinks(currentObject);
-                        //console.log("Unsnapped:", currentObject);
                     }
 
                     if (mouse.x < 250) {
