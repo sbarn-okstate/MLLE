@@ -1,10 +1,11 @@
 /* TestDiv.jsx
   *
-  * AUTHOR(S): Mark Taylor
+  * AUTHOR(S): Mark Taylor, Justin Moua
   *
   * PURPOSE: Test node component for sandbox enviroment.
   * 
   * NOTES: Once actual nodes are created, this should be removed.
+  *        These are called from NodeDrawer.jsx. 
   */
 
 import React, { forwardRef } from "react";
@@ -34,7 +35,11 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
 // Dense Layer Object
 export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable"}) {
     return (
-        <div ref={ref} id={name} className={classNameOverride}>
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "#4CAF50", // Optional: Add a background color
+            }}
+        >
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dense Layer</p>
             </div>
@@ -51,7 +56,7 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                     />
                 </span>
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
@@ -83,45 +88,172 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
 
 
 // Activation Layer Object
-export function ActivationLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className={classNameOverride}>
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(0,153,255)", // Optional: Add a background color
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Activation Layer {activationName}</p>
+            </div>
+            <p>
+                activation type: {activationName}
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+export function ReluObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+            }}
+            >
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer</p>
             </div>
-            <p>Activation Function: 
-                <span>
-                    <select name={name + "activation"} id={name + "activation"}>
-                        <option value="relu">ReLU</option>
-                        <option value="sigmoid">Sigmoid</option>
-                        <option value="tanh">Tanh</option>
-                        <option value="softmax">Softmax</option>
-                    </select>
-                </span>
+            <p>
+                ReLu
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+}
+
+export function SigmoidObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Activation Layer</p>
+            </div>
+            <p>
+                Sigmoid
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+}
+
+export function TanhObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Activation Layer</p>
+            </div>
+            <p>
+                Tanh
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+}
+
+export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+            }}
+            >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Activation Layer</p>
+            </div>
+            <p>
+                Softmax
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+}
+
+// // Convolution Layer Object
+export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+            }}
+        >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Convolution Layer</p>
+            </div>
+            <p>{filterSize} Filter size
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+//Convolution Layer Object
+export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+            }}
+        >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Convolution Layer</p>
+            </div>
+            <p>Filter Size of 3x3
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Convolution Layer Object
-export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className={classNameOverride}>
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+            }}
+        >
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Convolution Layer</p>
             </div>
-            <p>Filter Size: 
-                <span>
-                    <select name={name + "filter"} id={name + "filter"}>
-                        <option value="3x3">3x3</option>
-                        <option value="5x5">5x5</option>
-                        <option value="7x7">7x7</option>
-                    </select>
-                </span>
+            <p>Filter Size of 5x5
             </p>
-            <input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+// Convolution Layer Object
+export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+            }}
+        >
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Convolution Layer</p>
+            </div>
+            <p>Filter Size of 7x7
+            </p>
+            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
@@ -130,7 +262,11 @@ export function ConvolutionLayerObject({ name, ref, handleRef, classNameOverride
 // Output Layer Object
 export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
-        <div ref={ref} id={name} className={classNameOverride}>
+        <div ref={ref} id={name} className={classNameOverride}
+            style={{
+                backgroundColor: "rgb(255, 140, 0)", // Optional: Add a background color
+            }}
+        >
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Output</p>
             </div>
