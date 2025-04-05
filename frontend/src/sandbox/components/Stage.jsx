@@ -77,7 +77,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("Active Objects:", activeObjectsRef);
                 console.log("elements:", elements);
                 console.log("div:", div);
                 console.log("index:", index-1);
@@ -85,7 +84,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const snapType = elements[index-1]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index-1]?.objectType || `object${index}`;   
                 const newObject = createNewObject(objectType, div, index, snapType);
-                console.log("Active Objects:", activeObjectsRef);
+                console.log("Active Objects:", activeObjectsRef.current);
                 // Define draggable behavior
                 draggable.onMove = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
@@ -199,7 +198,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
     // custom snapping behavior
     function findClosestSnapPoint(currentObject, activeObjectsRef) {
-        console.log("activeObjectsRef:", activeObjectsRef);
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -326,7 +324,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     
         const existingStartNode = activeObjectsRef.current.find(obj => obj.id === "startNode");
         if (existingStartNode) {
-            console.log("startNode already exists in activeObjects.");
+            console.warn("startNode already exists in activeObjects.");
             return;
         }
     
