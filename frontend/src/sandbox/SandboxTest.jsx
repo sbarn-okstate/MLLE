@@ -160,7 +160,8 @@ function SandboxTest() {
             
             // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
-                objectData.activation = getFieldValue(currentObject.name + "activation");
+                //objectData.activation = getFieldValue(currentObject.name + "activation");
+                objectData.activation = currentObject.rightLink.subType;
                 currentObject = currentObject.rightLink; // move to activation object
             }
 
