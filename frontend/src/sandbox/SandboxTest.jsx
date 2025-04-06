@@ -43,9 +43,11 @@ function createBackend() {
     backend_worker = backend.getBackendWorker();
 }
 
+//called by startTraining() to create the model.
 function createModel() {
     //FIXME: This is just a test
     const dataset = model[0].dataset;
+    console.log("dataset in createModel() is:", dataset);
     let layers = model.slice(1);
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
@@ -54,7 +56,8 @@ function startTraining(setTrainingState, modelState) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         createModel();
         //FIXME: This is just a test
-        let fileName = model[0].dataset;
+        let fileName = model[0].dataset; 
+        console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
         backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
         setTrainingState('training');
@@ -172,7 +175,8 @@ function SandboxTest() {
             } 
             // Handle Convolution Layer
             else if (currentObject.objectType === "convolution") {
-                objectData.filter = getFieldValue(currentObject.name + "filter");
+                //objectData.filter = getFieldValue(currentObject.name + "filter");
+                objectData.filter = currentObject.subType;
             }
             
             // Handle Activation Function following any layer

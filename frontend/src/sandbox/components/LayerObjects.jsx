@@ -97,7 +97,7 @@ export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = 
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic_normal_binary_classification_500.csv
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
                 {/*
                 <span>
                     <select name={name + "dataset"} id={name + "dataset"}>
@@ -113,6 +113,107 @@ export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = 
     );
 };
 
+//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
+export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+                    style={{
+                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
+            }}>
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Heart Prediction Dataset<br/><br/>heart.csv
+                {/*
+                <span>
+                    <select name={name + "dataset"} id={name + "dataset"}>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
+                        <option value="dataset2.csv">Dataset 2</option>
+                        <option value="dataset3.csv">Dataset 3</option>
+                    </select>
+                </span>
+                */}
+            </p>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+                    style={{
+                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
+            }}>
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Boston Housing Dataset<br/><br/>boston-housing-train.csv
+                {/*
+                <span>
+                    <select name={name + "dataset"} id={name + "dataset"}>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
+                        <option value="dataset2.csv">Dataset 2</option>
+                        <option value="dataset3.csv">Dataset 3</option>
+                    </select>
+                </span>
+                */}
+            </p>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+                    style={{
+                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
+            }}>
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> MNIST Dataset<br/><br/>mnist_train.csv
+                {/*
+                <span>
+                    <select name={name + "dataset"} id={name + "dataset"}>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
+                        <option value="dataset2.csv">Dataset 2</option>
+                        <option value="dataset3.csv">Dataset 3</option>
+                    </select>
+                </span>
+                */}
+            </p>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
+
+
+export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+                    style={{
+                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
+            }}>
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Fashion MNIST Dataset<br/><br/>fashion-mnist_train.csv
+                {/*
+                <span>
+                    <select name={name + "dataset"} id={name + "dataset"}>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
+                        <option value="dataset2.csv">Dataset 2</option>
+                        <option value="dataset3.csv">Dataset 3</option>
+                    </select>
+                </span>
+                */}
+            </p>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
 //================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================
 
 //================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================
