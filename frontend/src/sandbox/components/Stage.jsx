@@ -327,50 +327,56 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
     function renderObject(objectType, subType, props) {
         const { key, ...restProps } = props; // Extract the key from props
-        const currentObject = activeObjectsState.find(obj => obj.id === props.name);
 
-        const activeLinks = currentObject
-        ? {
-            top: currentObject.topLink !== null && currentObject.topLink !== 0 ? true : currentObject.topLink,
-            right: currentObject.rightLink !== null && currentObject.rightLink !== 0 ? true : currentObject.rightLink,
-            bottom: currentObject.bottomLink !== null && currentObject.bottomLink !== 0 ? true : currentObject.bottomLink,
-            left: currentObject.leftLink !== null && currentObject.leftLink !== 0 ? true : currentObject.leftLink,
-        }
-        : { top: null, right: null, bottom: null, left: null }; // Default to null if no currentObject
+        const currentObject = activeObjectsState.find(obj => obj.id === props.key);
+        console.log("Current Object:", currentObject);
+        // Dynamically construct activeLinks based on snapPoints
+        const linkStates = currentObject
+            ? currentObject.snapPoints.reduce((links, point) => {
+                const linkType = point.type; // e.g., "top", "right", "bottom", "left"
+                const linkValue = currentObject[`${linkType}Link`]; // Access the corresponding link property
+
+                // Only include links that are in snapPoints
+                links[linkType] = linkValue !== null && linkValue !== 0 ? true : linkValue;
+                return links;
+            }, {})
+            : {}; // Default to an empty object if no currentObject
+
+        console.log("Link States:", linkStates);
 
         switch (objectType) {
             case "startNode":
-                return <StartNode key={key} {...restProps} />;
+                return <StartNode key={key} {...restProps} linkStates={linkStates}/>;
             case "dataset":
-                return <DatasetObject key={key} {...restProps} />;
+                return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
             case "dense":
-                return <DenseLayerObject key={key} {...restProps} />;
+                return <DenseLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "activation":
                 //return <ActivationLayerObject key={key} {...restProps} />;
                 switch (subType) {
                     case "relu":
-                        return <ReluObject key={key} {...restProps} />;
+                        return <ReluObject key={key} {...restProps} linkStates={linkStates} />;
                     case "sigmoid":
-                        return <SigmoidObject key={key} {...restProps} />;
+                        return <SigmoidObject key={key} {...restProps} linkStates={linkStates}/>;
                     case "tanh":
-                        return <TanhObject key={key} {...restProps} />;
+                        return <TanhObject key={key} {...restProps} linkStates={linkStates}/>;
                     case "softmax":
-                        return <SoftmaxObject key={key} {...restProps} />;
+                        return <SoftmaxObject key={key} {...restProps} linkStates={linkStates}/>;
                 }
             case "convolution":
                 //return <ConvolutionLayerObject key={key} {...restProps} />;
                 switch (subType) {
                     case "3x3":
-                        return <ConvolutionLayer3x3Object key={key} {...restProps} />;
+                        return <ConvolutionLayer3x3Object key={key} {...restProps} linkStates={linkStates}/>;
                     case "5x5":
-                        return <ConvolutionLayer5x5Object key={key} {...restProps} />;
+                        return <ConvolutionLayer5x5Object key={key} {...restProps} linkStates={linkStates}/>;
                     case "7x7":
-                        return <ConvolutionLayer7x7Object key={key} {...restProps} />;
+                        return <ConvolutionLayer7x7Object key={key} {...restProps} linkStates={linkStates}/>;
                 }
             case "output":
-                return <OutputLayerObject key={key} {...restProps} />;
+                return <OutputLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "neuron":
-                return <NeuronObject key={key} {...restProps} activeLinks={activeLinks} />;
+                return <NeuronObject key={key} {...restProps} linkStates={linkStates} />;
             default:
                 return null;
         }
