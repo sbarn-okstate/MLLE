@@ -5,6 +5,24 @@
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES:
+  * 
+  *     SandboxTest.jsx Strcture:
+  * *       - createBackend(): Creates the backend worker.
+  * *       - createModel(): Creates the model for the backend worker.  
+  * *       - startTraining(): Starts the training process.
+  * *       - pauseTraining(): Pauses the training process.
+  * *       - resumeTraining(): Resumes the training process.
+  * *       - stopTraining(): Stops the training process.
+  * *       - SandboxTest(): The main function that creates the sandbox page.
+  * * *             - validateModel(): Validates the model by checking the chain of linked objects.
+  * * *             - AddObject(): Adds an object to the list of objects on the stage.
+  * * *                     - Takes in three optional parameters: objectType, subType, and fileName.
+  * * * *                           - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
+  * * * *                           - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)
+  * * * * *                         - fileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+  * * *             - UpdateDraggablePos(): Updates the position of the draggable objects.
+  * * *             - return: Returns the JSX for the sandbox page.
+  * * * *                   - Returns NodeDrawer, Stage, and bottom bar with options.
   */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -182,20 +200,27 @@ function SandboxTest() {
     // localized test div add
     //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
     //This is because NodeDrawer calls the AddObject function when a user selects a node.
-    function AddObject(objectType = "all", subType = "all") {
+    /*
+    addObject takes in three possible parameters. They are:
+        - objectType, subType, and fileName.
+            - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
+            - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
+            - fileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+    */
+    function AddObject(objectType = "all", subType = "all", fileName = "none") {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
-            relu: "lr",
-            sigmoid: "lr",
-            tanh: "lr",
-            softma: "lr",
+            relu: "lr",                 // Might not need this. Have to do testing later to see if we can remove this. 
+            sigmoid: "lr",              // Might not need this. Have to do testing later to see if we can remove this. 
+            tanh: "lr",                 // Might not need this. Have to do testing later to see if we can remove this. 
+            softmax: "lr",              // Might not need this. Have to do testing later to see if we can remove this. 
             convolution: "lr",    // Convolution layer snaps top and bottom
-            filter3x3: "lr",
-            filter5x5: "lr",
-            filter7x7: "lr",
+            filter3x3: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
+            filter5x5: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
+            filter7x7: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
             output: "l",          // Output layer can only snap at the top
             neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
@@ -212,10 +237,11 @@ function SandboxTest() {
                     id: count,
                     objectType, //passed in from NodeDrawer.jsx
                     subType, //passed in from NodeDrawer.jsx
+                    fileName,
                     snapType
                 }
             ];
-            //console.log("Updated list:", updatedList); // Debugging log
+            console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 

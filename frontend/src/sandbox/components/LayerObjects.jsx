@@ -6,6 +6,28 @@
   * 
   * NOTES: Once actual nodes are created, this should be removed.
   *        These are called from NodeDrawer.jsx. 
+  * 
+  * *       LayerObjects.jsx contains the following functions:
+  * *               - renderLinkedIndicators(): Helper function to render all link indicators
+  
+  * *               - DatasetObject(): Dataset object that corresponds with synthetic_normal_binary_classification_500.csv
+  * *               - DatasetNBC500Object(): Dataset object that corresponds with synthetic_normal_binary_classification_500.csv
+  
+  * *               - DenseLayerObject(): Dense layer object
+  * *               - NeuronObject(): Neuron object
+  
+  * *               - ActivationLayerObject(): Activation layer object
+  * * *                 - ReluObject(): Relu object
+  * * *                 - SigmoidObject(): Sigmoid object
+  * * *                 - TanhObject(): Tanh object
+  * * *                 - SoftmaxObject(): Softmax object
+  
+  * * *               - ConvolutionLayerObject(): Convolution layer object
+  * * *                 - ConvolutionLayer3x3Object(): Convolution layer object with 3x3 filter size
+  * * *                 - ConvolutionLayer5x5Object(): Convolution layer object with 5x5 filter size
+  * * *                 - ConvolutionLayer7x7Object(): Convolution layer object with 7x7 filter size
+  
+  * * *               - OutputLayerObject(): Output layer object  
   */
 
 import React, { forwardRef } from "react";
@@ -43,6 +65,8 @@ export function renderLinkIndicators(linkStates) {
     });
 }
 
+//================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
+// synthetic_normal_binary_classification_500.csv
 // Dataset Object
 export function DatasetObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
@@ -63,7 +87,35 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
         </div>
     );
 };
+//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
+export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+    return (
+        <div ref={ref} id={name} className={classNameOverride}
+                    style={{
+                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
+            }}>
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic_normal_binary_classification_500.csv
+                {/*
+                <span>
+                    <select name={name + "dataset"} id={name + "dataset"}>
+                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
+                        <option value="dataset2.csv">Dataset 2</option>
+                        <option value="dataset3.csv">Dataset 3</option>
+                    </select>
+                </span>
+                */}
+            </p>
+            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+        </div>
+    );
+};
 
+//================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================
+
+//================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================
 // Dense Layer Object
 export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable"}) {
     return (
@@ -114,7 +166,9 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
         </div>
     );
 }
+//================DENSE OBJECTS ENDS HERE================================DENSE OBJECTS ENDS HERE================================DENSE OBJECTS ENDS HERE================
 
+//================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================
 
 // Activation Layer Object
 export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "testdraggable",}) {
@@ -213,7 +267,9 @@ export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "testd
         </div>
     );
 }
+//================ACTIVATION OBJECTS ENDS HERE================================ACTIVATION OBJECTS ENDS HERE================================ACTIVATION OBJECTS ENDS HERE================
 
+//================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================
 // // Convolution Layer Object
 export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classNameOverride = "testdraggable" }) {
     return (
@@ -289,6 +345,7 @@ export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverri
         </div>
     );
 };
+//================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================
 
 // Output Layer Object
 export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
