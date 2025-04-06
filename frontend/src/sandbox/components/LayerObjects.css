@@ -45,7 +45,7 @@
 .top-link {
     top: -25px;
     left: 50%;
-    transform: translateX(-50%) rotate(90deg);
+    transform: translateX(-50%);
 }
 
 .right-link {
@@ -57,7 +57,7 @@
 .bottom-link {
     bottom: -25px;
     left: 50%;
-    transform: translateX(-50%) rotate(270deg);
+    transform: translateX(-50%);
 }
 
 .left-link {
