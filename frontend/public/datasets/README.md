@@ -36,5 +36,5 @@ Fashion MNIST (Modified Dataset)
 - **Can use for:** Image Classification
 - **Filename:** 
     - fashion-mnist_train.csv
-- **Link:** https://www.kaggle.com/datasets/oddrationale/mnist-in-csv
+- **Link:** https://www.kaggle.com/datasets/zalando-research/fashionmnist
 - **Note:** A modified version of the fashion MNIST with 1000 examples in a csv format.
