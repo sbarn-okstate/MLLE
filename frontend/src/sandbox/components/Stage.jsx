@@ -5,8 +5,7 @@
   * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
   *          well.
   * 
-  * NOTES: We need to look into better snapping mechanics
-  * FIXME: activeObjects isn't the same across objects
+  * NOTES:
   */
 
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
@@ -63,7 +62,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
     // 2. Expose startNode and activeObjects via the ref
     useImperativeHandle(ref, () => ({
-        getStartNode: () => activeObjectsRef.current.find(obj => obj.id === "startNode"),
+        getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
         getActiveObjects: () => activeObjectsRef.current,
     }));
 
@@ -73,8 +72,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
     
     useEffect(() => {
-        console.log("divRefs:", divRefs.current);
-        console.log("handleRefs:", handleRefs.current);
+        //console.log("divRefs:", divRefs.current);
+        //console.log("handleRefs:", handleRefs.current);
 
         // This useEffect runs after the components are rendered
         divRefs.current.forEach((div, index) => {
@@ -92,8 +91,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
                 const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
-                const newObject = createNewObject(objectType, div, index, snapType);
-                console.log("Active Objects:", activeObjectsRef.current);
+                const newObject = createNewObject(objectType, subType, div, index, snapType);
+
+                //console.log("Active Objects:", activeObjectsRef.current);
+
                 // Define draggable behavior
                 draggable.onMove = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);

@@ -1,6 +1,6 @@
 /* TestDiv.jsx
   *
-  * AUTHOR(S): Mark Taylor, Justin Moua
+  * AUTHOR(S): Mark Taylor, Justin Moua, Samuel Barney
   *
   * PURPOSE: Test node component for sandbox enviroment.
   * 
