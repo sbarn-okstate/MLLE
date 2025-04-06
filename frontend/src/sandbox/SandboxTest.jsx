@@ -16,10 +16,10 @@
   * *       - SandboxTest(): The main function that creates the sandbox page.
   * * *             - validateModel(): Validates the model by checking the chain of linked objects.
   * * *             - AddObject(): Adds an object to the list of objects on the stage.
-  * * *                     - Takes in three optional parameters: objectType, subType, and fileName.
+  * * *                     - Takes in three optional parameters: objectType, subType, and datasetFileName.
   * * * *                           - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
   * * * *                           - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)
-  * * * * *                         - fileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+  * * * * *                         - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
   * * *             - UpdateDraggablePos(): Updates the position of the draggable objects.
   * * *             - return: Returns the JSX for the sandbox page.
   * * * *                   - Returns NodeDrawer, Stage, and bottom bar with options.
@@ -127,7 +127,8 @@ function SandboxTest() {
         // Traverse the left link for the dataset object
         let currentObject = startNode.leftLink;
         if (currentObject.objectType === "dataset") {
-            const datasetValue = getFieldValue(currentObject.name + "dataset");
+            //const datasetValue = getFieldValue(currentObject.name + "dataset");
+            const datasetValue = currentObject.datasetFileName;
             chain.push({
                 type: currentObject.objectType,
                 dataset: datasetValue,
@@ -202,12 +203,12 @@ function SandboxTest() {
     //This is because NodeDrawer calls the AddObject function when a user selects a node.
     /*
     addObject takes in three possible parameters. They are:
-        - objectType, subType, and fileName.
+        - objectType, subType, and datasetFileName.
             - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
-            - fileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+            - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = "all", fileName = "none") {
+    function AddObject(objectType = "all", subType = "all", datasetFileName = "none") {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
@@ -237,7 +238,7 @@ function SandboxTest() {
                     id: count,
                     objectType, //passed in from NodeDrawer.jsx
                     subType, //passed in from NodeDrawer.jsx
-                    fileName,
+                    datasetFileName,
                     snapType
                 }
             ];

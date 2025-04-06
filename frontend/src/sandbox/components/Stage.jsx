@@ -11,8 +11,8 @@
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DatasetObject,
-    DenseLayerObject,
     DatasetNBC500Object,
+    DenseLayerObject,
     ActivationLayerObject,
     ConvolutionLayerObject,
     NeuronObject,
@@ -92,7 +92,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
                 const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
-                const newObject = createNewObject(objectType, subType, div, index, snapType);
+                const datasetFileName = elements[index]?.datasetFileName || `dataset${index}`; // Dataset file name isn't used for snapping rules currently
+                const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType);
 
                 //console.log("Active Objects:", activeObjectsRef.current);
 
@@ -298,7 +299,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return closestPoint;
     }
 
-    function createNewObject(objectType, subType, fileName, div, index, snapType = "all") {
+    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all") {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -318,7 +319,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             id: index,
             objectType: objectType,
             subType: subType,
-            fileName: fileName,
+            datasetFileName: datasetFileName,
             element: div,
             leftLink: null,
             rightLink: null,
@@ -334,7 +335,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return newObject;
     }
 
-    function renderObject(objectType, subType, fileName, props) {
+    function renderObject(objectType, subType, datasetFileName, props) {
         const { key, ...restProps } = props; // Extract the key from props
 
         const currentObject = activeObjectsState.find(obj => obj.id === props.key);
@@ -358,9 +359,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
                     case ".csv":
-                        switch (fileName) {
+                        switch (datasetFileName) {
                             case "synthetic_normal_binary_classification_500.csv":
-                                return <DatasetNBC500Object key={key} {...restProps} linkStates={linkStates} />;
+                                return <DatasetNBC500Object key={key} {...restProps} linkStates={linkStates}/>;
                         }
                 }
             case "dense":
@@ -399,7 +400,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     return (
         <div id="stage" className="teststage">
             {elements.map((item, index) => (
-                renderObject(item.objectType, item.subType, item.fileName,{
+                renderObject(item.objectType, item.subType, item.datasetFileName,{
                     key: index,
                     name: item.id,
                     ref: (el) => (divRefs.current[index] = el),

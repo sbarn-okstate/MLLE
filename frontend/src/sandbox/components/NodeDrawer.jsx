@@ -60,10 +60,10 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                     */}
                     {/*
                         createNodeFunction takes in three possible parameters. They are:
-                            - objectType, subType, and fileName.
+                            - objectType, subType, and datasetFileName.
                                 - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
                                 - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
-                                - fileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+                                - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
                     */}
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetNBC500Object classNameOverride={"drawerNode"} /></div>
 
