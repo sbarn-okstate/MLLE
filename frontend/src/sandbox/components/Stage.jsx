@@ -5,8 +5,7 @@
   * PURPOSE: Stage for the sandbox nodes. Handles creation of sandbox nodes as
   *          well.
   * 
-  * NOTES: We need to look into better snapping mechanics
-  * FIXME: activeObjects isn't the same across objects
+  * NOTES:
   */
 
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";

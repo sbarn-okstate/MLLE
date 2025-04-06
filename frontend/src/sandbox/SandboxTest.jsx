@@ -5,8 +5,6 @@
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES:
-  * FIXME, in validateModel, objects don't have a type trait so I had to use object.name.startsWith
-  * to determine the type of object. This is a temporary solution and should be fixed.
   */
 
 import React, { useState, useEffect, useRef } from "react";
