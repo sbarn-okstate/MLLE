@@ -5,8 +5,6 @@
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES:
-  * FIXME, in validateModel, objects don't have a type trait so I had to use object.name.startsWith
-  * to determine the type of object. This is a temporary solution and should be fixed.
   */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -64,9 +62,9 @@ function stopTraining(setTrainingState) {
 
 function SandboxTest() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
-        { name: "startNode", type: "startNode", snapType: "lr" }, // Add startNode here
+        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -160,7 +158,7 @@ function SandboxTest() {
             
             // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
-                //objectData.activation = getFieldValue(currentObject.name + "activation");
+                //objectData.activation = currentObject.rightLink.subType;
                 objectData.activation = currentObject.rightLink.subType;
                 currentObject = currentObject.rightLink; // move to activation object
             }
@@ -217,7 +215,7 @@ function SandboxTest() {
                     snapType
                 }
             ];
-            console.log("Updated list:", updatedList); // Debugging log
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 

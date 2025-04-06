@@ -1,0 +1,65 @@
+/* Neuron container */
+.neuron-container {
+    width: 100px; /* Increased size */
+    height: 100px;
+    position: relative;
+    background-color: transparent; /* Transparent bounding box */
+    pointer-events: none; /* Prevent mouse events */
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    user-select: none;
+}
+
+/* Draggable handle in the center */
+.nodeHandle {
+    width: 50px;
+    height: 50px;
+    background-color: #4CAF50;
+    border-radius: 5px;
+    display: flex;
+    pointer-events: all; /* Allow mouse events */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    cursor: grab;
+}
+
+/* Link indicators */
+.link-indicator {
+    position: absolute;
+    pointer-events: none; /* Prevent mouse events */
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+/* Positioning for each link */
+.top-link {
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%) rotate(90deg);
+}
+
+.right-link {
+    right: -25px;
+    top: 50%;
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.bottom-link {
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%) rotate(270deg);
+}
+
+.left-link {
+    left: -25px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+}

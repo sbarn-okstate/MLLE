@@ -1,6 +1,6 @@
 /* TestDiv.jsx
   *
-  * AUTHOR(S): Mark Taylor, Justin Moua
+  * AUTHOR(S): Mark Taylor, Justin Moua, Samuel Barney
   *
   * PURPOSE: Test node component for sandbox enviroment.
   * 
@@ -10,6 +10,38 @@
 
 import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
+import "./LayerObjects.css";
+
+import closedLink from "../../assets/closed.png";
+import openLink from "../../assets/open.png";
+
+// Helper function to render all link indicators
+export function renderLinkIndicators(linkStates) {
+    const positionToAltText = {
+        top: "Top Link",
+        right: "Right Link",
+        bottom: "Bottom Link",
+        left: "Left Link",
+    };
+
+    return Object.entries(linkStates).map(([position, value]) => {
+        if (value === 0) {
+            return null; // No image for 0
+        }
+
+        const src = value ? closedLink : openLink; // closedLink for true, openLink for null
+        const alt = positionToAltText[position] || "Link"; // Use predefined alt text or fallback to "Link"
+
+        return (
+            <img
+                key={position} // Use position as the key
+                src={src}
+                alt={alt}
+                className={`link-indicator ${position}-link`}
+            />
+        );
+    });
+}
 
 // Dataset Object
 export function DatasetObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
@@ -56,6 +88,7 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                     />
                 </span>
             </p>
+            
             {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
@@ -63,32 +96,28 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable", linkStates = {} }) {
+
     return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                width: "60px", // Set width to 50px
-                height: "60px", // Set height to 50px
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "#4CAF50", // Optional: Add a background color
-                border: "2px solid #2E7D32", // Optional: Add a border
-                borderRadius: "5px", // Optional: Slightly rounded corners
-                cursor: "grab", // Indicate draggable behavior
-                userSelect: "none", // Prevent text selection
-            }}
-            >
+        <div
+            ref={ref}
+            id={name}
+            className={`${classNameOverride} neuron-container`}
+        >
+            {/* Draggable handle in the center */}
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Neuron</p>
             </div>
+
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates)}
         </div>
     );
 }
 
 
 // Activation Layer Object
-export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "testdraggable",}) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -103,11 +132,12 @@ export function ActivationLayerObject({ activationName, name, ref, handleRef, cl
             </p>
             {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+            
         </div>
     );
 };
 
-export function ReluObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ReluObject({ name, ref, handleRef, classNameOverride = "testdraggable",  linkStates = {}  }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -122,6 +152,7 @@ export function ReluObject({ name, ref, handleRef, classNameOverride = "testdrag
             </p>
             {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
             { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+            {renderLinkIndicators(linkStates)}
         </div>
     );
 }
