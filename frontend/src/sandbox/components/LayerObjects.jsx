@@ -12,8 +12,8 @@ import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 import "./LayerObjects.css";
 
-import closedLink from "../../assets/closed.png";
-import openLink from "../../assets/open.png";
+import closedLink from "../../assets/closedLink.svg";
+import openLink from "../../assets/openLink.svg";
 
 // Helper function to render all link indicators
 export function renderLinkIndicators(linkStates) {
