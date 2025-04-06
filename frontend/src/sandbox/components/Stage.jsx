@@ -109,9 +109,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                         draggable.top += dy;
 
                         // Explicitly update the draggable's position
-                        draggable.position();
+                        draggable.position();  
                     }
                 };
+
+                draggable.onDragStart = function () {
+                    const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    clearLinks(currentObject);
+                    //console.log("Dragging:", currentObject);
+                }
 
                 draggable.onDragEnd = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
@@ -317,6 +323,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             topLink: null,
             bottomLink: null,
             snapPoints,
+            isSnapped: false,
         };
     
         const updatedObjects = [...activeObjectsRef.current, newObject];
@@ -329,7 +336,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         const { key, ...restProps } = props; // Extract the key from props
 
         const currentObject = activeObjectsState.find(obj => obj.id === props.key);
-        console.log("Current Object:", currentObject);
+
         // Dynamically construct activeLinks based on snapPoints
         const linkStates = currentObject
             ? currentObject.snapPoints.reduce((links, point) => {
@@ -341,8 +348,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 return links;
             }, {})
             : {}; // Default to an empty object if no currentObject
-
-        console.log("Link States:", linkStates);
 
         switch (objectType) {
             case "startNode":
