@@ -17,8 +17,8 @@ import * as backend from '../backend/backend.js';
 import snapPoints from './snapPoints.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
 
-let backend_worker = null
-let model = null
+let backend_worker = null;
+let model = null;
 
 function createBackend() {
     backend.createBackendWorker();

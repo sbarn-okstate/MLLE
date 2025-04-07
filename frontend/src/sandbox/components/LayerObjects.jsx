@@ -105,7 +105,7 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
             className={`${classNameOverride} neuron-container`}
         >
             {/* Draggable handle in the center */}
-            <div ref={handleRef} className="nodeHandle">
+            <div ref={handleRef} className="neuron">
                 <p className="nodeDragText">Neuron</p>
             </div>
 
