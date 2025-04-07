@@ -5,8 +5,6 @@
   * PURPOSE: Page for the Sandbox to occupy.
   * 
   * NOTES:
-  * FIXME, in validateModel, objects don't have a type trait so I had to use object.name.startsWith
-  * to determine the type of object. This is a temporary solution and should be fixed.
   */
 
 import React, { useState, useEffect, useRef } from "react";
@@ -64,9 +62,9 @@ function stopTraining(setTrainingState) {
 
 function SandboxTest() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
-        { name: "startNode", type: "startNode", snapType: "lr" }, // Add startNode here
+        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -160,7 +158,7 @@ function SandboxTest() {
             
             // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
-                objectData.activation = getFieldValue(currentObject.name + "activation");
+                objectData.activation = currentObject.rightLink.subType;
                 currentObject = currentObject.rightLink; // move to activation object
             }
 
@@ -181,13 +179,22 @@ function SandboxTest() {
     };
 
     // localized test div add
-    function AddObject(objectType = "all") {
+    //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
+    //This is because NodeDrawer calls the AddObject function when a user selects a node.
+    function AddObject(objectType = "all", subType = "all") {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
+            relu: "lr",
+            sigmoid: "lr",
+            tanh: "lr",
+            softma: "lr",
             convolution: "lr",    // Convolution layer snaps top and bottom
+            filter3x3: "lr",
+            filter5x5: "lr",
+            filter7x7: "lr",
             output: "l",          // Output layer can only snap at the top
             neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
@@ -202,11 +209,12 @@ function SandboxTest() {
                 ...prevList,
                 {
                     id: count,
-                    objectType,
+                    objectType, //passed in from NodeDrawer.jsx
+                    subType, //passed in from NodeDrawer.jsx
                     snapType
                 }
             ];
-            console.log("Updated list:", updatedList); // Debugging log
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 
@@ -224,6 +232,10 @@ function SandboxTest() {
     return(
         <>
             <div className="sandboxContainer">
+                {/*NodeDrawer is a component that has three props passed into it 
+                    the three proprs are drawerOpen, setDrawerOpen, and createNodeFunction.
+                    createNodeFunction specifically passes the "AddObject" function into NodeDrawer.
+                    This way, NodeDrawer can call "AddObject" when a use selects a node.*/}
                 <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
                 <Stage
                     ref={stageRef}
