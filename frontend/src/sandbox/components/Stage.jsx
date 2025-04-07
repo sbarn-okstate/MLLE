@@ -26,6 +26,7 @@ import {
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
+import LinkerLine from "linkerline";
 import snapPoints from "../snapPoints.js";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
