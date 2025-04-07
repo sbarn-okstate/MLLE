@@ -229,6 +229,14 @@ function SandboxTest() {
         });
     };
 
+    const createTestLinker = () => {
+        if (stageRef.current) {
+            stageRef.current.createTestLinker();
+        } else {
+            console.error("Stage reference is not available!");
+        }
+    }
+
     return(
         <>
             <div className="sandboxContainer">
@@ -254,6 +262,7 @@ function SandboxTest() {
                             justifyContent: "flex-end",
                             gap: "10px"
                         }}>
+                        <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
                         <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState)}>Start Training</button>
