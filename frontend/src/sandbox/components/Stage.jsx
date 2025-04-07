@@ -43,19 +43,24 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
-    const [text, setText] = useState("");
 
-    var fired = false;
+    var fired = 0;
 
     function CreateTestLinker() {
-        if(fired) {
-            setText("crap");
+        if (divRefs.current.length < 2) {
+            console.error("divRefs is less than 2: a LinkerLine is not possible!");
         } else {
-            fired = true;
+            fired = fired + 1;
             console.log("Creating test LinkerLine!");
         
-            const line1 = new LinkerLine(
-                {start: divRefs.current[0], end: divRefs.current[1], endLabel: text});
+            const line1 = new LinkerLine({
+                start: divRefs.current[0],
+                end: divRefs.current[1],
+                middleLabel: LinkerLine.pathLabel("label text")});
+
+            // Looks like this is the way to set the text
+            // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
+            line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
         }
     }
 
