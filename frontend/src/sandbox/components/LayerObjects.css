@@ -15,7 +15,7 @@
 }
 
 /* Draggable handle in the center */
-.nodeHandle {
+.neuron {
     width: 50px;
     height: 50px;
     background-color: #4CAF50;
