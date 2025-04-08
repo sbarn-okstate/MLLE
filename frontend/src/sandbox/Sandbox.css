@@ -1,11 +1,11 @@
-/* SandboxTest.css
+/* Sandbox.css
   *
   * AUTHOR(S): Mark Taylor
   *
-  * PURPOSE: Stylesheet for the SandboxTest page
+  * PURPOSE: Stylesheet for the Sandbox page
   * 
   * NOTES: This file should be renamed at some point in
-  *        conjunction with SandboxTest.jsx
+  *        conjunction with Sandbox.jsx
   */
 
 :root {
@@ -121,7 +121,7 @@
     transition: all 0.1s ease-in;
 }
 
-.teststage {
+.stage {
     background-color: grey;
     position: absolute;
     overflow: hidden;
@@ -138,7 +138,7 @@
     z-index: 89001;
 }
 
-.testdraggable {
+.draggable {
     position: absolute;
     background-color: red;
     display: inline-block;

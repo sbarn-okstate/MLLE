@@ -1,4 +1,4 @@
-/* TestDiv.jsx
+/* NodeDrawer.jsx
   *
   * AUTHOR(S): Mark Taylor, Justin Moua
   *
@@ -6,7 +6,7 @@
   * 
   * NOTES: Idealy, this is drag and drop thing.
   * 
-  * - Is called by SandboxTest.jsx
+  * - Is called by Sandbox.jsx
   *     - Contains the following functions:
   *         - NodeDrawer: The main function that creates the drawer.
   *             - NodeHandleClick: Function that handles the opening and closing of the drawer.
@@ -39,7 +39,7 @@ import {
  } from './LayerObjects.jsx';
 
 //createNodeFunction is a parameter that has the "AddObject" function
-//from SandboxTest.jsx passed to it.
+//from Sandbox.jsx passed to it.
 //The return statements in particular is where 
 //we see objectType and subType being passed to the function.
 export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunction}) {
