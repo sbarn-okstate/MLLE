@@ -65,7 +65,7 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
 };
 
 // Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable"}) {
+export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -105,7 +105,7 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
             className={`${classNameOverride} neuron-container`}
         >
             {/* Draggable handle in the center */}
-            <div ref={handleRef} className="nodeHandle">
+            <div ref={handleRef} className="neuron">
                 <p className="nodeDragText">Neuron</p>
             </div>
 

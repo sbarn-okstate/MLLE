@@ -17,8 +17,8 @@ import * as backend from '../backend/backend.js';
 import snapPoints from './snapPoints.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
 
-let backend_worker = null
-let model = null
+let backend_worker = null;
+let model = null;
 
 function createBackend() {
     backend.createBackendWorker();
@@ -229,6 +229,14 @@ function SandboxTest() {
         });
     };
 
+    const createTestLinker = () => {
+        if (stageRef.current) {
+            stageRef.current.createTestLinker();
+        } else {
+            console.error("Stage reference is not available!");
+        }
+    }
+
     return(
         <>
             <div className="sandboxContainer">
@@ -254,6 +262,7 @@ function SandboxTest() {
                             justifyContent: "flex-end",
                             gap: "10px"
                         }}>
+                        <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
                         <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState)}>Start Training</button>

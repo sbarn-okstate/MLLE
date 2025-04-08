@@ -26,6 +26,7 @@ import {
  } from './LayerObjects.jsx';
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
+import LinkerLine from "linkerline";
 import snapPoints from "../snapPoints.js";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
@@ -42,6 +43,26 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
+
+    var fired = 0;
+
+    function CreateTestLinker() {
+        if (divRefs.current.length < 2) {
+            console.error("divRefs is less than 2: a LinkerLine is not possible!");
+        } else {
+            fired = fired + 1;
+            console.log("Creating test LinkerLine!");
+        
+            const line1 = new LinkerLine({
+                start: divRefs.current[0],
+                end: divRefs.current[1],
+                middleLabel: LinkerLine.pathLabel("label text")});
+
+            // Looks like this is the way to set the text
+            // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
+            line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
+        }
+    }
 
     /*
     {   activeObjects object structure
@@ -64,13 +85,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     useImperativeHandle(ref, () => ({
         getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
         getActiveObjects: () => activeObjectsRef.current,
+        createTestLinker: CreateTestLinker,
     }));
 
     // draggables do not know about state variables? so the need an external helper
     function extAction(ref) {
         console.log(`an element has called for external action: ${typeof ref}`);
     }
-    
+
     useEffect(() => {
         //console.log("divRefs:", divRefs.current);
         //console.log("handleRefs:", handleRefs.current);
@@ -97,6 +119,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
                 // Define draggable behavior
                 draggable.onMove = function () {
+                    // Update the linkerlines
+                    LinkerLine.positionAll();
+
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
 
