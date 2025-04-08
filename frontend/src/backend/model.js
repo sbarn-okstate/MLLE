@@ -55,7 +55,8 @@ export async function prepareModel({layers, dataset}, self) {
     // define loss and optimizer
     model.compile({
         loss: undefined      || datasetDefaults[dataset].loss      || defaults.LOSS,
-        optimizer: undefined || datasetDefaults[dataset].optimizer || defaults.OPTIMIZER
+        optimizer: undefined || datasetDefaults[dataset].optimizer || defaults.OPTIMIZER,
+        metrics: ['accuracy']
     });
     
     // Get the model summary as a string
@@ -107,20 +108,35 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                     self.postMessage('Training started...');
                 },
                 onEpochEnd: (epoch, logs) => {
-                    self.postMessage(`Epoch ${epoch + 1}: loss = ${logs.loss}`);
+                    const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
+                    const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
+                    self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
                     saveWeightsToSharedMemory();
                 },
                 onTrainingEnd: () => {
                     self.postMessage('Training complete!');
                 },
                 onBatchEnd: async (batch, logs) => {
+                    const batchLoss = logs.loss.toFixed(4); // Batch loss
+                    const batchAccuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Batch accuracy
+                    //self.postMessage(`Batch ${batch + 1}: loss = ${batchLoss}, accuracy = ${batchAccuracy}`);
                     await pauseResumeCallback.onBatchEnd(batch, logs);
-                }
+                },
             }
         });
     } catch (error) {
         self.postMessage(`Error during training: ${error.message}`);
     }
+}
+
+function createBatches(xsArray, ysArray, batchSize) {
+    const batches = [];
+    for (let i = 0; i < xsArray.length; i += batchSize) {
+        const xsBatch = xsArray.slice(i, i + batchSize);
+        const ysBatch = ysArray.slice(i, i + batchSize);
+        batches.push({ xs: xsBatch, ys: ysBatch });
+    }
+    return batches;
 }
 
 export function pauseTraining() {

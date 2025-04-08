@@ -34,8 +34,19 @@ import React, { forwardRef } from "react";
 import test from "../../assets/test.png";
 import "./LayerObjects.css";
 
-import closedLink from "../../assets/closed.png";
-import openLink from "../../assets/open.png";
+import openLinkLR from "../../assets/openLinkLR.svg";
+import openLinkTB from "../../assets/openLinkTB.svg";
+import closedLinkLR from "../../assets/closedLinkLR.svg";
+import closedLinkTB from "../../assets/closedLinkTB.svg";
+
+const openLinkLeft = openLinkLR;
+const openLinkRight = openLinkLR;
+const openLinkTop = openLinkTB;
+const openLinkBottom = openLinkTB;
+const closedLinkLeft = closedLinkLR;
+const closedLinkRight = closedLinkLR;
+const closedLinkTop = closedLinkTB;
+const closedLinkBottom = closedLinkTB;  
 
 // Helper function to render all link indicators
 export function renderLinkIndicators(linkStates) {
@@ -45,19 +56,34 @@ export function renderLinkIndicators(linkStates) {
         bottom: "Bottom Link",
         left: "Left Link",
     };
+    
+    const positionToSVG = {
+        top: openLinkTop,
+        bottom: openLinkBottom,
+        left: openLinkLeft,
+        right: openLinkRight,
+    };
+
+    const closedPositionToSVG = {
+        top: closedLinkTop,
+        bottom: closedLinkBottom,
+        left: closedLinkLeft,
+        right: closedLinkRight,
+    };
 
     return Object.entries(linkStates).map(([position, value]) => {
         if (value === 0) {
             return null; // No image for 0
         }
 
-        const src = value ? closedLink : openLink; // closedLink for true, openLink for null
+        // Use the correct SVG based on the position and link state
+        const src = value ? closedPositionToSVG[position] : positionToSVG[position];
         const alt = positionToAltText[position] || "Link"; // Use predefined alt text or fallback to "Link"
 
         return (
             <img
                 key={position} // Use position as the key
-                src={src}
+                src={src} // Dynamically assign the correct SVG
                 alt={alt}
                 className={`link-indicator ${position}-link`}
             />

@@ -34,6 +34,7 @@ import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
 import snapPoints from './snapPoints.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
+import Report from './components/Report.jsx';
 
 let backend_worker = null;
 let model = null;
@@ -52,7 +53,7 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, modelState) {
+function startTraining(setTrainingState, modelState, setReportContent) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         createModel();
         //FIXME: This is just a test
@@ -61,14 +62,26 @@ function startTraining(setTrainingState, modelState) {
         let problemType = 'classification';
         backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
         setTrainingState('training');
+        setReportContent([
+            "Training started!",
+            "Click 'Pause Training' to pause.",
+        ]);
     } else {
         console.error("Chain of objects not validated!");
+        setReportContent([
+            "Chain of objects not validated!",
+            "Please validate your model before starting training.",
+        ]);
     }
 }
 
-function pauseTraining(setTrainingState) {
+function pauseTraining(setTrainingState, setReportContent) {
     backend_worker.postMessage({func: 'pauseTraining'});
     setTrainingState('paused');
+    setReportContent([
+        "Training paused.",
+        "Click 'Resume Training' to continue.",
+    ]);
 }
 
 function resumeTraining(setTrainingState) {
@@ -76,9 +89,13 @@ function resumeTraining(setTrainingState) {
     setTrainingState('training');
 }
 
-function stopTraining(setTrainingState) {
+function stopTraining(setTrainingState, setReportContent) {
     backend_worker.postMessage({func: 'stopTraining'});
     setTrainingState('stopped');
+    setReportContent([
+        "Welcome to the Sandbox!",
+        "Validate your model to start training.",
+    ]);
 }
 
 function SandboxTest() {
@@ -91,6 +108,10 @@ function SandboxTest() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [trainingState, setTrainingState] = useState('stopped');
     const [modelState, setModelState] = useState('invalid');
+    const [reportContent, setReportContent] = useState([
+        "Welcome to the Sandbox!",
+        "Validate your model to start training.",
+    ]);
 
     const stageRef = useRef(null); // Reference to the stage component
 
@@ -129,7 +150,7 @@ function SandboxTest() {
     
         // Traverse the left link for the dataset object
         let currentObject = startNode.leftLink;
-        if (currentObject.objectType === "dataset") {
+        if (currentObject && currentObject.objectType === "dataset") {
             //const datasetValue = getFieldValue(currentObject.name + "dataset");
             const datasetValue = currentObject.datasetFileName;
             chain.push({
@@ -138,6 +159,10 @@ function SandboxTest() {
             });
         } else {
             console.error("No dataset object linked to the left of the start node!");
+            setReportContent([
+                "Missing dataset object.",
+                "Please link a dataset object to the left of the start node.",
+            ]);
             return chain;
         }
     
@@ -150,6 +175,10 @@ function SandboxTest() {
             if (currentObject.objectType === "activation") {
                 console.log("Invalid activation function");
                 setModelState('invalid');
+                setReportContent([
+                    "Invalid activation function.",
+                    "Activation functions must be preceded by a layer.",
+                ]);
                 break;
             }
  
@@ -189,6 +218,10 @@ function SandboxTest() {
             // Handle Output Layer
             if (!currentObject.rightLink && currentObject.objectType == "output") {
                 setModelState('valid');
+                setReportContent([
+                    "Model validated successfully!",
+                    "You can now start training your model.",
+                ]);
                 console.log("Model validated successfully!");
                 break;
             } else {
@@ -285,6 +318,7 @@ function SandboxTest() {
                     updateDrags={UpdateDraggablePos} 
                     drawerOpen={drawerOpen}
                 />
+                <Report title="Training Report" content={reportContent} />
                 <div className="bottomBar">
                     <Link to="/"><button className="sandboxButton">Go Back</button></Link>
                     <div style={{
@@ -297,18 +331,18 @@ function SandboxTest() {
                         <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
                         <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState)}>Start Training</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setReportContent)}>Start Training</button>
                         )}
                         {trainingState === 'training' && (
                             <>
-                                <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState)}>Pause Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState)}>Stop Training</button>
+                                <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setReportContent)}>Pause Training</button>
+                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setReportContent)}>Stop Training</button>
                             </>
                         )}
                         {trainingState === 'paused' && (
                             <>
                                 <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState)}>Stop Training</button>
+                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setReportContent)}>Stop Training</button>
                             </>
                         )}
                     </div>

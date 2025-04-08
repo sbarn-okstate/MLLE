@@ -157,6 +157,7 @@
     height: 20px;
     overflow: hidden;
     transition: all 0.2s ease-in;
+    z-index: 100;
 }
 
 .nodeHandle:hover {
