@@ -14,6 +14,7 @@ import { data } from 'react-router';
 let model = null;
 let sharedBuffer = null;
 let weightArray = null;
+let metricsArray = null; // Stores loss and accuracy
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
 
@@ -111,7 +112,9 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                     const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
                     const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
                     self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
-                    saveWeightsToSharedMemory();
+        
+                    // Save weights, epoch, loss, and accuracy to shared memory
+                    saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
                 },
                 onTrainingEnd: () => {
                     self.postMessage('Training complete!');
@@ -157,12 +160,15 @@ export function stopTraining() {
     }
 }
 
-function initSharedBuffer(){
-    const bufferSize = calculateBufferSize();
-    sharedBuffer = new SharedArrayBuffer(bufferSize);
-    weightArray = new Float32Array(sharedBuffer);
-}
+function initSharedBuffer() {
+    const weightsBufferSize = calculateBufferSize(); // Size for weights
+    const metricsBufferSize = 12; // 4 bytes for epoch + 4 bytes for loss + 4 bytes for accuracy
+    const totalBufferSize = weightsBufferSize + metricsBufferSize;
 
+    sharedBuffer = new SharedArrayBuffer(totalBufferSize);
+    weightArray = new Float32Array(sharedBuffer, 0, weightsBufferSize / 4); // First part for weights
+    metricsArray = new Float32Array(sharedBuffer, weightsBufferSize, 3); // Second part for epoch, loss, and accuracy
+}
 function calculateBufferSize() {
     let totalParams = 0;
     layerSizes = model.layers.map(layer => {
@@ -174,17 +180,24 @@ function calculateBufferSize() {
     return totalParams * 4; // 4 bytes per float32
 }
 
-function saveWeightsToSharedMemory() {
+function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
+    // Save weights
     let offset = 0;
-    model.layers.forEach((layer, layerIndex) => {
-        layer.getWeights().forEach(tensor => {
+    model.layers.forEach((layer) => {
+        layer.getWeights().forEach((tensor) => {
             const data = tensor.dataSync();
             weightArray.set(data, offset);
             offset += data.length;
         });
     });
 
-    self.postMessage({ func: "weightsUpdated" });
+    // Save epoch, loss, and accuracy
+    metricsArray[0] = epoch; // Save epoch
+    metricsArray[1] = parseFloat(loss); // Save loss
+    metricsArray[2] = parseFloat(accuracy); // Save accuracy
+
+    // Notify the frontend that weights, loss, and accuracy have been updated
+    self.postMessage({ func: "weightsAndMetricsUpdated"});
 }
 
 class PauseResumeCallback extends tf.Callback {
