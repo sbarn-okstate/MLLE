@@ -1,4 +1,4 @@
-/* SandboxTest.jsx
+/* Sandbox.jsx
   *
   * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
@@ -36,11 +36,10 @@ import {
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
-import snapPoints from "../snapPoints.js";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
-//SandboxTest.jsx uses this component~
-//elements is passed in as a prop from SandboxTest.jsx
+//Sandbox.jsx uses this component~
+//elements is passed in as a prop from Sandbox.jsx
 //and contains the following:
 //  {
 //      id: count,
@@ -439,7 +438,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
 
     return (
-        <div id="stage" className="teststage">
+        <div id="stage" className="stage">
             {elements.map((item, index) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName,{
                     key: index,

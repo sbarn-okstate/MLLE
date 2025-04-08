@@ -1,8 +1,8 @@
-/* TestDiv.jsx
+/* LayerObjects.jsx
   *
   * AUTHOR(S): Mark Taylor, Justin Moua, Samuel Barney
   *
-  * PURPOSE: Test node component for sandbox enviroment.
+  * PURPOSE: Node components for sandbox enviroment.
   * 
   * NOTES: Once actual nodes are created, this should be removed.
   *        These are called from NodeDrawer.jsx. 
@@ -31,7 +31,6 @@
   */
 
 import React, { forwardRef } from "react";
-import test from "../../assets/test.png";
 import "./LayerObjects.css";
 
 import openLinkLR from "../../assets/openLinkLR.svg";
@@ -94,7 +93,7 @@ export function renderLinkIndicators(linkStates) {
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -109,12 +108,12 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "testd
                     </select>
                 </span>
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
                     style={{
@@ -124,23 +123,15 @@ export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = 
                 <p className="nodeDragText">Dataset</p>
             </div>
             <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
-                {/*
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-                */}
+                
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
 
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
                     style={{
@@ -150,22 +141,14 @@ export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOv
                 <p className="nodeDragText">Dataset</p>
             </div>
             <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Heart Prediction Dataset<br/><br/>heart.csv
-                {/*
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-                */}
+                
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
 
-export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
                     style={{
@@ -175,22 +158,14 @@ export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOver
                 <p className="nodeDragText">Dataset</p>
             </div>
             <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Boston Housing Dataset<br/><br/>boston-housing-train.csv
-                {/*
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-                */}
+                
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
 
-export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
                     style={{
@@ -200,23 +175,15 @@ export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "
                 <p className="nodeDragText">Dataset</p>
             </div>
             <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> MNIST Dataset<br/><br/>mnist_train.csv
-                {/*
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-                */}
+                
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
 
 
-export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
                     style={{
@@ -226,17 +193,9 @@ export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverr
                 <p className="nodeDragText">Dataset</p>
             </div>
             <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Fashion MNIST Dataset<br/><br/>fashion-mnist_train.csv
-                {/*
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-                */}
+                
             </p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+
         </div>
     );
 };
@@ -244,7 +203,7 @@ export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverr
 
 //================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================
 // Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable", text = "placeholder" }) {
+export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "draggable", text = "placeholder" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -267,15 +226,12 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "te
                     />
                 </span>
             </p>
-            
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdraggable", linkStates = {} }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "draggable", linkStates = {} }) {
 
     return (
         <div
@@ -298,7 +254,7 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "testdr
 //================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================
 
 // Activation Layer Object
-export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "testdraggable",}) {
+export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "draggable",}) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -311,14 +267,11 @@ export function ActivationLayerObject({ activationName, name, ref, handleRef, cl
             <p>
                 activation type: {activationName}
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
-            
         </div>
     );
 };
 
-export function ReluObject({ name, ref, handleRef, classNameOverride = "testdraggable",  linkStates = {}  }) {
+export function ReluObject({ name, ref, handleRef, classNameOverride = "draggable",  linkStates = {}  }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -331,14 +284,14 @@ export function ReluObject({ name, ref, handleRef, classNameOverride = "testdrag
             <p>
                 ReLu
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
+            
+
             {renderLinkIndicators(linkStates)}
         </div>
     );
 }
 
-export function SigmoidObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function SigmoidObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -351,13 +304,11 @@ export function SigmoidObject({ name, ref, handleRef, classNameOverride = "testd
             <p>
                 Sigmoid
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 }
 
-export function TanhObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function TanhObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -370,13 +321,11 @@ export function TanhObject({ name, ref, handleRef, classNameOverride = "testdrag
             <p>
                 Tanh
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 }
 
-export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -389,8 +338,6 @@ export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "testd
             <p>
                 Softmax
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 }
@@ -398,7 +345,7 @@ export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "testd
 
 //================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================
 // // Convolution Layer Object
-export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -410,14 +357,12 @@ export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classN
             </div>
             <p>{filterSize} Filter size
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 //Convolution Layer Object
-export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -429,14 +374,12 @@ export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverri
             </div>
             <p>Filter Size of 3x3
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Convolution Layer Object
-export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -448,14 +391,12 @@ export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverri
             </div>
             <p>Filter Size of 5x5
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 
 // Convolution Layer Object
-export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -467,15 +408,13 @@ export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverri
             </div>
             <p>Filter Size of 7x7
             </p>
-            {/*<input name={name + "WeightText"} id={name + "WeightText"} style={{width: "95%"}}/>*/}
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };
 //================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================
 
 // Output Layer Object
-export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "testdraggable" }) {
+export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
@@ -486,7 +425,6 @@ export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "t
                 <p className="nodeDragText">Output</p>
             </div>
             <p>Output Layer</p>
-            { /*<img src={test} width="100" height="100" style={{ borderRadius: "5px" }} /> */ }
         </div>
     );
 };

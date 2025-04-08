@@ -1,4 +1,4 @@
-/* SandboxTest.jsx
+/* Sandbox.jsx
   *
   * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
   *
@@ -6,14 +6,14 @@
   * 
   * NOTES:
   * 
-  *     SandboxTest.jsx Strcture:
+  *     Sandbox.jsx Strcture:
   * *       - createBackend(): Creates the backend worker.
   * *       - createModel(): Creates the model for the backend worker.  
   * *       - startTraining(): Starts the training process.
   * *       - pauseTraining(): Pauses the training process.
   * *       - resumeTraining(): Resumes the training process.
   * *       - stopTraining(): Stops the training process.
-  * *       - SandboxTest(): The main function that creates the sandbox page.
+  * *       - Sandbox(): The main function that creates the sandbox page.
   * * *             - validateModel(): Validates the model by checking the chain of linked objects.
   * * *             - AddObject(): Adds an object to the list of objects on the stage.
   * * *                     - Takes in three optional parameters: objectType, subType, and datasetFileName.
@@ -28,11 +28,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { data, Link } from "react-router";
 import PlainDraggable from "plain-draggable";
-import './SandboxTest.css';
-import SandboxController from './SandboxController.jsx';
+import './Sandbox.css';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
-import snapPoints from './snapPoints.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
 import Report from './components/Report.jsx';
 
@@ -98,7 +96,7 @@ function stopTraining(setTrainingState, setReportContent) {
     ]);
 }
 
-function SandboxTest() {
+function Sandbox() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
@@ -351,4 +349,4 @@ function SandboxTest() {
         </>
     );
 }
-export default SandboxTest
+export default Sandbox
