@@ -11,9 +11,10 @@
 let backend_worker = null;
 let sharedBuffer;
 let weightArray;
+let metricsArray; // Stores loss and accuracy
 let layerSizes;
 
-export function createBackendWorker() {
+export function createBackendWorker(updateMetricsCallback) {
     if (!backend_worker) {
         backend_worker = new Worker(new URL("./worker.js", import.meta.url), {type: 'module'});
         console.log("Backend worker created.");
@@ -33,11 +34,21 @@ export function createBackendWorker() {
                     case "sharedBuffer":
                         sharedBuffer = args.sharedBuffer;
                         layerSizes = args.layerSizes;
-                        weightArray = new Float32Array(sharedBuffer);
+
+                        const weightsBufferSize = layerSizes.reduce((sum, size) => sum + size, 0) * 4; // Total size of weights in bytes
+                        const metricsBufferSize = 12; // 4 bytes for epoch + 4 bytes for loss + 4 bytes for accuracy
+                        weightArray = new Float32Array(sharedBuffer, 0, weightsBufferSize / 4);
+                        metricsArray = new Float32Array(sharedBuffer, weightsBufferSize, metricsBufferSize / 4);
                         console.log("Shared buffer initialized.");
                         break;
-                    case "weightsUpdated":
-                        console.log("Weights updated:", getLayerWeights());
+                    case "weightsAndMetricsUpdated":
+                        const { weights, epoch, loss, accuracy } = getWeightsAndMetrics();
+                        //console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy);
+                    
+                        if (updateMetricsCallback) {
+                            //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
+                            updateMetricsCallback(epoch, loss, accuracy); // Pass epoch, loss, and accuracy
+                        }
                         break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
@@ -53,13 +64,22 @@ export function createBackendWorker() {
     //console.log('Backend worker already created.');
 }
 
-function getLayerWeights() {
+function getWeightsAndMetrics() {
     let offset = 0;
-    return layerSizes.map(layerSize => {
+
+    // Extract weights for each layer
+    const weights = layerSizes.map(layerSize => {
         const layerWeights = weightArray.slice(offset, offset + layerSize);
         offset += layerSize;
         return layerWeights; // Float32Array of this layer’s weights
     });
+
+    // Extract epoch, loss, and accuracy from the shared buffer
+    const epoch = metricsArray[0]; // Epoch is stored first
+    const loss = metricsArray[1]; // Loss is stored after the epoch
+    const accuracy = metricsArray[2]; // Accuracy is stored after the loss
+
+    return { weights, epoch, loss, accuracy };
 }
 
 export function getBackendWorker(){
