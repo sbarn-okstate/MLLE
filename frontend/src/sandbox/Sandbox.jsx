@@ -38,8 +38,8 @@ import Report from './components/Report.jsx';
 let backend_worker = null;
 let model = null;
 
-function createBackend(updateAccuracy) {
-    backend.createBackendWorker(updateAccuracy);
+function createBackend(updateMetricsCallback, updateWeightsCallback) {
+    backend.createBackendWorker(updateMetricsCallback, updateWeightsCallback);
     backend_worker = backend.getBackendWorker();
 }
 
@@ -122,6 +122,15 @@ function Sandbox() {
         UpdateDraggablePos();
     })
 
+    const updateMetricsCallback = (epoch, loss, accuracy) => {
+        //console.log("Epoch in Sandbox.jsx is:", epoch);
+        //console.log("Loss in Sandbox.jsx is:", loss);
+        //console.log("Accuracy in Sandbox.jsx is:", accuracy);
+
+        updateGraphData(epoch, accuracy); // Pass accuracy to the graph
+        updateAccuracy(accuracy); // Update the accuracy percentage
+    }
+
     // Function to update the graph data in the Report component
     const updateGraphData = (epoch, accuracy) => {
         if (reportRef.current) {
@@ -136,15 +145,13 @@ function Sandbox() {
         }
     };
 
-    createBackend((epoch, loss, accuracy) => {
-        //console.log("Epoch in Sandbox.jsx is:", epoch);
-        //console.log("Loss in Sandbox.jsx is:", loss);
-        //console.log("Accuracy in Sandbox.jsx is:", accuracy);
-    
-        updateGraphData(epoch, accuracy); // Pass accuracy to the graph
-        updateAccuracy(accuracy); // Update the accuracy percentage
-    });
+    const updateWeightsCallback = (weights) => {
+        //console.log("Weights updated:", weights);
+    }
 
+    createBackend(updateMetricsCallback, updateWeightsCallback);
+
+    
 
     const validateModel = () => {
         if (!stageRef.current) {

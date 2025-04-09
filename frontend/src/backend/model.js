@@ -111,7 +111,7 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                 onEpochEnd: (epoch, logs) => {
                     const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
                     const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
-                    self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
+                    //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
         
                     // Save weights, epoch, loss, and accuracy to shared memory
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);

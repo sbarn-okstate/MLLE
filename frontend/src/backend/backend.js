@@ -14,7 +14,7 @@ let weightArray;
 let metricsArray; // Stores loss and accuracy
 let layerSizes;
 
-export function createBackendWorker(updateMetricsCallback) {
+export function createBackendWorker(updateMetricsCallback, updateWeightsCallback) {
     if (!backend_worker) {
         backend_worker = new Worker(new URL("./worker.js", import.meta.url), {type: 'module'});
         console.log("Backend worker created.");
@@ -44,10 +44,13 @@ export function createBackendWorker(updateMetricsCallback) {
                     case "weightsAndMetricsUpdated":
                         const { weights, epoch, loss, accuracy } = getWeightsAndMetrics();
                         //console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy);
-                    
                         if (updateMetricsCallback) {
                             //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
                             updateMetricsCallback(epoch, loss, accuracy); // Pass epoch, loss, and accuracy
+                        }
+                        if (updateWeightsCallback) {
+                            //console.log("Updating weights callback with:", { weights });
+                            updateWeightsCallback(weights); // Pass weights
                         }
                         break;
                     default:
