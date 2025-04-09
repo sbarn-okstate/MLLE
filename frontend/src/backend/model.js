@@ -71,7 +71,7 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(fileName, problemType, self, batchSize = 64, epochs = 1000) {
+export async function trainModel(fileName, problemType, self, batchSize = 64, epochs = 5) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -131,11 +131,8 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
                 },
                 onTrainingEnd: () => {
-                    // Serialize the entire training metrics array into JSON
-                    const serializedMetrics = JSON.stringify(trainingMetrics);
-                    // Send the final JSON to the frontend
+                    //console.log("✅ Reached onTrainingEnd callback");
                     self.postMessage("Training complete!");
-                    console.log("Training complete. Metrics:", serializedMetrics);
                 },
                 onBatchEnd: async (batch, logs) => {
                     const batchLoss = logs.loss.toFixed(4); // Batch loss
@@ -145,6 +142,11 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                 },
             }
         });
+        // Serialize the entire training metrics array into JSON
+        // Send the final JSON to the frontend
+        const serializedMetrics = JSON.stringify(trainingMetrics);
+        console.log("Training complete. Metrics:", serializedMetrics);
+        console.log("🚀 model.fit completed without error");
     } catch (error) {
         self.postMessage(`Error during training: ${error.message}`);
     }
