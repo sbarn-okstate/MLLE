@@ -101,6 +101,9 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
 
         pauseResumeCallback = new PauseResumeCallback();
 
+        // Array to store epoch data
+        let trainingMetrics = [];
+
         await model.fit(xsTensor, ysTensor, {
             epochs: epochs,
             batchSize: batchSize,
@@ -111,13 +114,28 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                 onEpochEnd: (epoch, logs) => {
                     const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
                     const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
+
+                    // Push the epoch data into the array
+                    trainingMetrics.push({
+                        epoch: epoch + 1,
+                        loss: parseFloat(loss),
+                        accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
+                    });
+
+                    // Optionally, log the JSON string for debugging
+                    console.log(JSON.stringify(trainingMetrics));
+
                     self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
         
                     // Save weights, epoch, loss, and accuracy to shared memory
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
                 },
                 onTrainingEnd: () => {
-                    self.postMessage('Training complete!');
+                    // Serialize the entire training metrics array into JSON
+                    const serializedMetrics = JSON.stringify(trainingMetrics);
+                    // Send the final JSON to the frontend
+                    self.postMessage("Training complete!");
+                    console.log("Training complete. Metrics:", serializedMetrics);
                 },
                 onBatchEnd: async (batch, logs) => {
                     const batchLoss = logs.loss.toFixed(4); // Batch loss
