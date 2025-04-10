@@ -71,7 +71,7 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(fileName, problemType, self, batchSize = 64, epochs = 5) {
+export async function trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 5) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -101,7 +101,10 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
 
         pauseResumeCallback = new PauseResumeCallback();
 
-        // Array to store epoch data
+        //Used to store training metrics.
+        //Will be turned into a .json later.
+        //The link below talks about serializing arrays
+        //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
         let trainingMetrics = [];
 
         await model.fit(xsTensor, ysTensor, {
@@ -122,10 +125,9 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
                         accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
                     });
 
-                    // Optionally, log the JSON string for debugging
-                    console.log(JSON.stringify(trainingMetrics));
-
-                    self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
+                    //console.log(JSON.stringify(trainingMetrics));
+                    console.log("training metrics:", trainingMetrics)
+                    //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
         
                     // Save weights, epoch, loss, and accuracy to shared memory
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
@@ -144,8 +146,48 @@ export async function trainModel(fileName, problemType, self, batchSize = 64, ep
         });
         // Serialize the entire training metrics array into JSON
         // Send the final JSON to the frontend
-        const serializedMetrics = JSON.stringify(trainingMetrics);
-        console.log("Training complete. Metrics:", serializedMetrics);
+        //trainingMetrics.push(chainOfObjects);
+        //get the length of chainOfObjects
+
+        let cob = [];
+        let tm = [];
+
+        for (let i = 0; i < trainingMetrics.length; i++) {
+            tm.push(trainingMetrics[i]);
+        }
+        for (let i = 0; i < chainOfObjects.length; i++){
+            cob.push(chainOfObjects[i]);
+        }
+
+        let modelInfo = [{
+            "chan of objects": cob,
+            "training metrics": tm
+        }]
+        console.log("modelInfo is: ", modelInfo);
+
+        self.postMessage({
+            func: 'saveFile',
+            args: {
+                fileName: 'modelInfo.json',
+                modelInfo: modelInfo,
+            },
+        });
+        // for (let i = 0; i < chainOfObjects.length; i++){
+        //     trainingMetrics.push(chainOfObjects[i]);
+        // }
+        // const serializedMetrics = JSON.stringify(trainingMetrics);
+        // console.log("Training complete. Metrics:", serializedMetrics);
+        // console.log("chainOfObjects is: ", chainOfObjects);
+
+        // self.postMessage({
+        //     func: 'saveFile',
+        //     args: {
+        //         fileName: 'training_metrics.json',
+        //         data: serializedMetrics,
+        //         chainOfObjects: chainOfObjects
+        //     },
+        // });
+
         console.log("🚀 model.fit completed without error");
     } catch (error) {
         self.postMessage(`Error during training: ${error.message}`);

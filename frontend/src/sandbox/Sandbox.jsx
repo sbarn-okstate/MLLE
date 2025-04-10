@@ -52,14 +52,14 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, modelState, setStatusContent) {
+function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         createModel();
         //FIXME: This is just a test
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
-        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType}});
+        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}});
         setTrainingState('training');
         setStatusContent([
             "Training started!",
@@ -102,7 +102,11 @@ function Sandbox() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
-        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
+        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here,
+        {id: 1, objectType: 'dataset', subType: '.csv', datasetFileName: 'synthetic_normal_binary_classification_500.csv', snapType: 'r'},
+        {id: 2, objectType: 'neuron', subType: 'all', datasetFileName: 'none', snapType: 'all'},
+        {id: 3, objectType: 'activation', subType: 'sigmoid', datasetFileName: 'none', snapType: 'lr'},
+        {id: 4, objectType: 'output', subType: 'all', datasetFileName: 'none', snapType: 'l'}
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -357,7 +361,7 @@ function Sandbox() {
                         <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
                         <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
                         {trainingState === 'stopped' && (
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent)}>Start Training</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
                         )}
                         {trainingState === 'training' && (
                             <>

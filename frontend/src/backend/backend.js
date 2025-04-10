@@ -6,6 +6,14 @@
  * in the main thread to recieve messages from the worker thread.
  * 
  * NOTES: None
+ * 
+ * TODO (4/10/2025 by Justin Moua): 
+ * - Put "pretrained model" (.json file of chainOfObjects and model hyperparamters)
+ *   into public folder. (Before doing so, create a "JSON" folder in the public folder.)
+ * - Validate that the model created via GUI matches up with model founded in the JSON file.
+ *     - Will probably have to make loops to check through the .json file . 
+ * - If the step before is successful, then read the training information
+ *   and try to display it on the graph.
  */
 
 let backend_worker = null;
@@ -13,6 +21,9 @@ let sharedBuffer;
 let weightArray;
 let metricsArray; // Stores loss and accuracy
 let layerSizes;
+let fileName;
+let data;
+let modelInfo;
 
 export function createBackendWorker(updateMetricsCallback) {
     if (!backend_worker) {
@@ -49,6 +60,28 @@ export function createBackendWorker(updateMetricsCallback) {
                             //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
                             updateMetricsCallback(epoch, loss, accuracy); // Pass epoch, loss, and accuracy
                         }
+                        break;
+                    //Used for saving the model to a file.
+                    case "saveFile":
+                        //console.log("backend.js:")
+                        //serializing to json
+                        fileName = args.fileName;
+                        //console.log("fileName", fileName);
+
+                        modelInfo = args.modelInfo;
+                        //console.log("data", data);
+                        //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
+                        const serializedData = JSON.stringify(modelInfo); // No pretty print
+
+                        const blob = new Blob([serializedData], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
                         break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
