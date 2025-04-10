@@ -347,6 +347,7 @@ function Sandbox() {
                     setDrags={setDraggables} 
                     updateDrags={UpdateDraggablePos} 
                     drawerOpen={drawerOpen}
+                    modelState={modelState} // Might not be needed in the future, used for 
                 />
                 <div className="topRightContainer">
                     <Status title="Training Status" content={statusContent} />

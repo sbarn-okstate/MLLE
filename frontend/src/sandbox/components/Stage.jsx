@@ -47,28 +47,41 @@ import LinkerLine from "linkerline";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState }, ref) => {
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
 
-    var fired = 0;
+    //var fired = 0; // test
 
     function CreateTestLinker() {
-        if (divRefs.current.length < 2) {
-            console.error("divRefs is less than 2: a LinkerLine is not possible!");
-        } else {
-            fired = fired + 1;
-            console.log("Creating test LinkerLine!");
+        // if (divRefs.current.length < 2) {
+        //     console.error("divRefs is less than 2: a LinkerLine is not possible!");
+        // } else {
+        //     fired = fired + 1;
+        //     console.log("Creating test LinkerLine!");
         
-            const line1 = new LinkerLine({
-                start: divRefs.current[0],
-                end: divRefs.current[1],
-                middleLabel: LinkerLine.pathLabel("label text")});
+        //     const line1 = new LinkerLine({
+        //         start: divRefs.current[0],
+        //         end: divRefs.current[1],
+        //         middleLabel: LinkerLine.pathLabel("label text")});
 
-            // Looks like this is the way to set the text
-            // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
-            line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
+        //     // Looks like this is the way to set the text
+        //     // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
+        //     line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
+        // }
+
+        // We need to see if the model is valid
+        if(modelState === `valid`) {
+            //
+            console.info(`LinkerLines: Model is validated! Creating lines!`);
+
+            // Find all neurons to get create LinkerLines to and fro
+            // Start node has to exist if the model validated
+            const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
+            console.log(`type of startNode: ${typeof(startNode)}; `);
+
+            let currentObject = startNode.leftLink;
         }
     }
 
