@@ -181,6 +181,11 @@
     display: inline;
     color: white;
     font-size: 12px;
+    user-select: none;
+}
+
+.nodeText {
+    user-select: none;
 }
 
 .topRightContainer {

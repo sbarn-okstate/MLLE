@@ -4,7 +4,7 @@ export default function StartNode({ref, handleRef, name, classNameOverride}) {
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Start</p>
             </div>
-            <p>Start here</p>
+            <p className={"nodeText"}>Start here</p>
         </div>
     )
 }
