@@ -14,6 +14,7 @@
   * *       - resumeTraining(): Resumes the training process.
   * *       - stopTraining(): Stops the training process.
   * *       - Sandbox(): The main function that creates the sandbox page.
+  * 
   * * *             - validateModel(): Validates the model by checking the chain of linked objects.
   * * *             - AddObject(): Adds an object to the list of objects on the stage.
   * * *                     - Takes in three optional parameters: objectType, subType, and datasetFileName.
@@ -39,6 +40,7 @@ let backend_worker = null;
 let model = null;
 
 function createBackend(updateAccuracy) {
+    //calls .createBackendWorker from backend.js
     backend.createBackendWorker(updateAccuracy);
     backend_worker = backend.getBackendWorker();
 }
@@ -103,10 +105,16 @@ function Sandbox() {
     const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
         { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here,
-        {id: 1, objectType: 'dataset', subType: '.csv', datasetFileName: 'synthetic_normal_binary_classification_500.csv', snapType: 'r'},
-        {id: 2, objectType: 'neuron', subType: 'all', datasetFileName: 'none', snapType: 'all'},
-        {id: 3, objectType: 'activation', subType: 'sigmoid', datasetFileName: 'none', snapType: 'lr'},
-        {id: 4, objectType: 'output', subType: 'all', datasetFileName: 'none', snapType: 'l'}
+        //Below lines are for quick debugging/testing purposes.
+        // {id: 1, objectType: 'dataset', subType: '.csv', datasetFileName: 'synthetic_normal_binary_classification_500.csv', snapType: 'r'},
+        // {id: 2, objectType: 'neuron', subType: 'all', datasetFileName: 'none', snapType: 'all'},
+        // {id: 3, objectType: 'activation', subType: 'sigmoid', datasetFileName: 'none', snapType: 'lr'},
+        // {id: 4, objectType: 'output', subType: 'all', datasetFileName: 'none', snapType: 'l'}
+        
+        
+        // { id: 1, objectType: 'dataset', subType: '.csv', datasetFileName: 'synthetic_normal_binary_classification_500.csv', snapType: 'r' },
+        // {id: 2, objectType: 'output', subType: 'all', datasetFileName: 'none', snapType: 'l'}
+
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -259,6 +267,10 @@ function Sandbox() {
 
         model = chain;
         console.log("Chain of objects:", chain);
+
+        backend_worker.postMessage({ func: 'validateModel', args: { model } });
+        
+        
         return chain;
     };
 
@@ -359,7 +371,9 @@ function Sandbox() {
                             gap: "10px"
                         }}>
                         <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
-                        <button className="sandboxButton" onClick={validateModel}>Validate Model</button>
+                        {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
+                        <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
                         )}

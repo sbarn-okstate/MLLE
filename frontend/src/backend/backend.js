@@ -8,11 +8,11 @@
  * NOTES: None
  * 
  * TODO (4/10/2025 by Justin Moua): 
- * - Put "pretrained model" (.json file of chainOfObjects and model hyperparamters)
- *   into public folder. (Before doing so, create a "JSON" folder in the public folder.)
- * - Validate that the model created via GUI matches up with model founded in the JSON file.
+ * - (DONE) Put "pretrained model" (.json file of chainOfObjects and model hyperparamters)
+ *   into public folder. (Before doing so, create a "JSON" folder in the public folder.) 
+ * -(DONE) Validate that the model created via GUI matches up with model founded in the JSON file.
  *     - Will probably have to make loops to check through the .json file . 
- * - If the step before is successful, then read the training information
+ * - (NOT DONE) If the step before is successful, then read the training information
  *   and try to display it on the graph.
  */
 
@@ -62,17 +62,19 @@ export function createBackendWorker(updateMetricsCallback) {
                         }
                         break;
                     //Used for saving the model to a file.
+                    //This gets called from model.js in trainModel().
                     case "saveFile":
-                        //console.log("backend.js:")
-                        //serializing to json
+                        //Obtain file name and model information
+                        //Model information includes epoch, loss, accuracy, and weights.
                         fileName = args.fileName;
-                        //console.log("fileName", fileName);
-
                         modelInfo = args.modelInfo;
-                        //console.log("data", data);
+
+                        //Serialize data to JSON
                         //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
                         const serializedData = JSON.stringify(modelInfo); // No pretty print
 
+                        //==========Needs to be removed when creating the end product=======
+                        //Used for downloading the serialized data as a .JSON.
                         const blob = new Blob([serializedData], { type: 'application/json' });
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
@@ -82,6 +84,8 @@ export function createBackendWorker(updateMetricsCallback) {
                         a.click();
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
+                        //==========Needs to be removed when creating the end product=======
+
                         break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
