@@ -23,6 +23,7 @@
 
 .graphText {
     text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.7);
+    transition: color 0.1s linear;
 }
 
 .drawerDiv {
