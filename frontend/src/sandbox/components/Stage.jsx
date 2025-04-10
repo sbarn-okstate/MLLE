@@ -80,7 +80,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                     lines.push(
                         new LinkerLine({
                             start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                            end: divRefs.current[currentObject.id],
+                            //end: LinkerLine.PointAnchor(divRefs.current[currentObject.id], {x: 25, y: `50%`}),
+                            end: handleRefs.current[currentObject.id],
                             middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                             path: `straight`}));
                     lines[lines.length - 1].name = `line${lines.length - 1}`;
@@ -98,7 +99,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         lines.push(
                             new LinkerLine({
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                                end: divRefs.current[currentUp.topLink.id],
+                                //end: LinkerLine.PointAnchor(divRefs.current[currentUp.topLink.id], {x: 25, y: `50%`}),
+                                end: handleRefs.current[currentUp.topLink.id],
                                 middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
@@ -115,7 +117,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         lines.push(
                             new LinkerLine({
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                                end: divRefs.current[currentDown.bottomLink.id],
+                                //end: LinkerLine.PointAnchor(divRefs.current[currentDown.bottomLink.id], {x: 25, y: `50%`}),
+                                end: handleRefs.current[currentDown.bottomLink.id],
                                 middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
