@@ -82,7 +82,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                             start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
                             //end: LinkerLine.PointAnchor(divRefs.current[currentObject.id], {x: 25, y: `50%`}),
                             end: handleRefs.current[currentObject.id],
-                            middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                            endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                             path: `straight`}));
                     lines[lines.length - 1].name = `line${lines.length - 1}`;
                     lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -101,7 +101,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
                                 //end: LinkerLine.PointAnchor(divRefs.current[currentUp.topLink.id], {x: 25, y: `50%`}),
                                 end: handleRefs.current[currentUp.topLink.id],
-                                middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
                         lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -119,7 +119,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
                                 //end: LinkerLine.PointAnchor(divRefs.current[currentDown.bottomLink.id], {x: 25, y: `50%`}),
                                 end: handleRefs.current[currentDown.bottomLink.id],
-                                middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
                         lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -127,6 +127,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         currentDown = currentDown.bottomLink;
                     }
                 }
+
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
