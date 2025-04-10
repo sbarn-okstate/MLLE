@@ -48,6 +48,7 @@ import LinkerLine from "linkerline";
 //      snapType
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
+    const stageRef = useRef(null);
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
@@ -91,6 +92,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
 
     // 2. Expose startNode and activeObjects via the ref
     useImperativeHandle(ref, () => ({
+        getStageElement: () => stageRef.current,
         getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
         getActiveObjects: () => activeObjectsRef.current,
         createTestLinker: CreateTestLinker,
@@ -117,12 +119,18 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
+                console.log("Draggable:", draggable);
+                console.log("index:", index);
+                console.log("elements[index]:", elements[index]);
+                console.log("active", elements[index]?.active);
                 // Get the type of the object from the elements array
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
                 const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
                 const datasetFileName = elements[index]?.datasetFileName || `dataset${index}`; // Dataset file name isn't used for snapping rules currently
-                const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType);
+                const active = elements[index]?.active
+                const location = elements[index]?.location || {x: 0, y: 0}; // Default to (0, 0) if not specified
+                const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType, active);
 
                 //console.log("Active Objects:", activeObjectsRef.current);
 
@@ -150,6 +158,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
+                    if (!currentObject.active) {
+                        currentObject.isActive = true;
+                    }
                     //console.log("Dragging:", currentObject);
                 }
 
@@ -173,8 +184,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 };
 
                 // Set initial position
-                draggable.top = 300;
-                draggable.left = 300;
+                draggable.top = location.y;
+                draggable.left = location.x;
 
                 // Visually above everything for dragging into node drawer for deletion
                 draggable.onDrag = function () {
@@ -284,7 +295,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     
         activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
-    
+            if (!otherObject.isActive) return; // Skip inactive objects
             // Cache the other object's bounding rect
             const otherRect = otherObject.element.getBoundingClientRect();
     
@@ -331,7 +342,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
         return closestPoint;
     }
 
-    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all") {
+    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active) {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -359,6 +370,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
             bottomLink: null,
             snapPoints,
             isSnapped: false,
+            isActive: active
         };
     
         const updatedObjects = [...activeObjectsRef.current, newObject];
@@ -438,7 +450,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
     }
 
     return (
-        <div id="stage" className="stage">
+        <div id="stage" className="stage" ref={stageRef}>
             {elements.map((item, index) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName,{
                     key: index,
