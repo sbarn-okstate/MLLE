@@ -51,37 +51,83 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
+    var lines = [];
+    var lineTexts = [];
 
     //var fired = 0; // test
 
     function CreateTestLinker() {
-        // if (divRefs.current.length < 2) {
-        //     console.error("divRefs is less than 2: a LinkerLine is not possible!");
-        // } else {
-        //     fired = fired + 1;
-        //     console.log("Creating test LinkerLine!");
-        
-        //     const line1 = new LinkerLine({
-        //         start: divRefs.current[0],
-        //         end: divRefs.current[1],
-        //         middleLabel: LinkerLine.pathLabel("label text")});
-
-        //     // Looks like this is the way to set the text
-        //     // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
-        //     line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
-        // }
-
         // We need to see if the model is valid
         if(modelState === `valid`) {
             //
-            console.info(`LinkerLines: Model is validated! Creating lines!`);
+            console.info(`LinkerLines DEBUG: Model is validated! Creating lines!`);
 
             // Find all neurons to get create LinkerLines to and fro
             // Start node has to exist if the model validated
             const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
-            console.log(`type of startNode: ${typeof(startNode)}; `);
 
-            let currentObject = startNode.leftLink;
+            // We need both current and previous object
+            let prevObject = startNode;
+            let currentObject = startNode.rightLink;
+            
+            while(currentObject.rightLink != null) {
+                console.log(`finding stuff`);
+                if(currentObject.objectType === 'neuron') {
+                    console.log(`LinkerLines DEBUG: Found a neuron!`);
+
+                    // Create a LinkerLine
+                    lineTexts.push(`line${lines.length}`);
+                    lines.push(
+                        new LinkerLine({
+                            start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
+                            end: divRefs.current[currentObject.id],
+                            middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                            path: `straight`}));
+                    lines[lines.length - 1].name = `line${lines.length - 1}`;
+                    lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                    // We need to search up and down as well
+                    let currentUp = currentObject;
+                    let currentDown = currentObject;
+
+                    while(currentUp.topLink != null) {
+                        console.log("LinkerLines DEBUG: Found a neuron above!");
+                        
+                        // Create a LinkerLine
+                        lineTexts.push(`line${lines.length}`);
+                        lines.push(
+                            new LinkerLine({
+                                start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
+                                end: divRefs.current[currentUp.topLink.id],
+                                middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                path: `straight`}));
+                        lines[lines.length - 1].name = `line${lines.length - 1}`;
+                        lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                        currentUp = currentUp.topLink;
+                    }
+
+                    while(currentDown.bottomLink != null) {
+                        console.log("LinkerLines DEBUG: Found a neuron below!");
+
+                        // Create a LinkerLine
+                        lineTexts.push(`line${lines.length}`);
+                        lines.push(
+                            new LinkerLine({
+                                start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
+                                end: divRefs.current[currentDown.bottomLink.id],
+                                middleLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                path: `straight`}));
+                        lines[lines.length - 1].name = `line${lines.length - 1}`;
+                        lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                        currentDown = currentDown.bottomLink;
+                    }
+                }
+                prevObject = currentObject;
+                currentObject = currentObject.rightLink;
+            }
+
         }
     }
 
