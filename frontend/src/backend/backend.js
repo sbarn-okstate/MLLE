@@ -21,10 +21,10 @@ let sharedBuffer;
 let weightArray;
 let metricsArray; // Stores loss and accuracy
 let layerSizes;
-let fileName;
 let data;
 let modelInfo;
 
+//Called by Sandbox.jsx from it's createBackend() function.
 export function createBackendWorker(updateMetricsCallback) {
     if (!backend_worker) {
         backend_worker = new Worker(new URL("./worker.js", import.meta.url), {type: 'module'});
@@ -41,13 +41,15 @@ export function createBackendWorker(updateMetricsCallback) {
             if (typeof message === "object" && message !== null) {
                 const {func, args} = message;
                 
-                switch (func){
+                switch (func) {
                     case "sharedBuffer":
                         sharedBuffer = args.sharedBuffer;
                         layerSizes = args.layerSizes;
 
                         const weightsBufferSize = layerSizes.reduce((sum, size) => sum + size, 0) * 4; // Total size of weights in bytes
                         const metricsBufferSize = 12; // 4 bytes for epoch + 4 bytes for loss + 4 bytes for accuracy
+                        // Link here explains about the Float32Array() constructor: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array/Float32Array
+                        //            new Float32Array(buffer, byteOffset, length)
                         weightArray = new Float32Array(sharedBuffer, 0, weightsBufferSize / 4);
                         metricsArray = new Float32Array(sharedBuffer, weightsBufferSize, metricsBufferSize / 4);
                         console.log("Shared buffer initialized.");
@@ -58,17 +60,21 @@ export function createBackendWorker(updateMetricsCallback) {
                     
                         if (updateMetricsCallback) {
                             //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
-                            updateMetricsCallback(epoch, loss, accuracy); // Pass epoch, loss, and accuracy
+                            updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights.
                         }
                         break;
                     //Used for saving the model to a file.
                     //This gets called from model.js in trainModel().
-                    case "saveFile":
-                        //Obtain file name and model information
-                        //Model information includes epoch, loss, accuracy, and weights.
-                        fileName = args.fileName;
-                        modelInfo = args.modelInfo;
-
+                    //args contains: { fileName: "modelInfo.json", modelInfo: cob } where cobi s "chain of objects"
+                    case "captureTraining":
+                        let fileName = args.fileName;
+                        let chainOfObjects = args.chainOfObjects;
+                        let trainingMetrics = args.trainingMetrics;
+                        // console.log("Epochs, loss, and accuracy are:", metricsArray);
+                        // console.log("Weights are:", weightArray);
+                        // console.log("Chain of objects is:", chainOfObjects)
+                        //console.log("weight array is:", weightArray);
+                        modelInfo = [{ chainOfObjects, trainingMetrics }];
                         //Serialize data to JSON
                         //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
                         const serializedData = JSON.stringify(modelInfo); // No pretty print
@@ -85,8 +91,56 @@ export function createBackendWorker(updateMetricsCallback) {
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
                         //==========Needs to be removed when creating the end product=======
-
                         break;
+                    case "simulateTraining":
+                        let jsonData = args.jsonData;
+                        const num_of_epochs = jsonData[0]["metricsArray"].length
+                        
+                        
+                        // Arrow functions to extract data for each variable
+                        const getEpoch = (index) => jsonData[0]["metricsArray"][index]["epoch"];
+                        const getLoss = (index) => jsonData[0]["metricsArray"][index]["loss"];
+                        const getAccuracy = (index) => jsonData[0]["metricsArray"][index]["accuracy"];
+                        const getWeights = (index) => jsonData[0]["weightsArray"][index]; // Assuming weights are stored in a "weightsArray"
+
+                        for (let i = 0; i < num_of_epochs; i++) {
+                            const epoch = getEpoch(i);
+                            const loss = getLoss(i);
+                            const accuracy = getAccuracy(i);
+                            const weights = getWeights(i);
+                            if (updateMetricsCallback) {
+                                //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
+                                updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights.
+                            }
+                        }
+                        break;
+                    // Leaving this here for future reference. 
+                    // but will be deleted in when shipping final product.
+                    // 
+                    // case "saveFile":
+                    //     //Obtain file name and model information
+                    //     //Model information includes epoch, loss, accuracy, and weights.
+                    //     fileName = args.fileName;
+                    //     modelInfo = args.modelInfo;
+
+                    //     //Serialize data to JSON
+                    //     //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
+                    //     const serializedData = JSON.stringify(modelInfo); // No pretty print
+
+                    //     //==========Needs to be removed when creating the end product=======
+                    //     //Used for downloading the serialized data as a .JSON.
+                    //     const blob = new Blob([serializedData], { type: 'application/json' });
+                    //     const url = URL.createObjectURL(blob);
+                    //     const a = document.createElement('a');
+                    //     a.href = url;
+                    //     a.download = fileName;
+                    //     document.body.appendChild(a);
+                    //     a.click();
+                    //     document.body.removeChild(a);
+                    //     URL.revokeObjectURL(url);
+                    //     //==========Needs to be removed when creating the end product=======
+
+                    //     break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
                 }

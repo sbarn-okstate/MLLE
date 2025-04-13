@@ -34,45 +34,29 @@ let pauseResumeCallback;
 
 //Model information is passed into here so we can check if it exists in the JSON folder.
 export async function validateModel(model, self) {
-    self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
+    //self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });     //Have to check if I need this.
     try {
         //Obtain JSON file
-        const response = await fetch('/json/test2.json'); // Adjust the path if necessary
+        const response = await fetch('/json/sampleModel.json'); // Adjust the path if necessary
         
         //Deserializes JSON file as an object.
         const jsonData = await response.json();
-        console.log("jsonData:", jsonData);
+        self.postMessage("jsonData:", jsonData);
         
         //if model object matches object from json file
-        if (JSON.stringify(model) === JSON.stringify(jsonData[0]["chain of objects"])) {
-            console.log("Model matches the one in test.json!");
+        if (JSON.stringify(model) === JSON.stringify(jsonData[0]["chainOfObjects"])) {
+            self.postMessage("Model matches the one in sampleModel.json!");
+            //goes to backend.js 
+            //self.postMessage({ func: "simulateTraining", args: jsonData })
+            //Might not need this: return jsonData; //returns what is saved in the json file.
         }
         else{
-            console.log("Model does not match the one in test.json!");
-            console.log("Model is:", model);
-            console.log("Model in test.json is:", jsonData[0]["chain of objects"]);
+            self.postMessage("Model does not match the one in sampleModel.json!");
+            self.postMessage("Model is:", model);
+            self.postMessage("Model in sampleModel.json is:", jsonData[0]["chainOfObjects"]);
         }
-
-        //================for dev purposes=============
-        //displays chain of objects to console.
-        //console.log("jsonData[0][\"chain of objects\"] is: ", jsonData[0]["chain of objects"]);
-
-        //displays training metrics to console
-        // for (let i = 0; i < jsonData[0]["training metrics"].length; i++){
-        //     console.log("jsonData[0][\"training metrics\"][i] is: ", jsonData[0]["training metrics"][i]);
-        //     //console.log("jsonData[0][\"training metrics\"][i].epoch is: ", jsonData[0]["training metrics"][i].epoch);
-        //     //console.log("jsonData[0][\"training metrics\"][i].loss is: ", jsonData[0]["training metrics"][i].loss);
-        //     //console.log("jsonData[0][\"training metrics\"][i].accuracy is: ", jsonData[0]["training metrics"][i].accuracy);
-        //     // Save epoch, loss, and accuracy
-        // }
-
-        //displays weights to console
-        //console.log("jsonData[0][\"weights\"] is: ", jsonData[0]["weights"]);
-
-        //console.log("Above is a test to print out al the training metrics in the JSON file.")
-        //================for dev purposes=============
     } catch (error) {
-        console.error("Error loading test.json:", error);
+        console.error("Error loading sampleModel.json:", error);
     }
 }
 
@@ -129,7 +113,7 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 10) {
+export async function trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 20) {
     try {
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
@@ -181,6 +165,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, self, ba
                         epoch: epoch + 1,
                         loss: parseFloat(loss),
                         accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
+                        weight: weightArray,
                     });
 
                     //console.log(JSON.stringify(trainingMetrics));
@@ -202,56 +187,9 @@ export async function trainModel(fileName, problemType, chainOfObjects, self, ba
                 },
             }
         });
-        // Serialize the entire training metrics array into JSON
-        // Send the final JSON to the frontend
-        //trainingMetrics.push(chainOfObjects);
-        //get the length of chainOfObjects
-
+        // Call to capture training
         //==========Obtain Training Metrics===========
-        let cob = [];
-        let tm = [];
-        let wt = [];
-
-        for (let i = 0; i < trainingMetrics.length; i++) {
-            tm.push(trainingMetrics[i]);
-        }
-        for (let i = 0; i < chainOfObjects.length; i++){
-            cob.push(chainOfObjects[i]);
-        }
-
-        let modelInfo = [{
-            "chain of objects": cob,
-            "training metrics": tm,
-            "weights" : weightArray,
-        }]
-        console.log("modelInfo is: ", modelInfo);
-
-        //Post message to backend worker called 'saveFile' so we can store
-        //the model's information.
-        self.postMessage({
-            func: 'saveFile',
-            args: {
-                fileName: 'modelInfo.json',
-                modelInfo: modelInfo,
-                weightArray: weightArray,
-            },
-        });
-
-        // for (let i = 0; i < chainOfObjects.length; i++){
-        //     trainingMetrics.push(chainOfObjects[i]);
-        // }
-        // const serializedMetrics = JSON.stringify(trainingMetrics);
-        // console.log("Training complete. Metrics:", serializedMetrics);
-        // console.log("chainOfObjects is: ", chainOfObjects);
-
-        // self.postMessage({
-        //     func: 'saveFile',
-        //     args: {
-        //         fileName: 'training_metrics.json',
-        //         data: serializedMetrics,
-        //         chainOfObjects: chainOfObjects
-        //     },
-        // });
+        self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
         //==========Obtain Training Metrics===========
         console.log("🚀 model.fit completed without error");
     } catch (error) {
@@ -317,7 +255,7 @@ function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
             offset += data.length;
         });
     });
-    console.log("weightArray is: ", weightArray);
+    //console.log("weightArray is: ", weightArray);
     // Save epoch, loss, and accuracy
     metricsArray[0] = epoch; // Save epoch
     metricsArray[1] = parseFloat(loss); // Save loss

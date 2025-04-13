@@ -148,7 +148,7 @@ function Sandbox() {
         }
     };
 
-    createBackend((epoch, loss, accuracy) => {
+    createBackend((epoch, loss, accuracy, weights) => {
         //console.log("Epoch in Sandbox.jsx is:", epoch);
         //console.log("Loss in Sandbox.jsx is:", loss);
         //console.log("Accuracy in Sandbox.jsx is:", accuracy);
