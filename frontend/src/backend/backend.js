@@ -92,27 +92,9 @@ export function createBackendWorker(updateMetricsCallback) {
                         URL.revokeObjectURL(url);
                         //==========Needs to be removed when creating the end product=======
                         break;
-                    case "simulateTraining":
+                    case "simulateTrainingWithDelay":
                         let jsonData = args.jsonData;
-                        const num_of_epochs = jsonData[0]["metricsArray"].length
-                        
-                        
-                        // Arrow functions to extract data for each variable
-                        const getEpoch = (index) => jsonData[0]["metricsArray"][index]["epoch"];
-                        const getLoss = (index) => jsonData[0]["metricsArray"][index]["loss"];
-                        const getAccuracy = (index) => jsonData[0]["metricsArray"][index]["accuracy"];
-                        const getWeights = (index) => jsonData[0]["weightsArray"][index]; // Assuming weights are stored in a "weightsArray"
-
-                        for (let i = 0; i < num_of_epochs; i++) {
-                            const epoch = getEpoch(i);
-                            const loss = getLoss(i);
-                            const accuracy = getAccuracy(i);
-                            const weights = getWeights(i);
-                            if (updateMetricsCallback) {
-                                //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
-                                updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights.
-                            }
-                        }
+                        simulateTrainingWithDelay(jsonData, updateMetricsCallback);
                         break;
                     // Leaving this here for future reference. 
                     // but will be deleted in when shipping final product.
@@ -153,6 +135,33 @@ export function createBackendWorker(updateMetricsCallback) {
         return;
     }
     //console.log('Backend worker already created.');
+}
+
+async function simulateTrainingWithDelay(jsonData, updateMetricsCallback) {
+    const num_of_epochs = jsonData[0]["trainingMetrics"].length;
+
+    // Arrow functions to extract data for each variable
+    const getEpoch = (index) => jsonData[0]["trainingMetrics"][index]["epoch"];
+    const getLoss = (index) => jsonData[0]["trainingMetrics"][index]["loss"];
+    const getAccuracy = (index) => jsonData[0]["trainingMetrics"][index]["accuracy"];
+    const getWeights = (index) => jsonData[0]["trainingMetrics"][index]["weight"]; // Assuming weights are stored in a "weightsArray"
+
+    // Helper function to introduce a delay
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (let i = 0; i < num_of_epochs; i++) {
+        const epoch = getEpoch(i);
+        const loss = getLoss(i);
+        const accuracy = getAccuracy(i);
+        const weights = getWeights(i);
+
+        if (updateMetricsCallback) {
+            updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights
+        }
+
+        // Wait for 1 second before the next iteration
+        await delay(500);
+    }
 }
 
 function getWeightsAndMetrics() {

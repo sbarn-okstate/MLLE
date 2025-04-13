@@ -32,8 +32,9 @@ let metricsArray = null; // Stores loss and accuracy
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
 
+//TRAINING SIMULATION/SIMULATE
 //Model information is passed into here so we can check if it exists in the JSON folder.
-export async function validateModel(model, self) {
+export async function validatePretrainedModel(model, self) {
     //self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });     //Have to check if I need this.
     try {
         //Obtain JSON file
@@ -41,13 +42,13 @@ export async function validateModel(model, self) {
         
         //Deserializes JSON file as an object.
         const jsonData = await response.json();
-        self.postMessage("jsonData:", jsonData);
-        
+        console.log("jsonData is:", jsonData[0]["trainingMetrics"].length);
         //if model object matches object from json file
         if (JSON.stringify(model) === JSON.stringify(jsonData[0]["chainOfObjects"])) {
             self.postMessage("Model matches the one in sampleModel.json!");
             //goes to backend.js 
-            //self.postMessage({ func: "simulateTraining", args: jsonData })
+            //TRAINING SIMULATON TAKES PLACE HERE.
+            self.postMessage({ func: "simulateTrainingWithDelay", args: {jsonData} })
             //Might not need this: return jsonData; //returns what is saved in the json file.
         }
         else{

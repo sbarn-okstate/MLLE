@@ -1,4 +1,5 @@
-The serialized models are formatted as shown:
+The serialized models are formatted as shown below.
+It has been set up so that within the array (as shown by the outer brackets) can contain multiple models. This example contains one model. A higher overview of what having multiple models would look like could be this exapmle that holds three models: [{...},{...},{...}]
             
 
     [

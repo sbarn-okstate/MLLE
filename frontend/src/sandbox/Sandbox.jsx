@@ -4,27 +4,35 @@
   *
   * PURPOSE: Page for the Sandbox to occupy.
   * 
-  * NOTES:
+  * Sandbox.jsx Strcture:
+  *     - createBackend(): Creates the backend worker.
+  *     - createModel(): Creates the model for the backend worker.  
+  *     - startTraining(): Starts the training process.
+  *     - pauseTraining(): Pauses the training process.
+  *     - resumeTraining(): Resumes the training process.
+  *     - stopTraining(): Stops the training process.
+  *     - Sandbox(): The main function that creates the sandbox page.
+  * *           - validateModel(): Validates the model by checking the chain of linked objects.
+  * *           - AddObject(): Adds an object to the list of objects on the stage.
+  * *                   - Takes in three optional parameters: objectType, subType, and datasetFileName.
+  * * *                         - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
+  * * *                         - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)
+  * * * *                       - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+  * *           - UpdateDraggablePos(): Updates the position of the draggable objects.
+  * *           - return: Returns the JSX for the sandbox page.
+  * * *                 - Returns NodeDrawer, Stage, and bottom bar with options. 
   * 
-  *     Sandbox.jsx Strcture:
-  * *       - createBackend(): Creates the backend worker.
-  * *       - createModel(): Creates the model for the backend worker.  
-  * *       - startTraining(): Starts the training process.
-  * *       - pauseTraining(): Pauses the training process.
-  * *       - resumeTraining(): Resumes the training process.
-  * *       - stopTraining(): Stops the training process.
-  * *       - Sandbox(): The main function that creates the sandbox page.
+  * =====
+  * NOTES
+  * =====
+  * 4/13/2025 (Justin) - Pretrained models can now be read and have their training simulated on the training report graph
+  *                      Currently, there is a stored sample model in D:\GitHub\MLLE\frontend\public\json\sampleModel.json. To simulate its
+  *                      training, the "validate model" needs to be clicked first. Otherwise, the information being read from the pretrained model
+  *                      will not be read. This is when the information is passed to the training report graph, it goes through the same code
+  *                      that the "start training" button does where a validation of the model must have occured. **NOTE** that this DOES NOT affect
+  *                      "start training" from running if you are wanting to create a model that does not match the pretrained model. 
   * 
-  * * *             - validateModel(): Validates the model by checking the chain of linked objects.
-  * * *             - AddObject(): Adds an object to the list of objects on the stage.
-  * * *                     - Takes in three optional parameters: objectType, subType, and datasetFileName.
-  * * * *                           - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
-  * * * *                           - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)
-  * * * * *                         - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
-  * * *             - UpdateDraggablePos(): Updates the position of the draggable objects.
-  * * *             - return: Returns the JSX for the sandbox page.
-  * * * *                   - Returns NodeDrawer, Stage, and bottom bar with options.
-  */
+*/
 
 import React, { useState, useEffect, useRef } from "react";
 import { data, Link } from "react-router";
@@ -267,13 +275,17 @@ function Sandbox() {
 
         model = chain;
         console.log("Chain of objects:", chain);
-
-        backend_worker.postMessage({ func: 'validateModel', args: { model } });
+        
+        //Might delete this in the future.
+        //backend_worker.postMessage({ func: 'validateModel', args: { model } });
         
         
         return chain;
     };
 
+    const simulateTrainingFromPretrainedModel = () => {
+        backend_worker.postMessage({ func: 'validatePretrainedModel', args: { model } });
+    };
     // localized test div add
     //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
     //This is because NodeDrawer calls the AddObject function when a user selects a node.
@@ -373,6 +385,7 @@ function Sandbox() {
                         <button className="sandboxButton" onClick={createTestLinker}>Test LinkerLine</button>
                         {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
                         <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+                        <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel()}>Devbutton: Simulate Training w/pretrained model</button>
 
                         {trainingState === 'stopped' && (
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
