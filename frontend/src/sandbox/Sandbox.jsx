@@ -309,14 +309,19 @@ function Sandbox() {
                     location,
                 }
             ];
-            console.log("Updated list:", updatedList); // Debugging log
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 
         setCount(count + 1);
     };
 
-    //AddObject("neuron"); // Add a neuron object by default
+    function RemoveObject(id) {
+        setList(prevList => {
+            const updatedList = prevList.filter(item => item.id !== id);
+            return updatedList;
+        });
+    }
 
 
     // Recalculate position for all draggables
@@ -352,6 +357,8 @@ function Sandbox() {
                     drags={draggables} 
                     setDrags={setDraggables} 
                     updateDrags={UpdateDraggablePos} 
+                    AddObject={AddObject}
+                    RemoveObject={RemoveObject}
                     drawerOpen={drawerOpen}
                 />
                {/* <DatasetDrawer

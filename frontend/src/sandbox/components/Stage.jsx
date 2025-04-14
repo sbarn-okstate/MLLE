@@ -47,7 +47,7 @@ import LinkerLine from "linkerline";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen}, ref) => {
     const stageRef = useRef(null);
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
@@ -119,10 +119,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("Draggable:", draggable);
-                console.log("index:", index);
-                console.log("elements[index]:", elements[index]);
-                console.log("active", elements[index]?.active);
                 // Get the type of the object from the elements array
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
@@ -159,6 +155,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
                     if (!currentObject.active) {
+                        if(currentObject.objectType === "neuron"){
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 400, y: 50});
+                        }
+                        else if (currentObject.objectType === "output"){
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 200, y: 50});
+                        }
                         currentObject.isActive = true;
                     }
                     //console.log("Dragging:", currentObject);
@@ -174,7 +176,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen }, ref) => {
                         //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
 
-                    if (mouse.x < 250) {
+                    if (mouse.y < 250) {
                         // somehow remove this
                         console.error(`TODO: Implement despawning div!`);
                         

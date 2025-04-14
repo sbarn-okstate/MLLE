@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import PlainDraggable from "plain-draggable";
-import "./DatasetDrawer.css";
+//import "./DatasetDrawer.css";
 import {
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
@@ -30,7 +30,7 @@ export default function DatasetDrawer({ drawerOpen, setDrawerOpen, stageRef}) {
         if (drawerRef.current && stageRef.current) {
             const nodes = drawerRef.current.querySelectorAll(".drawerNode");
             nodes.forEach((node, index) => {
-                console.log(stageRef.current);
+                //console.log(stageRef.current);
                 // Move the node to the stage as its parent
                 stageRef.current.appendChild(node);
 
