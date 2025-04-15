@@ -32,6 +32,7 @@ import './Sandbox.css';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
+import DatasetDrawer from './components/DatasetDrawer.jsx';
 import Status from './components/Status.jsx';
 import Report from './components/Report.jsx';
 
@@ -100,12 +101,16 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
 
 function Sandbox() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(1); // Start from 1 to avoid collision with startNode
+    const [count, setCount] = useState(3); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
-        { id: "startNode", objectType: "startNode", snapType: "lr" }, // Add startNode here
+        { id: "startNode", objectType: "startNode", snapType: "lr", location: {x: 300, y: 300}, active: true},
+        { id: 1, objectType: "neuron", snapType: "all", location: {x: 400, y: 50}, active: false},
+        { id: 2, objectType: "output", snapType: "l", location: {x: 200, y: 50}, active: false},
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
+
     const [trainingState, setTrainingState] = useState('stopped');
     const [modelState, setModelState] = useState('invalid');
     const [statusContent, setStatusContent] = useState([
@@ -114,7 +119,6 @@ function Sandbox() {
     ]);
 
     const reportRef = useRef(null);
-
     const stageRef = useRef(null); // Reference to the stage component
 
     // This gets executed when the DOM is updated
@@ -123,22 +127,16 @@ function Sandbox() {
     })
 
     const updateMetricsCallback = (epoch, loss, accuracy) => {
-        //console.log("Epoch in Sandbox.jsx is:", epoch);
-        //console.log("Loss in Sandbox.jsx is:", loss);
-        //console.log("Accuracy in Sandbox.jsx is:", accuracy);
-
         updateGraphData(epoch, accuracy); // Pass accuracy to the graph
         updateAccuracy(accuracy); // Update the accuracy percentage
     }
 
-    // Function to update the graph data in the Report component
     const updateGraphData = (epoch, accuracy) => {
         if (reportRef.current) {
             reportRef.current.addGraphData(epoch, accuracy);
         }
     };
 
-    // Function to update the accuracy percentage in the Report component
     const updateAccuracy = (accuracy) => {
         if (reportRef.current) {
             reportRef.current.updateAccuracy(accuracy);
@@ -275,7 +273,7 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = "all", datasetFileName = "none") {
+    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 200}) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
@@ -306,15 +304,25 @@ function Sandbox() {
                     objectType, //passed in from NodeDrawer.jsx
                     subType, //passed in from NodeDrawer.jsx
                     datasetFileName,
-                    snapType
+                    snapType,
+                    active,
+                    location,
                 }
             ];
-            console.log("Updated list:", updatedList); // Debugging log
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
 
         setCount(count + 1);
     };
+
+    function RemoveObject(id) {
+        setList(prevList => {
+            const updatedList = prevList.filter(item => item.id !== id);
+            return updatedList;
+        });
+    }
+
 
     // Recalculate position for all draggables
     // Required for bounds to function properly
@@ -339,6 +347,9 @@ function Sandbox() {
                     the three proprs are drawerOpen, setDrawerOpen, and createNodeFunction.
                     createNodeFunction specifically passes the "AddObject" function into NodeDrawer.
                     This way, NodeDrawer can call "AddObject" when a use selects a node.*/}
+
+               
+
                 <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
                 <Stage
                     ref={stageRef}
@@ -346,12 +357,21 @@ function Sandbox() {
                     drags={draggables} 
                     setDrags={setDraggables} 
                     updateDrags={UpdateDraggablePos} 
+                    AddObject={AddObject}
+                    RemoveObject={RemoveObject}
                     drawerOpen={drawerOpen}
                 />
+               {/* <DatasetDrawer
+                    drawerOpen={datasetDrawerOpen}
+                    setDrawerOpen={setDatasetDrawerOpen}
+                    stageRef={stageRef}
+                /> */}
+                
                 <div className="topRightContainer">
                     <Status title="Training Status" content={statusContent} />
                     <Report ref={reportRef} title="Training Report" />
                 </div>
+                
                 <div className="bottomBar">
                     <Link to="/"><button className="sandboxButton">Go Back</button></Link>
                     <div style={{
