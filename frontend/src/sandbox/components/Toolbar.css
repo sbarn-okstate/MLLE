@@ -1,0 +1,17 @@
+.toolbar {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 100px;
+    padding: 10px 30px;
+    background: #f5f5f5;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-weight: 500;
+}

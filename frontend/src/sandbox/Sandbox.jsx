@@ -112,9 +112,9 @@ function Sandbox() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(3); // Start from 1 to avoid collision with startNode
     const [list, setList] = useState([
-        { id: "startNode", objectType: "startNode", snapType: "lr", location: {x: 300, y: 300}, active: true},
-        { id: 1, objectType: "neuron", snapType: "all", location: {x: 400, y: 50}, active: false},
-        { id: 2, objectType: "output", snapType: "l", location: {x: 200, y: 50}, active: false},
+        { id: "startNode", objectType: "startNode", snapType: "lr", location: {x: 300, y: 300}, isActive: true},
+        { id: 1, objectType: "neuron", snapType: "all", location: {x: 200, y: 100}, isActive: false},
+        { id: 2, objectType: "output", snapType: "l", location: {x: 200, y: 50}, isActive: false},
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -300,7 +300,7 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 200}) {
+    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", isActive = true, location = {x: 300, y: 200}) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
@@ -332,7 +332,7 @@ function Sandbox() {
                     subType, //passed in from NodeDrawer.jsx
                     datasetFileName,
                     snapType,
-                    active,
+                    isActive,
                     location,
                 }
             ];
@@ -370,6 +370,9 @@ function Sandbox() {
     return(
         <>
             <div className="sandboxContainer"  >
+    
+
+
                 {/*NodeDrawer is a component that has three props passed into it 
                     the three proprs are drawerOpen, setDrawerOpen, and createNodeFunction.
                     createNodeFunction specifically passes the "AddObject" function into NodeDrawer.
@@ -378,32 +381,19 @@ function Sandbox() {
                
 
                 <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
-                <div> {/*Let the user scroll*/}
+
                 <Stage
                     ref={stageRef}
-                    elements={list} 
-                    drags={draggables} 
-                    setDrags={setDraggables} 
-                    updateDrags={UpdateDraggablePos} 
+                    elements={list}
+                    drags={draggables}
+                    setDrags={setDraggables}
+                    updateDrags={UpdateDraggablePos}
                     AddObject={AddObject}
                     RemoveObject={RemoveObject}
                     drawerOpen={drawerOpen}
-                    modelState={modelState} // Might not be needed in the future, used for 
+                    modelState={modelState}
                 />
-               {/* <DatasetDrawer
-                    drawerOpen={datasetDrawerOpen}
-                    setDrawerOpen={setDatasetDrawerOpen}
-                    stageRef={stageRef}
-                /> */}
-                
-                </div>
-                {/* Toggle Button */}
-                <button
-                    className="toggleButton"
-                    onClick={toggleStatusAndReport}
-                >
-                    {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                </button>
+
                 {/* Conditionally Render Status and Report */}
                 {showStatusAndReport && (
                     <div className="topRightContainer">
