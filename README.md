@@ -19,8 +19,8 @@
 # TODO functional (High Priority)
 - [ ] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
 - [ ] Add visual component to neurons that reflect biases
-- [ ] Figure out how to package the webapp
-- [ ] Add a fullscreen button in the bottom right
+- [ ] Figure out how to package the webapp - JM
+- [ ] Add a fullscreen button in the bottom right - JM
 - [ ] Make objects removeable by dragging to specific location
 - [ ] Change startNode to 'Data Batcher'
 - [ ] Add specific drawers for datasets and activation functions
