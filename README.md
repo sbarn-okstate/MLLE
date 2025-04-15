@@ -17,7 +17,6 @@
 # TODO List
 
 # TODO functional (High Priority)
-- [ ] Create dataset files and update dataset-defaults.js with their information
 - [ ] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
 - [ ] Add visual component to neurons that reflect biases
 - [ ] Figure out how to package the webapp
@@ -37,6 +36,7 @@
 
 # END OF PROJECT TODO
 - [ ] Standardize inline comments
+- [ ] Create dataset files and update dataset-defaults.js with their information
 - [ ] Update header comments
 - [ ] Remove unused variables, functions, and classes.
 - [ ] Rename variables, functions, and classes to be appropriate.
