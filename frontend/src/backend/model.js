@@ -208,15 +208,22 @@ function createBatches(xsArray, ysArray, batchSize) {
     return batches;
 }
 
-export function pauseTraining() {
+export function pauseTraining(self) {
     if (pauseResumeCallback) {
         pauseResumeCallback.pause();
     }
+    if (self){
+        self.postMessage({ func: 'pauseSimulatedTraining' });
+        console.log("Paused simulated training");
+    }
 }
 
-export function resumeTraining() {
+export function resumeTraining(self) {
     if (pauseResumeCallback) {
         pauseResumeCallback.resume();
+    }
+    if (self){
+        self.postMessage({ func: 'resumeSimulatedTraining' });
     }
 }
 

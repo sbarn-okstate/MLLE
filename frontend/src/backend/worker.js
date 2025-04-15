@@ -26,10 +26,10 @@ self.onmessage = async (event) => {
             await trainModel(args.fileName, args.problemType, args.chainOfObjects, self);
             break;
         case "pauseTraining":
-            await pauseTraining();
+            await pauseTraining(self);
             break;
         case "resumeTraining":
-            await resumeTraining();
+            await resumeTraining(self);
             break;
         case "stopTraining":
             await stopTraining();

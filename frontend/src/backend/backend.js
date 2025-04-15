@@ -123,6 +123,13 @@ export function createBackendWorker(updateMetricsCallback) {
                     //     //==========Needs to be removed when creating the end product=======
 
                     //     break;
+                    case "pauseSimulatedTraining":
+                        pauseSimulatedTraining();
+                        break;
+                    case "resumeSimulatedTraining":
+                        resumeSimulatedTraining();
+                        break;
+
                     default:
                         console.log('Unknown function call from backend worker:', func);
                 }
@@ -137,6 +144,46 @@ export function createBackendWorker(updateMetricsCallback) {
     //console.log('Backend worker already created.');
 }
 
+// async function simulateTrainingWithDelay(jsonData, updateMetricsCallback) {
+//     const num_of_epochs = jsonData[0]["trainingMetrics"].length;
+
+//     // Arrow functions to extract data for each variable
+//     const getEpoch = (index) => jsonData[0]["trainingMetrics"][index]["epoch"];
+//     const getLoss = (index) => jsonData[0]["trainingMetrics"][index]["loss"];
+//     const getAccuracy = (index) => jsonData[0]["trainingMetrics"][index]["accuracy"];
+//     const getWeights = (index) => jsonData[0]["trainingMetrics"][index]["weight"]; // Assuming weights are stored in a "weightsArray"
+
+//     // Helper function to introduce a delay
+//     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+//     for (let i = 0; i < num_of_epochs; i++) {
+//         const epoch = getEpoch(i);
+//         const loss = getLoss(i);
+//         const accuracy = getAccuracy(i);
+//         const weights = getWeights(i);
+
+//         if (updateMetricsCallback) {
+//             updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights
+//         }
+
+//         // Wait for 1 second before the next iteration
+//         await delay(500);
+//     }
+// }
+
+let isPaused = false; // Flag to track pause state
+
+// Function to pause training
+export function pauseSimulatedTraining() {
+    isPaused = true;
+}
+
+// Function to resume training
+export function resumeSimulatedTraining() {
+    isPaused = false;
+}
+
+// Simulate training with delay and pause functionality
 async function simulateTrainingWithDelay(jsonData, updateMetricsCallback) {
     const num_of_epochs = jsonData[0]["trainingMetrics"].length;
 
@@ -150,6 +197,11 @@ async function simulateTrainingWithDelay(jsonData, updateMetricsCallback) {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     for (let i = 0; i < num_of_epochs; i++) {
+        // Check if paused
+        while (isPaused) {
+            await delay(100); // Wait 100ms before checking again
+        }
+
         const epoch = getEpoch(i);
         const loss = getLoss(i);
         const accuracy = getAccuracy(i);
@@ -159,7 +211,7 @@ async function simulateTrainingWithDelay(jsonData, updateMetricsCallback) {
             updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights
         }
 
-        // Wait for 1 second before the next iteration
+        // Wait for 500ms before the next iteration
         await delay(500);
     }
 }
