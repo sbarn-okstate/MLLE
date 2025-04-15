@@ -80,9 +80,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                     lines.push(
                         new LinkerLine({
                             start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                            //end: LinkerLine.PointAnchor(divRefs.current[currentObject.id], {x: 25, y: `50%`}),
                             end: handleRefs.current[currentObject.id],
-                            endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                            endLabel: lineTexts[lines.length],
                             path: `straight`}));
                     lines[lines.length - 1].name = `line${lines.length - 1}`;
                     lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -99,9 +98,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         lines.push(
                             new LinkerLine({
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                                //end: LinkerLine.PointAnchor(divRefs.current[currentUp.topLink.id], {x: 25, y: `50%`}),
                                 end: handleRefs.current[currentUp.topLink.id],
-                                endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                endLabel: lineTexts[lines.length],
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
                         lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -117,9 +115,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         lines.push(
                             new LinkerLine({
                                 start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
-                                //end: LinkerLine.PointAnchor(divRefs.current[currentDown.bottomLink.id], {x: 25, y: `50%`}),
                                 end: handleRefs.current[currentDown.bottomLink.id],
-                                endLabel: LinkerLine.pathLabel(lineTexts[lines.length]),
+                                endLabel: lineTexts[lines.length],
                                 path: `straight`}));
                         lines[lines.length - 1].name = `line${lines.length - 1}`;
                         lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
@@ -127,6 +124,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         currentDown = currentDown.bottomLink;
                     }
                 }
+
+                // We also need to see if there is an activation layer between
+                // dense layers so that we can create all the lines between all
+                // nodes
+
 
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
@@ -233,6 +235,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, drawerOpen, modelState },
                         //extAction(divRefs[index]);
                     }
 
+                    LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
 
                 // Set initial position

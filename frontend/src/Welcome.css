@@ -10,24 +10,44 @@
 .footertext {
     color: rgba(160, 160, 160, 0.87);
     font-size: small;
-    text-align: center;
     display:inline-block;
-    position:absolute;
+    position:sticky;
     top: 96%;
     bottom: 0;
     left: 0;
     right: 0;
+    user-select: none;
 }
 
-body {
-    margin: 0;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-  }
+.crap {
+  margin: 25px;
+  height: 100%;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
 
 button {
-    height: 3em;
-    width: 10em;
-    border-radius: 1em;
+  height: 3em;
+  width: 10em;
+  border-radius: 100px;
+  background-color: rgba(104, 104, 104, 0.375);
+  border-color: grey;
+  color: white;
+  border-style: solid;
+  user-select: none;
+  transition: all 0.2s ease-in;
+}
+
+button:hover {
+  background-color: rgb(56, 56, 56);
+  color: white;
+  transition: all 0.2s ease-in;
+}
+
+button:active {
+  background-color: var(--activeColor);
+  color: black;
+  transition: all 0.1s ease-in;
 }
