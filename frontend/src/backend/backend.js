@@ -55,6 +55,7 @@ export function createBackendWorker(updateMetricsCallback) {
                         console.log("Shared buffer initialized.");
                         break;
                     case "weightsAndMetricsUpdated":
+                        //getWeightsAndMetrics will is called everytime weights and other metrics are updated.
                         const { weights, epoch, loss, accuracy } = getWeightsAndMetrics();
                         //console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy);
                     
@@ -65,7 +66,8 @@ export function createBackendWorker(updateMetricsCallback) {
                         break;
                     //Used for saving the model to a file.
                     //This gets called from model.js in trainModel().
-                    //args contains: { fileName: "modelInfo.json", modelInfo: cob } where cobi s "chain of objects"
+                    //args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} 
+                    //      - trainingMetrics contains weights, epoch, loss, and accuracy.
                     case "captureTraining":
                         let fileName = args.fileName;
                         let chainOfObjects = args.chainOfObjects;

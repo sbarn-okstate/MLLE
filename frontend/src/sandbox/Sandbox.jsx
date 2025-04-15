@@ -69,7 +69,7 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
-        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}});
+        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}}); //Goes to worker.js
         setTrainingState('training');
         setStatusContent([
             "Training started!",
