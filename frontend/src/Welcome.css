@@ -7,47 +7,46 @@
   * NOTES: None
   */
 
-.footertext {
-    color: rgba(160, 160, 160, 0.87);
-    font-size: small;
-    display:inline-block;
-    position:sticky;
-    top: 96%;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    user-select: none;
-}
-
-.crap {
-  margin: 25px;
-  height: 100%;
+.welcomeBody {
+  margin: 0;
+  background-color: rgb(255, 255, 255);
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center; /* Center elements vertically */
+  align-items: center; /* Center elements horizontally */
+  height: 100vh; /* Full viewport height */
+  font-family: Arial, sans-serif; /* Optional: Set a font */
+  text-align: center; /* Center text inside the body */
+}
+  
+
+.WelcomeTitle {
+  font-size: 3em; /* Adjust the font size */
+  color: #000000; /* Set the text color */
+  text-align: center; /* Center the text */
+  margin-top: 20px; /* Add spacing at the top */
+  font-weight: bold; /* Make the text bold */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.539); /* Optional: Add a subtle shadow */
 }
 
-button {
+.useSandboxButton {
   height: 3em;
   width: 10em;
-  border-radius: 100px;
-  background-color: rgba(104, 104, 104, 0.375);
-  border-color: grey;
-  color: white;
-  border-style: solid;
-  user-select: none;
-  transition: all 0.2s ease-in;
+  border-radius: 1em;
+  font-size: 1em;
+  cursor: pointer;
+  color: rgb(0, 0, 0); /* Text color */
+  background-color: #ffa600; /* Default background color */
+  border: 2px solid #000000;
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
 }
 
 button:hover {
-  background-color: rgb(56, 56, 56);
-  color: white;
-  transition: all 0.2s ease-in;
+  background-color: #0056b3; /* Change background color on hover */
 }
 
-button:active {
-  background-color: var(--activeColor);
-  color: black;
-  transition: all 0.1s ease-in;
+.footertext {
+  color: rgba(160, 160, 160, 0.87);
+  font-size: small;
+  text-align: center;
 }
