@@ -122,7 +122,7 @@ export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = 
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
+            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
                 
             </p>
 
@@ -140,7 +140,7 @@ export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOv
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Heart Prediction Dataset<br/><br/>heart.csv
+            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Heart Prediction Dataset<br/><br/>heart.csv
                 
             </p>
 
@@ -157,7 +157,7 @@ export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOver
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Boston Housing Dataset<br/><br/>boston-housing-train.csv
+            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Boston Housing Dataset<br/><br/>boston-housing-train.csv
                 
             </p>
 
@@ -174,7 +174,7 @@ export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> MNIST Dataset<br/><br/>mnist_train.csv
+            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> MNIST Dataset<br/><br/>mnist_train.csv
                 
             </p>
 
@@ -192,7 +192,7 @@ export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverr
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Fashion MNIST Dataset<br/><br/>fashion-mnist_train.csv
+            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Fashion MNIST Dataset<br/><br/>fashion-mnist_train.csv
                 
             </p>
 
@@ -213,7 +213,7 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dense Layer</p>
             </div>
-            <p>Number of Nodes: 
+            <p className={"nodeText"}>Number of Nodes: 
                 <span>
                     <input
                         type="number"
@@ -264,7 +264,7 @@ export function ActivationLayerObject({ activationName, name, ref, handleRef, cl
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer {activationName}</p>
             </div>
-            <p>
+            <p className={"nodeText"}>
                 activation type: {activationName}
             </p>
         </div>
@@ -281,7 +281,7 @@ export function ReluObject({ name, ref, handleRef, classNameOverride = "draggabl
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer</p>
             </div>
-            <p>
+            <p className={"nodeText"}>
                 ReLu
             </p>
             
@@ -301,7 +301,7 @@ export function SigmoidObject({ name, ref, handleRef, classNameOverride = "dragg
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer</p>
             </div>
-            <p>
+            <p className={"nodeText"}>
                 Sigmoid
             </p>
         </div>
@@ -318,7 +318,7 @@ export function TanhObject({ name, ref, handleRef, classNameOverride = "draggabl
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer</p>
             </div>
-            <p>
+            <p className={"nodeText"}>
                 Tanh
             </p>
         </div>
@@ -335,7 +335,7 @@ export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "dragg
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Activation Layer</p>
             </div>
-            <p>
+            <p className={"nodeText"}>
                 Softmax
             </p>
         </div>
@@ -355,7 +355,7 @@ export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classN
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Convolution Layer</p>
             </div>
-            <p>{filterSize} Filter size
+            <p className={"nodeText"}>{filterSize} Filter size
             </p>
         </div>
     );
@@ -372,7 +372,7 @@ export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverri
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Convolution Layer</p>
             </div>
-            <p>Filter Size of 3x3
+            <p className={"nodeText"}>Filter Size of 3x3
             </p>
         </div>
     );
@@ -389,7 +389,7 @@ export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverri
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Convolution Layer</p>
             </div>
-            <p>Filter Size of 5x5
+            <p className={"nodeText"}>Filter Size of 5x5
             </p>
         </div>
     );
@@ -406,7 +406,7 @@ export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverri
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Convolution Layer</p>
             </div>
-            <p>Filter Size of 7x7
+            <p className={"nodeText"}>Filter Size of 7x7
             </p>
         </div>
     );
@@ -424,7 +424,7 @@ export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "d
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Output</p>
             </div>
-            <p>Output Layer</p>
+            <p className={"nodeText"}>Output Layer</p>
         </div>
     );
 };

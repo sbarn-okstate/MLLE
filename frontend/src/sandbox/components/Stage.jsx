@@ -47,29 +47,176 @@ import LinkerLine from "linkerline";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen}, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState}, ref) => {
     const stageRef = useRef(null);
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
+    var lines = [];
+    var lineTexts = [];
 
-    var fired = 0;
+    // Creates LinkerLines for dense layers
+    function CreateLinkerLines() {
+        LinkerLine.removeAll();
+        lines = [];
+        lineTexts = [];
 
-    function CreateTestLinker() {
-        if (divRefs.current.length < 2) {
-            console.error("divRefs is less than 2: a LinkerLine is not possible!");
+        // We need to see if the model is valid first and foremost
+        if(modelState === `valid`) {
+            //console.info(`LinkerLines DEBUG: Model is validated! Creating lines!`);
+
+            // Start node has to exist if the model validated
+            const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
+
+            // We need both current and previous object
+            let prevObject = startNode;
+            let currentObject = startNode.rightLink;
+            
+            // As far as I know
+            //  - The first dense layer needs connections to the object to its left
+            //  - All further dense layers need to be fully connected to each other
+            //  - The last dense layer needs to connect to the output node
+            let firstDense = true;
+
+            // // TEST TEST TEST
+            // console.log(`LinkerLine DEBUG: Beginning 1D traversal test...`);
+            // while(currentObject.rightLink != null) {
+            //     console.log(`${currentObject.objectType} -> ${currentObject.rightLink.objectType}`);
+            //     currentObject = currentObject.rightLink;
+            // }
+            // // TEST TEST TEST
+
+            currentObject = startNode.rightLink;
+
+            while(currentObject.rightLink != null) {
+                if(currentObject.objectType === 'neuron') {
+                    //console.log(`LinkerLines DEBUG: Found a neuron/dense layer!`);
+
+                    if (firstDense) {
+                        // Being the first has a special case, fully connected to starting node
+
+                        // More efficient and clean line creating algorithm
+                        // We need to traverse to the top of the dense layer
+                        let currentLayerNode = currentObject;
+                        while(currentLayerNode.topLink != null) {
+                            // We aren't at the top of the layer yet
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+
+                        // Now that we are at the top of the layer, we can go down and create the lines
+                        while(currentLayerNode != null) {
+                            // Create a LinkerLine
+                            //console.log("LinkerLine DEBUG: Creating a LinkerLine for first dense layer!");
+                            lineTexts.push(`line${lines.length}`);
+                            lines.push(
+                                new LinkerLine({
+                                    start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
+                                    end: handleRefs.current[currentLayerNode.id],
+                                    endLabel: lineTexts[lines.length],
+                                    path: `straight`}));
+                            lines[lines.length - 1].name = `line${lines.length - 1}`;
+                            lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                            currentLayerNode = currentLayerNode.bottomLink;
+                        }
+
+                        firstDense = !firstDense; // Flip firstDense so we know we have passed the first dense layer
+                    }
+
+                    // Now that we have established the position of the current dense layer we need to see if there is
+                    // another dense layer...
+                    let nextDenseLayer = currentObject;
+                    let noLayer = true;
+
+                    // We are only looking for the next dense layer
+                    //while((nextDenseLayer.objectType != "neuron") && noLayer) {
+                    while((nextDenseLayer.rightLink != null) && noLayer) {
+                        if(nextDenseLayer.rightLink.objectType === "neuron") {
+                            // Break the while loop because we found the next dense layer
+                            noLayer = false;
+                        }
+                        nextDenseLayer = nextDenseLayer.rightLink;
+                    }
+
+                    if (noLayer === false) {
+                        // If we are here, there is another dense layer to connect to
+                        let currentLayerNode = currentObject;
+                        let currentNextLayerTopNode = nextDenseLayer;
+
+                        // Traverse to the tops of the dense layers
+                        while(currentLayerNode.topLink != null) {
+                            // We aren't at the top of the layer yet
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+
+                        while(currentNextLayerTopNode.topLink != null) {
+                            // We aren't at the top of the layer yet
+                            currentNextLayerTopNode = currentNextLayerTopNode.topLink;
+                        }
+
+                        // Create a new variable so that we don't have to traverse the dense layer up again
+                        let currentNextLayerNode = currentNextLayerTopNode;
+
+                        //console.log(`linkerline from ${currentLayerNode.objectType} to ${currentNextLayerNode.objectType} ??`);
+
+                        // Create the fully connected LinkerLines between the dense layers
+                        while(currentLayerNode != null) {
+                            while(currentNextLayerNode != null) {
+                                // Create LinkerLines
+                                lineTexts.push(`line${lines.length}`);
+                                lines.push(
+                                    new LinkerLine({
+                                        //start: divRefs.current[(currentLayerNode == startNode) ? 0 : currentLayerNode.id],
+                                        start: handleRefs.current[currentLayerNode.id],
+                                        end: handleRefs.current[currentNextLayerNode.id],
+                                        endLabel: lineTexts[lines.length],
+                                        path: `straight`}));
+                                lines[lines.length - 1].name = `line${lines.length - 1}`;
+                                lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                                currentNextLayerNode = currentNextLayerNode.bottomLink;
+                            }
+
+                            currentLayerNode = currentLayerNode.bottomLink;
+                            currentNextLayerNode = currentNextLayerTopNode;
+                        }
+
+                    } else {
+                        // We didn't find another dense layer, so we need to create lines to the end node
+                        // TODO
+
+                        // We need to traverse to the top of the dense layer
+                        let currentLayerNode = currentObject;
+                        while(currentLayerNode.topLink != null) {
+                            // We aren't at the top of the layer yet
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+
+                        // Now that we are at the top of the layer, we can go down and create the lines
+                        while(currentLayerNode != null) {
+                            // Create a LinkerLine
+                            //console.log("LinkerLine DEBUG: Creating a LinkerLine for first dense layer!");
+                            lineTexts.push(`line${lines.length}`);
+                            lines.push(
+                                new LinkerLine({
+                                    start: handleRefs.current[currentLayerNode.id],
+                                    end: divRefs.current[nextDenseLayer.id],
+                                    endLabel: lineTexts[lines.length],
+                                    path: `straight`}));
+                            lines[lines.length - 1].name = `line${lines.length - 1}`;
+                            lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
+
+                            currentLayerNode = currentLayerNode.bottomLink;
+                        }
+                    }
+                }
+
+                prevObject = currentObject;
+                currentObject = currentObject.rightLink;
+            }
+
         } else {
-            fired = fired + 1;
-            console.log("Creating test LinkerLine!");
-        
-            const line1 = new LinkerLine({
-                start: divRefs.current[0],
-                end: divRefs.current[1],
-                middleLabel: LinkerLine.pathLabel("label text")});
-
-            // Looks like this is the way to set the text
-            // If we don't want the text to morph to the line, we can just replace the LinkerLine.pathLabel() with just a string
-            line1.setOptions({middleLabel: LinkerLine.pathLabel(`GET REPLACED!`)});
+            console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
         }
     }
 
@@ -95,7 +242,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         getStageElement: () => stageRef.current,
         getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
         getActiveObjects: () => activeObjectsRef.current,
-        createTestLinker: CreateTestLinker,
+        createLinkerLines: CreateLinkerLines,
     }));
 
     // draggables do not know about state variables? so the need an external helper
@@ -183,6 +330,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         //extAction(divRefs[index]);
                     }
 
+                    LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
 
                 // Set initial position

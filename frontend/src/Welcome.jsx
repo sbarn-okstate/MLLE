@@ -14,7 +14,7 @@ import './Welcome.css'
 
 function Welcome() {
     return(
-        <>
+        <div className={"crap"}>
             <h1>Welcome</h1>
             <div>
                 <p>
@@ -26,7 +26,7 @@ function Welcome() {
                 </p>
             </div>
             <p className="footertext">Work in progress. Content is content to change.</p>
-        </>
+        </div>
     )
 
 }
