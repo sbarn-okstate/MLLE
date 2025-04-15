@@ -101,7 +101,7 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
                 </svg>
             </div>
             <div className="reportAccuracy">
-                <p style={{ color: getAccuracyColor() }}>{accuracy.toFixed(2)}%</p>
+                <p className={"graphText"} style={{ color: getAccuracyColor() }}>{accuracy.toFixed(2)}%</p>
             </div>
         </div>
     );

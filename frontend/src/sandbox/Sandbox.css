@@ -21,6 +21,11 @@
     border-radius: 5px;
 }
 
+.graphText {
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+    transition: color 0.1s linear;
+}
+
 .drawerDiv {
     height: 100%;
     position: absolute;
@@ -176,6 +181,11 @@
     display: inline;
     color: white;
     font-size: 12px;
+    user-select: none;
+}
+
+.nodeText {
+    user-select: none;
 }
 
 .topRightContainer {
