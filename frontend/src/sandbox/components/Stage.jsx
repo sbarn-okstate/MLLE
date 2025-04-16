@@ -49,8 +49,8 @@ import LinkerLine from "linkerline";
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState}, ref) => {
     const stageRef = useRef(null);
-    const divRefs = useRef([]);
-    const handleRefs = useRef([]);
+    const divRefs = useRef({});
+    const handleRefs = useRef({});
     const drag = useRef([]);
     var lines = [];
     var lineTexts = [];
@@ -251,14 +251,17 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     useEffect(() => {
-        //console.log("divRefs:", divRefs.current);
-        //console.log("handleRefs:", handleRefs.current);
+        console.log("divRefs:", divRefs.current);
+        console.log("handleRefs:", handleRefs.current);
 
         // This useEffect runs after the components are rendered
-        divRefs.current.forEach((div, index) => {
+        elements.forEach((item) => {
+            const index = item.id;
+            const div = divRefs.current[index];
+            const handle = handleRefs.current[index];
             if (!drag.current[index]) {
                 drag.current[index] = 1;
-
+                
                 // Subscribe to mouse move event listener
                 let mouse;
                 addEventListener("mousemove", (event) => {mouse = event});
@@ -270,9 +273,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = elements[index]?.objectType || `object${index}`;   
                 const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
-                const datasetFileName = elements[index]?.datasetFileName || `dataset${index}`; // Dataset file name isn't used for snapping rules currently
+                const datasetFileName = elements[index]?.datasetFileName || `none`; // Dataset file name isn't used for snapping rules currently
                 const active = elements[index]?.active
-                const location = elements[index]?.location || {x: 0, y: 0}; // Default to (0, 0) if not specified
+                const location = elements[index]?.location || {x: 200, y: 50}; // Default to (0, 0) if not specified
                 const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType, active);
 
                 //console.log("Active Objects:", activeObjectsRef.current);
@@ -302,7 +305,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
 
-                    
+
                     if (!currentObject.isActive && false) {
                         if(currentObject.objectType === "neuron"){
                             AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
@@ -326,9 +329,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     }
 
                     if (mouse.y < 250) {
-                        // somehow remove this
-                        console.error(`TODO: Implement despawning div!`);
-                        
+                        if(currentObject.id !== "dataBatcher"){
+                            RemoveObject(currentObject.id);
+                        }
                         //extAction(divRefs[index]);
                     }
 
@@ -603,12 +606,24 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
-            {elements.map((item, index) => (
-                renderObject(item.objectType, item.subType, item.datasetFileName,{
-                    key: index,
+            {elements.map((item) => (
+                renderObject(item.objectType, item.subType, item.datasetFileName, {
+                    key: item.id,
                     name: item.id,
-                    ref: (el) => (divRefs.current[index] = el),
-                    handleRef: (el) => (handleRefs.current[index] = el),
+                    ref: (el) => { 
+                        if (el) {
+                            divRefs.current[item.id] = el;
+                        } else {
+                            delete divRefs.current[item.id];
+                        }
+                    },
+                    handleRef: (el) => {
+                        if (el) {
+                            handleRefs.current[item.id] = el;
+                        } else {
+                            delete handleRefs.current[item.id];
+                        }
+                    },
                     action: extAction
                 })
             ))}
