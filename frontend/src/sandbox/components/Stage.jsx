@@ -36,6 +36,7 @@ import {
 import StartNode from './StartNode.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
 //Sandbox.jsx uses this component~
@@ -52,6 +53,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const divRefs = useRef([]);
     const handleRefs = useRef([]);
     const drag = useRef([]);
+    const scrollContainerRef = useRef(null);
     var lines = [];
     var lineTexts = [];
 
@@ -264,7 +266,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 addEventListener("mousemove", (event) => {mouse = event});
                 
                 // Create a new PlainDraggable instance
-                const draggable = new PlainDraggable(div);
+                const draggable = new PlainDraggable(div, {containment: scrollContainerRef.current});
 
                 // Get the type of the object from the elements array
                 const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
@@ -299,14 +301,16 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 };
 
                 draggable.onDragStart = function () {
+                    console.log(activeObjectsRef.current);
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-                    if (!currentObject.active) {
+                    console.log("Dragging:", currentObject);
+                    if (!currentObject.active && false) {
                         if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 400, y: 50});
+                            AddObject("neuron", "all", "none", false, {x: 400, y: 100});
                         }
                         else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 200, y: 50});
+                            AddObject("output", "all", "none", false, {x: 200, y: 50});
                         }
                         currentObject.isActive = true;
                     }
@@ -601,15 +605,29 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
-            {elements.map((item, index) => (
-                renderObject(item.objectType, item.subType, item.datasetFileName,{
-                    key: index,
-                    name: item.id,
-                    ref: (el) => (divRefs.current[index] = el),
-                    handleRef: (el) => (handleRefs.current[index] = el),
-                    action: extAction
-                })
+            {/* Toolbar (fixed or absolute at top) */}
+            <div className="toolbarBox">
+                {elements.filter(obj => !obj.isActive).map((item, index) => (
+                    renderObject(item.objectType, item.subType, item.datasetFileName,{
+                        key: index,
+                        name: item.id,
+                        ref: (el) => (divRefs.current[index] = el),
+                        handleRef: (el) => (handleRefs.current[index] = el),
+                        action: extAction
+                    })
             ))}
+            </div>
+            <div className="stageScrollContainer" ref={scrollContainerRef}>
+                {elements.filter(obj => obj.isActive).map((item, index) => (
+                    renderObject(item.objectType, item.subType, item.datasetFileName,{
+                        key: index,
+                        name: item.id,
+                        ref: (el) => (divRefs.current[index] = el),
+                        handleRef: (el) => (handleRefs.current[index] = el),
+                        action: extAction
+                    })
+                ))}
+            </div>
         </div>
     );
 });
