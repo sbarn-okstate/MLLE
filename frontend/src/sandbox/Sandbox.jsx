@@ -367,84 +367,81 @@ function Sandbox() {
         }
     }
 
-    return(
+    return (
         <>
-            <div className="sandboxContainer"  >
-                {/*NodeDrawer is a component that has three props passed into it 
-                    the three proprs are drawerOpen, setDrawerOpen, and createNodeFunction.
-                    createNodeFunction specifically passes the "AddObject" function into NodeDrawer.
-                    This way, NodeDrawer can call "AddObject" when a use selects a node.*/}
-
-               
-
-                <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
-                <div> {/*Let the user scroll*/}
-                <Stage
-                    ref={stageRef}
-                    elements={list} 
-                    drags={draggables} 
-                    setDrags={setDraggables} 
-                    updateDrags={UpdateDraggablePos} 
-                    AddObject={AddObject}
-                    RemoveObject={RemoveObject}
-                    drawerOpen={drawerOpen}
-                    modelState={modelState} // Might not be needed in the future, used for 
-                />
-               {/* <DatasetDrawer
-                    drawerOpen={datasetDrawerOpen}
-                    setDrawerOpen={setDatasetDrawerOpen}
-                    stageRef={stageRef}
-                /> */}
-                
+            {/* Fixed Top Bar */}
+            <div className="topBar">
+                <Link to="/"><button className="sandboxButton">Go Back</button></Link>
+                <div style={{
+                    width: "100%",
+                    paddingRight: "20px",
+                    display: "inline-flex",
+                    justifyContent: "flex-end",
+                    gap: "10px"
+                }}>
+                    <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
+                    <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+                    {trainingState === 'stopped' && (
+                        <>
+                            <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
+                        </>
+                    )}
+                    {(trainingState === 'training' || trainingState === 'simulateTraining') && (
+                        <>
+                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
+                    {trainingState === 'paused' && (
+                        <>
+                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
                 </div>
-                {/* Toggle Button */}
+            </div>
+    
+            {/* Main Sandbox Area */}
+            <div className="sandboxContainer">
+                {/* Fixed NodeDrawer on the left */}
+                <div className="nodeDrawerFixed">
+                    <NodeDrawer
+                        drawerOpen={drawerOpen}
+                        setDrawerOpen={setDrawerOpen}
+                        createNodeFunction={AddObject}
+                    />
+                </div>
+    
+                {/* Fixed Top Right Status/Report */}
+                {showStatusAndReport && (
+                    <div className="topRightContainer">
+                        <Status title="Training Status" content={statusContent} />
+                        <Report ref={reportRef} title="Training Report" />
+                    </div>
+                )}
+    
+                {/* Toggle Button (can also be fixed if you want) */}
                 <button
                     className="toggleButton"
                     onClick={toggleStatusAndReport}
                 >
                     {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
                 </button>
-                {/* Conditionally Render Status and Report */}
-                {showStatusAndReport && (
-                    <div className="topRightContainer">
-                        <Status title="Training Status" content={statusContent} />
-                        <Report ref={reportRef} title="Training Report" />
-                    </div>
-                
-                )}
-                <div className="bottomBar">
-                    <Link to="/"><button className="sandboxButton">Go Back</button></Link>
-                    <div style={{
-                            width:"100%",
-                            paddingRight: "20px",
-                            display: "inline-flex",
-                            justifyContent: "flex-end",
-                            gap: "10px"
-                        }}>
-                        <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
-                        {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
-                        <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
-
-
-                        {trainingState === 'stopped' && (
-                            <>
-                            <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button>
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
-                            </>
-                        )}
-                        {(trainingState === 'training' || trainingState === 'simulateTraining') && (
-                            <>
-                                <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
-                            </>
-                        )}
-                        {trainingState === 'paused' && (
-                            <>
-                                <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
-                            </>
-                        )}
-                    </div>
+    
+                {/* Scrollable Stage */}
+                <div className="stageScrollWrapper">
+                    <Stage
+                        ref={stageRef}
+                        elements={list}
+                        drags={draggables}
+                        setDrags={setDraggables}
+                        updateDrags={UpdateDraggablePos}
+                        AddObject={AddObject}
+                        RemoveObject={RemoveObject}
+                        drawerOpen={drawerOpen}
+                        modelState={modelState}
+                    />
                 </div>
             </div>
         </>
