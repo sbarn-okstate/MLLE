@@ -44,6 +44,7 @@ import NodeDrawer from './components/NodeDrawer.jsx';
 import DatasetDrawer from './components/DatasetDrawer.jsx';
 import Status from './components/Status.jsx';
 import Report from './components/Report.jsx';
+import Toolbar from './components/Toolbar.jsx';
 
 let backend_worker = null;
 let model = null;
@@ -110,11 +111,9 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
 
 function Sandbox() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(3); // Start from 1 to avoid collision with startNode
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with dataBatcher
     const [list, setList] = useState([
-        { id: "startNode", objectType: "startNode", snapType: "lr", location: {x: 300, y: 300}, active: true},
-        { id: 1, objectType: "neuron", snapType: "all", location: {x: 400, y: 50}, active: false},
-        { id: 2, objectType: "output", snapType: "l", location: {x: 200, y: 50}, active: false},
+        { id: "dataBatcher", objectType: "dataBatcher", snapType: "lr", location: {x: 300, y: 300}, active: true},
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -172,9 +171,9 @@ function Sandbox() {
         } 
         setModelState('invalid');
 
-        const startNode = stageRef.current.getStartNode();
-        if (!startNode) {
-            console.error("Start node not found!");
+        const dataBatcher = stageRef.current.getDataBatcher();
+        if (!dataBatcher) {
+            console.error("Data batcher not found!");
             return [];
         }
     
@@ -191,7 +190,7 @@ function Sandbox() {
         };
     
         // Traverse the left link for the dataset object
-        let currentObject = startNode.leftLink;
+        let currentObject = dataBatcher.leftLink;
         if (currentObject && currentObject.objectType === "dataset") {
             //const datasetValue = getFieldValue(currentObject.name + "dataset");
             const datasetValue = currentObject.datasetFileName;
@@ -200,16 +199,16 @@ function Sandbox() {
                 dataset: datasetValue,
             });
         } else {
-            console.error("No dataset object linked to the left of the start node!");
+            console.error("No dataset object linked to the left of the data batcher!");
             setStatusContent([
                 "Missing dataset object.",
-                "Please link a dataset object to the left of the start node.",
+                "Please link a dataset object to the left of the data batcher.",
             ]);
             return chain;
         }
     
         // Traverse the right link for other objects
-        currentObject = startNode.rightLink;
+        currentObject = dataBatcher.rightLink;
         while (currentObject) {
             const objectData = { type: currentObject.objectType };
             
@@ -412,7 +411,10 @@ function Sandbox() {
                         createNodeFunction={AddObject}
                     />
                 </div>
-    
+
+                {/* Toolbar overlay */}
+                <Toolbar createNodeFunction={AddObject}/>
+
                 {/* Fixed Top Right Status/Report */}
                 
                     <div className="topRightContainer">

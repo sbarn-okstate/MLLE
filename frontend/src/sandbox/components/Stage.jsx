@@ -33,7 +33,7 @@ import {
     ConvolutionLayer5x5Object,
     ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
-import StartNode from './StartNode.jsx';
+import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
 
@@ -65,12 +65,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         if(modelState === `valid`) {
             //console.info(`LinkerLines DEBUG: Model is validated! Creating lines!`);
 
-            // Start node has to exist if the model validated
-            const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
+            // Data batcher has to exist if the model validated
+            const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
 
             // We need both current and previous object
-            let prevObject = startNode;
-            let currentObject = startNode.rightLink;
+            let prevObject = dataBatcher;
+            let currentObject = dataBatcher.rightLink;
             
             // As far as I know
             //  - The first dense layer needs connections to the object to its left
@@ -86,7 +86,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             // }
             // // TEST TEST TEST
 
-            currentObject = startNode.rightLink;
+            currentObject = dataBatcher.rightLink;
 
             while(currentObject.rightLink != null) {
                 if(currentObject.objectType === 'neuron') {
@@ -110,7 +110,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             lineTexts.push(`line${lines.length}`);
                             lines.push(
                                 new LinkerLine({
-                                    start: divRefs.current[(prevObject == startNode) ? 0 : prevObject.id],
+                                    start: divRefs.current[(prevObject == dataBatcher) ? 0 : prevObject.id],
                                     end: handleRefs.current[currentLayerNode.id],
                                     endLabel: lineTexts[lines.length],
                                     path: `straight`}));
@@ -166,7 +166,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 lineTexts.push(`line${lines.length}`);
                                 lines.push(
                                     new LinkerLine({
-                                        //start: divRefs.current[(currentLayerNode == startNode) ? 0 : currentLayerNode.id],
+                                        //start: divRefs.current[(currentLayerNode == dataBatcher) ? 0 : currentLayerNode.id],
                                         start: handleRefs.current[currentLayerNode.id],
                                         end: handleRefs.current[currentNextLayerNode.id],
                                         endLabel: lineTexts[lines.length],
@@ -237,10 +237,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
 
-    // 2. Expose startNode and activeObjects via the ref
+    // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
-        getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
+        getDataBatcher: () => activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher"),
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
     }));
@@ -301,16 +301,18 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-                    if (!currentObject.active) {
+
+                    
+                    if (!currentObject.isActive && false) {
                         if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 400, y: 50});
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
                         }
                         else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 200, y: 50});
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 200, y: 50});
                         }
                         currentObject.isActive = true;
                     }
-                    //console.log("Dragging:", currentObject);
+
                 }
 
                 draggable.onDragEnd = function () {
@@ -492,7 +494,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         return closestPoint;
     }
 
-    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active) {
+    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active = true) {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -547,8 +549,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             : {}; // Default to an empty object if no currentObject
 
         switch (objectType) {
-            case "startNode":
-                return <StartNode key={key} {...restProps} linkStates={linkStates}/>;
+            case "dataBatcher":
+                return <DataBatcher key={key} {...restProps} linkStates={linkStates}/>;
             case "dataset":
             //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
