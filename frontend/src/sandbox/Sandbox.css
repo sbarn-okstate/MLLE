@@ -201,11 +201,8 @@
     gap: 10px;
 }
 
-
 .toggleButton {
-    position: fixed;
-    top: 10px;
-    left: 10px;
+    position: relative;
     z-index: 10000; /* Ensure it stays above other elements */
     padding: 10px 20px;
     background-color: #007bff;

@@ -414,20 +414,24 @@ function Sandbox() {
                 </div>
     
                 {/* Fixed Top Right Status/Report */}
-                {showStatusAndReport && (
+                
                     <div className="topRightContainer">
-                        <Status title="Training Status" content={statusContent} />
-                        <Report ref={reportRef} title="Training Report" />
+                        {showStatusAndReport && (
+                            <>
+                                <Status title="Training Status" content={statusContent} />
+                                <Report ref={reportRef} title="Training Report" />
+                            </>
+                        )}
+                        {/* Toggle Button (can also be fixed if you want) */}
+                        <button
+                            className="toggleButton"
+                            onClick={toggleStatusAndReport}
+                        >
+                            {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
+                        </button>
                     </div>
-                )}
     
-                {/* Toggle Button (can also be fixed if you want) */}
-                <button
-                    className="toggleButton"
-                    onClick={toggleStatusAndReport}
-                >
-                    {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                </button>
+                
     
                 {/* Scrollable Stage */}
                 <div className="stageScrollWrapper">
