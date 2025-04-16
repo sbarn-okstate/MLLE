@@ -305,7 +305,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
                     console.log("Dragging:", currentObject);
-                    if (!currentObject.active) {
+                    if (!currentObject.active && false) {
                         if(currentObject.objectType === "neuron"){
                             AddObject("neuron", "all", "none", false, {x: 400, y: 100});
                         }
@@ -607,28 +607,26 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         <div id="stage" className="stage" ref={stageRef}>
             {/* Toolbar (fixed or absolute at top) */}
             <div className="toolbarBox">
-                {elements.filter(obj => !obj.isActive).map((item) => {
-                    const originalIndex = elements.findIndex(e => e.id === item.id);
-                    return renderObject(item.objectType, item.subType, item.datasetFileName, {
-                        key: item.id,
+                {elements.filter(obj => !obj.isActive).map((item, index) => (
+                    renderObject(item.objectType, item.subType, item.datasetFileName,{
+                        key: index,
                         name: item.id,
-                        ref: (el) => (divRefs.current[originalIndex] = el),
-                        handleRef: (el) => (handleRefs.current[originalIndex] = el),
+                        ref: (el) => (divRefs.current[index] = el),
+                        handleRef: (el) => (handleRefs.current[index] = el),
                         action: extAction
-                    });
-                })}
+                    })
+            ))}
             </div>
             <div className="stageScrollContainer" ref={scrollContainerRef}>
-                {elements.filter(obj => obj.isActive).map((item) => {
-                    const originalIndex = elements.findIndex(e => e.id === item.id);
-                    return renderObject(item.objectType, item.subType, item.datasetFileName, {
-                        key: item.id,
+                {elements.filter(obj => obj.isActive).map((item, index) => (
+                    renderObject(item.objectType, item.subType, item.datasetFileName,{
+                        key: index,
                         name: item.id,
-                        ref: (el) => (divRefs.current[originalIndex] = el),
-                        handleRef: (el) => (handleRefs.current[originalIndex] = el),
+                        ref: (el) => (divRefs.current[index] = el),
+                        handleRef: (el) => (handleRefs.current[index] = el),
                         action: extAction
-                    });
-                })}
+                    })
+                ))}
             </div>
         </div>
     );
