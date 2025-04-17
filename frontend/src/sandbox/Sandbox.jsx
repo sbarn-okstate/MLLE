@@ -41,7 +41,6 @@ import './Sandbox.css';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
-import DatasetDrawer from './components/DatasetDrawer.jsx';
 import Status from './components/Status.jsx';
 import Report from './components/Report.jsx';
 import Toolbar from './components/Toolbar.jsx';
@@ -117,8 +116,6 @@ function Sandbox() {
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
-
     const [trainingState, setTrainingState] = useState('stopped');
     const [modelState, setModelState] = useState('invalid');
     const [statusContent, setStatusContent] = useState([

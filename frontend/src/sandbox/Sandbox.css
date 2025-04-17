@@ -26,60 +26,8 @@
     transition: color 0.1s linear;
 }
 
-.drawerDiv {
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0px;
-    transition: all 0.2s ease-in;
-}
 
-.drawerDivCollapsed {
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    left: var(--nodeDrawerCollapsePos);
-    transition: all 0.2s ease-in;
-}
 
-.nodeDrawer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    position: relative;
-    width: var(--nodeDrawerWidth);
-    height: 100%;
-    background-color: rgba(69, 69, 69, 0.65);
-    backdrop-filter: blur(4px);
-    overflow-y: scroll;
-    z-index: 89000;
-}
-
-.nodeDrawerHandle {
-    position: absolute;
-    top: 40%;
-    left: 100%;
-    width: 25px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(57, 57, 57);
-    clip-path: xywh(0px 0px 100% 100% round 0px 5px 5px 0px);
-    z-index: 89001;
-    transition: all 0.2s ease-in;
-}
-
-.nodeDrawerHandle:hover {
-    background-color: rgb(78, 78, 78);
-    transition: all 0.2s ease-in;
-}
-
-.nodeDrawerHandle:active {
-    background-color: var(--activeColor);
-    transition: all 0.1s ease-in;
-}
 
 .sandboxContainer {
     position: relative;
@@ -227,21 +175,24 @@
 
 .nodeDrawerFixed {
     position: fixed;
-    top: 70px; /* below topBar */
+    top: 60px; /* below topBar */
     left: 0;
     z-index: 1100;
+    min-width: 200px;
+    height: calc(100vh - 90px); /* fill only below the topBar */
+    overflow: visible;
 }
 
 .topCenterContainer {
     position: fixed;
-    top: 70px; /* adjust to be below your .topBar */
+    top: 60px; /* adjust to be below your .topBar */
     left: 50%;
     transform: translateX(-50%);
     z-index: 1100;
     display: flex;
     gap: 16px;
     background: rgba(255,255,255,0.95);
-    border-radius: 8px;
+
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     padding: 8px 24px;
     pointer-events: auto;
