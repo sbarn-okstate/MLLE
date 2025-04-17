@@ -519,7 +519,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             subType: subType,
             datasetFileName: datasetFileName,
             element: div,
-            leftLink: null,
+            leftLink: null, //add false or 0 state when no link and snap point should be inactive
             rightLink: null,
             topLink: null,
             bottomLink: null,
