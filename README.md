@@ -41,3 +41,6 @@
 - [ ] Remove unused variables, functions, and classes.
 - [ ] Rename variables, functions, and classes to be appropriate.
 - [ ] Cleanup and refactor code where appropriate to improve readability.
+
+# Notes for presentation
+ - Future work: allow user to select which input features to utilize
