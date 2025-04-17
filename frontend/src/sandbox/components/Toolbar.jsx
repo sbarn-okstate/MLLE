@@ -48,7 +48,7 @@ const Toolbar = ({ createNodeFunction }) => (
     <div className="topCenterContainer">
         <ToolbarObject
             type="neuron"
-            N={5}
+            N={12}
             count={0}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Neuron info")}
@@ -64,7 +64,7 @@ const Toolbar = ({ createNodeFunction }) => (
         <div className="toolbarObjectDivider" />
         <ToolbarObject
             type="output"
-            N={2}
+            N={1}
             count={0}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Output layer info")}
