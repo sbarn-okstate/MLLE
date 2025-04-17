@@ -367,6 +367,14 @@ function Sandbox() {
         }
     }
 
+    const linkerChangeTest = () => {
+        if (stageRef.current) {
+            stageRef.current.linkerChangeTest();
+        } else {
+            console.error("Stage reference is not available!");
+        }
+    }
+
     return(
         <>
             <div className="sandboxContainer"  >
@@ -422,6 +430,7 @@ function Sandbox() {
                             gap: "10px"
                         }}>
                         <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
+                        <button className="sandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button>
                         {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
                         <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
 
