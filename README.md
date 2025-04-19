@@ -28,7 +28,7 @@
 - [ ] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
   
 # TODO visual (Medium Priority)
-- [ ] Move button bar to the top of the screen
+- [x] Move button bar to the top of the screen
 - [ ] Resize objects so that spacing and linker lines look good.
 - [ ] Update activation function visuals to show what data it modifys (vertical highlight)
 - [ ] Update all objects so that they match the style of the neurons
