@@ -44,6 +44,9 @@ import NodeDrawer from './components/NodeDrawer.jsx';
 import Status from './components/Status.jsx';
 import Report from './components/Report.jsx';
 import Toolbar from './components/Toolbar.jsx';
+import fullscreenOut from '../assets/fullscreen-out.svg';
+import fullscreenIn from '../assets/fullscreen-in.svg';
+
 
 let backend_worker = null;
 let model = null;
@@ -131,6 +134,26 @@ function Sandbox() {
     const reportRef = useRef(null);
     const stageRef = useRef(null); // Reference to the stage component
 
+    // Fullscreen handler
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const handleFullscreen = () => {
+        const elem = document.documentElement;
+        if (!document.fullscreenElement) {
+            if (elem.requestFullscreen) elem.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+        }
+    };
+
+    // Listen for fullscreen changes to update button icon
+    useEffect(() => {
+        function onFullscreenChange() {
+            setIsFullscreen(!!document.fullscreenElement);
+        }
+        document.addEventListener("fullscreenchange", onFullscreenChange);
+        return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+    }, []);
+    
     // This gets executed when the DOM is updated
     useEffect(() => {
         UpdateDraggablePos();
@@ -457,6 +480,18 @@ function Sandbox() {
                         drawerOpen={drawerOpen}
                         modelState={modelState}
                     />
+                    {/* Fullscreen Button */}
+                    <button
+                        className="fullscreenButton"
+                        onClick={handleFullscreen}
+                        title="Toggle Fullscreen"
+                    >
+                        <img
+                            src={isFullscreen ? fullscreenIn : fullscreenOut}
+                            alt={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                            style={{ width: 32, height: 32 }}
+                        />
+                    </button>
                 </div>
             </div>
         </>
