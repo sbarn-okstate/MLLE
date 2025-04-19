@@ -2,6 +2,23 @@
     background-color: rgb(220, 220, 220);
     position: absolute;
     overflow: hidden;
-    width: 4000px;
-    height: 100%;
+    width:150%;
+    height: 200%;
+}
+
+.recycle-bin {
+    position: fixed;
+    right: 2vw;
+    bottom: 3vh;
+    width: 10vw;      /* Scales with viewport width */
+    height: 10vw;     /* Keeps it square and responsive */
+    background: transparent;
+    border: 2px dashed #888;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3vw; /* Scales with viewport width */
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }

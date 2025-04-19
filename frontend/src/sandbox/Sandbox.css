@@ -75,16 +75,6 @@
     transition: all 0.1s ease-in;
 }
 
-
-  
-.stage {
-    background-color: rgb(220, 220, 220);
-    position: absolute;
-    overflow: hidden;
-    width: 150%;
-    height: 150%;
-}
-
 .drawerNode {
     position: relative;
     background-color: red;

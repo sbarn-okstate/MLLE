@@ -36,6 +36,7 @@ import {
 import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
 //Sandbox.jsx uses this component~
@@ -326,21 +327,30 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
                     clearLinks(currentObject);
 
-                    if (mouse.y < 250) {
+                    
+                    const recycleBin = document.getElementById("recycle-bin");
+                    const recycleRect = recycleBin.getBoundingClientRect();
+
+                    // Check if mouse or object overlaps recycle bin
+                    const mouseInBin = mouse &&
+                    mouse.clientX >= recycleRect.left &&
+                    mouse.clientX <= recycleRect.right &&
+                    mouse.clientY >= recycleRect.top &&
+                    mouse.clientY <= recycleRect.bottom;
+
+                    if (mouseInBin) {
                         if(currentObject.id !== "dataBatcher"){
-                            //draggable.remove();
                             RemoveObject(currentObject.id);
                             activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
                             setActiveObjectsState([...activeObjectsRef.current]);
                             return;
                         }
-                        //extAction(divRefs[item.id]);
                     }
+
                     if (snap) {
                         findClosestSnapPoint(currentObject, activeObjectsRef, 5, true);
                         //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
-
 
                     LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
@@ -664,6 +674,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     action: extAction
                 })
             ))}
+            <div id="recycle-bin" className="recycle-bin">
+                🗑️
+            </div>
         </div>
     );
 });
