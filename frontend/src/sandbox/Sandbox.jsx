@@ -382,7 +382,7 @@ function Sandbox() {
                     <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
                     {trainingState === 'stopped' && (
                         <>
-                            <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button>
+                            {/* <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button> */}
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
                         </>
                     )}

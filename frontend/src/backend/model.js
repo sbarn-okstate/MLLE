@@ -115,86 +115,124 @@ export async function prepareModel({layers, dataset}, self) {
 }
 
 export async function trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 20) {
+    
+    //Add checker here to see whether the model is one we have saved.
+    //If not then execute the code below
+
+    const response = await fetch('/json/sampleModel.json'); // Adjust the path if necessary
+    //Deserializes JSON file as an object.
+    const jsonData = await response.json();
+    
+    //Try statement for reading json file
     try {
-        if (!model) {
-            self.postMessage('Model not prepared. Please prepare model before training.');
-            return;
-        }
+        //==============SIMULATE TRAINING==========SIMULATE TRAINING==========SIMULATE TRAINING==========SIMULATE TRAINING==========
+        //Will need to change SampleModel to whatever the passed variable fileName is.
 
-        self.postMessage('Preparing dataset...');
-        let csvDataset = await loadCSV(fileName);
-        let dataArray = await csvDataset.toArray();
-
-        await tf.ready();
-
-        tf.util.shuffle(dataArray);
-        const processedDataset = dataArray.map(({ xs, ys }) => {
-            return { xs: Object.values(xs), ys: Object.values(ys) };
-        });
-
-        // Separate xs and ys into two arrays
-        const xsArray = processedDataset.map(d => d.xs);
-        const ysArray = processedDataset.map(d => d.ys);
-
-        // Convert xs and ys to tensors
-        const xsTensor = tf.tensor2d(xsArray);
-        const ysTensor = tf.tensor2d(ysArray);
-
-        self.postMessage("Dataset processed.");
-
-        pauseResumeCallback = new PauseResumeCallback();
-
-        //Used to store training metrics.
-        //Will be turned into a .json later.
-        //The link below talks about serializing arrays
-        //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
-        let trainingMetrics = [];
-
-        await model.fit(xsTensor, ysTensor, {
-            epochs: epochs,
-            batchSize: batchSize,
-            callbacks: {
-                onTrainingBegin: () => {
-                    self.postMessage('Training started...');
-                },
-                onEpochEnd: (epoch, logs) => {
-                    const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
-                    const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
-
-                    // Push the epoch data into the array
-                    trainingMetrics.push({
-                        epoch: epoch + 1,
-                        loss: parseFloat(loss),
-                        accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
-                        weight: weightArray,
-                    });
-
-                    //console.log(JSON.stringify(trainingMetrics));
-                    console.log("training metrics:", trainingMetrics)
-                    //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
         
-                    // Save weights, epoch, loss, and accuracy to shared memory
-                    saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
-                },
-                onTrainingEnd: () => {
-                    //console.log("✅ Reached onTrainingEnd callback");
-                    self.postMessage("Training complete!");
-                },
-                onBatchEnd: async (batch, logs) => {
-                    const batchLoss = logs.loss.toFixed(4); // Batch loss
-                    const batchAccuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Batch accuracy
-                    //self.postMessage(`Batch ${batch + 1}: loss = ${batchLoss}, accuracy = ${batchAccuracy}`);
-                    await pauseResumeCallback.onBatchEnd(batch, logs);
-                },
+        //If the model the user created matches a pretrained model we have. 
+        if (JSON.stringify(chainOfObjects) === JSON.stringify(jsonData[0]["chainOfObjects"])) {
+            self.postMessage("Model matches the one in sampleModel.json!");
+            //goes to backend.js 
+            //TRAINING SIMULATON TAKES PLACE HERE.
+            self.postMessage({ func: "simulateTrainingWithDelay", args: {jsonData} })
+            //Might not need this: return jsonData; //returns what is saved in the json file.
+        }
+        //==============SIMULATE TRAINING==========SIMULATE TRAINING==========SIMULATE TRAINING==========SIMULATE TRAINING==========
+        
+        //==============TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========
+        //If the model the user created DOES NOT match a pretrained model that we have.
+        else{
+            // self.postMessage("Model does not match the one in sampleModel.json! Will be training from scratch.");
+            // // self.postMessage("Model is:", model);
+            // self.postMessage("Model in sampleModel.json is:", jsonData[0]["chainOfObjects"]);
+            //Try statement for training the model!
+            try {
+                if (!model) {
+                    self.postMessage('Model not prepared. Please prepare model before training.');
+                    return;
+                }
+
+                self.postMessage('Preparing dataset...');
+                let csvDataset = await loadCSV(fileName);
+                let dataArray = await csvDataset.toArray();
+
+                await tf.ready();
+
+                tf.util.shuffle(dataArray);
+                const processedDataset = dataArray.map(({ xs, ys }) => {
+                    return { xs: Object.values(xs), ys: Object.values(ys) };
+                });
+
+                // Separate xs and ys into two arrays
+                const xsArray = processedDataset.map(d => d.xs);
+                const ysArray = processedDataset.map(d => d.ys);
+
+                // Convert xs and ys to tensors
+                const xsTensor = tf.tensor2d(xsArray);
+                const ysTensor = tf.tensor2d(ysArray);
+
+                self.postMessage("Dataset processed.");
+
+                pauseResumeCallback = new PauseResumeCallback();
+
+                //Used to store training metrics.
+                //Will be turned into a .json later.
+                //The link below talks about serializing arrays
+                //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
+                let trainingMetrics = [];
+
+                await model.fit(xsTensor, ysTensor, {
+                    epochs: epochs,
+                    batchSize: batchSize,
+                    callbacks: {
+                        onTrainingBegin: () => {
+                            self.postMessage('Training started...');
+                        },
+                        onEpochEnd: (epoch, logs) => {
+                            const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
+                            const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
+
+                            // Push the epoch data into the array
+                            trainingMetrics.push({
+                                epoch: epoch + 1,
+                                loss: parseFloat(loss),
+                                accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
+                                weight: weightArray,
+                            });
+
+                            //console.log(JSON.stringify(trainingMetrics));
+                            console.log("training metrics:", trainingMetrics)
+                            //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
+                
+                            // Save weights, epoch, loss, and accuracy to shared memory
+                            saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
+                        },
+                        onTrainingEnd: () => {
+                            //console.log("✅ Reached onTrainingEnd callback");
+                            self.postMessage("Training complete!");
+                        },
+                        onBatchEnd: async (batch, logs) => {
+                            const batchLoss = logs.loss.toFixed(4); // Batch loss
+                            const batchAccuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Batch accuracy
+                            //self.postMessage(`Batch ${batch + 1}: loss = ${batchLoss}, accuracy = ${batchAccuracy}`);
+                            await pauseResumeCallback.onBatchEnd(batch, logs);
+                        },
+                    }
+                });
+                // Call to capture training
+                //==========Obtain Training Metrics===========
+                self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
+                //==========Obtain Training Metrics===========
+                console.log("🚀 model.fit completed without error");
+            } catch (error) {
+                self.postMessage(`Error during training: ${error.message}`);
             }
-        });
-        // Call to capture training
-        //==========Obtain Training Metrics===========
-        self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
-        //==========Obtain Training Metrics===========
-        console.log("🚀 model.fit completed without error");
-    } catch (error) {
-        self.postMessage(`Error during training: ${error.message}`);
+        }
+        //==============TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========TRAINING FROM SCRATCH==========
+
+    //This catch error is for reading the json file
+    }catch (error) { 
+        console.error("Error loading sampleModel.json:", error)
     }
 }
 
