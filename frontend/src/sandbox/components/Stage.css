@@ -8,8 +8,8 @@
 
 .recycle-bin {
     position: fixed;
-    right: 2vw;
-    bottom: 3vh;
+    right:20px;
+    bottom: 8vh;
     width: 10vw;      /* Scales with viewport width */
     height: 10vw;     /* Keeps it square and responsive */
     background: transparent;
