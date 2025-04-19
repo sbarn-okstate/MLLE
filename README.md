@@ -21,9 +21,9 @@
 - [ ] Add visual component to neurons that reflect biases
 - [ ] Figure out how to package the webapp - JM
 - [ ] Add a fullscreen button in the bottom right - JM
-- [ ] Make objects removeable by dragging to specific location - SB
+- [x] Make objects removeable by dragging to specific location - SB
 - [ ] Change startNode to 'Data Batcher'
-- [ ] Add specific drawers for datasets and activation functions - SB
+- [x] Add specific drawers for datasets and activation functions - SB
 - [ ] Add tooltip buttons for each type of object and some buttons. (possibly add links to websites with more information)
 - [ ] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
   
