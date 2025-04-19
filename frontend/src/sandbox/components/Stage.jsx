@@ -326,11 +326,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
                     clearLinks(currentObject);
 
-                    if (snap) {
-                        updateLinks(currentObject, snap);
-                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
-                    }
-
                     if (mouse.y < 250) {
                         if(currentObject.id !== "dataBatcher"){
                             //draggable.remove();
@@ -341,6 +336,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         }
                         //extAction(divRefs[item.id]);
                     }
+                    if (snap) {
+                        findClosestSnapPoint(currentObject, activeObjectsRef, 5, true);
+                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
+                    }
+
 
                     LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
@@ -380,15 +380,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     snap.otherObject.bottomLink = obj;
 
                     // Set left and right links to 0 when snapping to the top
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 } else if (snap.currentPoint.type === "bottom") {
                     obj.bottomLink = snap.otherObject;
                     snap.otherObject.topLink = obj;
 
                     // Set left and right links to 0 when snapping to the bottom
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 }
             }
             return obj;
@@ -418,7 +422,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
     // custom snapping behavior
-    function findClosestSnapPoint(currentObject, activeObjectsRef) {
+    function findClosestSnapPoint(currentObject, activeObjectsRef, minDistance = 50, linkIfValid = false) {
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -451,8 +455,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                    currentRect.top + currentRect.height / 2, // For left and right, y is centered
             }));
     
-        let closestPoint = null;
-        let minDistance = 50; // Max snap distance
+        let pairs = []; //
     
         activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
@@ -472,11 +475,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             .map(point => ({
                 type: point.type,
                 x: point.type === "left" ? otherRect.left :
-                point.type === "right" ? otherRect.right :
-                otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
+                    point.type === "right" ? otherRect.right :
+                    otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
                 y: point.type === "top" ? otherRect.top :
-                point.type === "bottom" ? otherRect.bottom :
-                otherRect.top + otherRect.height / 2, // For left and right, y is centered
+                    point.type === "bottom" ? otherRect.bottom :
+                    otherRect.top + otherRect.height / 2, // For left and right, y is centered
             }));
     
             // Compare current snap points with other snap points
@@ -492,15 +495,43 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     if (isValidSnap) {
                         const distance = Math.hypot(currentPoint.x - otherPoint.x, currentPoint.y - otherPoint.y);
                         if (distance < minDistance) {
-                            minDistance = distance;
-                            closestPoint = { currentPoint, otherPoint, currentObject, otherObject };
+                            pairs.push({
+                                currentPoint,
+                                otherPoint,
+                                currentObject,
+                                otherObject,
+                                distance,
+                                priority: (
+                                    (currentPoint.type === "left" && otherPoint.type === "right") ||
+                                    (currentPoint.type === "right" && otherPoint.type === "left")
+                                ) ? 1 : 2 // 1 = left/right, 2 = top/bottom
+                            });
                         }
                     }
                 });
             });
         });
-    
-        return closestPoint;
+        // Sort pairs: left/right first, then top/bottom, then by distance
+        pairs.sort((a, b) => a.priority - b.priority || a.distance - b.distance);
+
+        if (linkIfValid) {
+            // Link all left/right pairs first, then top/bottom
+            pairs.forEach(pair => {
+                if (pair.priority === 1) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            pairs.forEach(pair => {
+                if (pair.priority === 2) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            // No need to return a closest point in this mode
+            return null;
+        } else {
+            // Return the closest pair (prioritizing left/right)
+            return pairs.length > 0 ? pairs[0] : null;
+        }
     }
 
     function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active = true) {
