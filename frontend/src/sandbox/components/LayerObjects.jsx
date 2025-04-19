@@ -93,7 +93,7 @@ export function renderLinkIndicators(linkStates) {
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-container" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -113,7 +113,7 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "dragg
     );
 };
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "draggable" }) {
+export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "dataset-container" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride + " dataset-nbc500-object"}>
             <div ref={handleRef} className="nodeHandle">
@@ -228,13 +228,13 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "draggable", linkStates = {} }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
 
     return (
         <div
             ref={ref}
             id={name}
-            className={`${classNameOverride} neuron-container`}
+            className={`${classNameOverride}`}
         >
             {/* Draggable handle in the center */}
             <div ref={handleRef} className="neuron">

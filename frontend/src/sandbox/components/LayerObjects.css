@@ -1,8 +1,16 @@
+.draggable {
+    position: absolute;
+    background-color: red;
+    display: inline-block;
+    padding: 2px;
+    border-radius: 5px;
+}
+
 /* Neuron container */
 .neuron-container {
-    width: 100px; /* Increased size */
+    width: 200px; /* Increased size */
     height: 100px;
-    position: relative;
+    position: absolute;
     background-color: transparent; /* Transparent bounding box */
     pointer-events: none; /* Prevent mouse events */
     border: none;
@@ -70,6 +78,22 @@
     background-color: rgb(255, 88, 88);
 }
 
+.dataset-container {
+    width: 200px; /* Increased size */
+    height: 300px;
+    position: absolute;
+    background-color: transparent; /* Transparent bounding box */
+    pointer-events: all; /* Prevent mouse events */
+    border: none;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    user-select: none;
+}
+
+
 /* NBC500 dataset object with image */
 .dataset-nbc500-object {
     background-color: rgb(255, 88, 88);
@@ -77,8 +101,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100%;
-    width: 100%;
     padding: 8px;
 }
 
@@ -89,4 +111,19 @@
     object-fit: contain;
     border-radius: 8px;
     margin-top: 8px;
+}
+
+
+.nodeHandle {
+    background-color: black;
+    /*position: fixed;*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+    z-index: 100;
 }

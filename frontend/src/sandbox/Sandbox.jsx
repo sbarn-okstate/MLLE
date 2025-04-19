@@ -413,7 +413,7 @@ function Sandbox() {
                 </div>
 
                 {/* Toolbar overlay */}
-                <Toolbar createNodeFunction={AddObject}/>
+                <Toolbar createNodeFunction={AddObject} elements={list}/>
 
                 {/* Fixed Top Right Status/Report */}
                 
