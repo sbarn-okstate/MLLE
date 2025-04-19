@@ -1,0 +1,59 @@
+.activation-container {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    width: 100px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.activation-extension {
+    position: absolute;
+    top: 0;
+    /* left should be set via inline style for dynamic positioning */
+    width: 50px;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(74, 144, 226, 1) 0%,
+        rgba(74, 144, 226, 0.50) 60%,
+        rgba(74, 144, 226, 0) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 16px;
+}
+
+.activation {
+    background: rgba(74, 144, 226, 0.50) ;
+    color: #fff;
+    width: 50px;         /* Narrower */
+    height: 150px;       /* Taller */
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    z-index: 5;
+    pointer-events: all;
+    position: relative;
+    writing-mode: vertical-rl;      /* Makes text vertical */
+    text-orientation: mixed;        /* Keeps letters upright */
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.activation.toolbar-preview {
+    background: rgba(74, 144, 226, 1) !important; /* Solid color for preview */
+    transform: rotate(-90deg) !important; /* Rotate the preview */
+}

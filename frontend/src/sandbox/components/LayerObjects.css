@@ -6,38 +6,6 @@
     border-radius: 5px;
 }
 
-/* Neuron container */
-.neuron-container {
-    width: 200px; /* Increased size */
-    height: 100px;
-    position: absolute;
-    background-color: transparent; /* Transparent bounding box */
-    pointer-events: none; /* Prevent mouse events */
-    border: none;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: grab;
-    user-select: none;
-}
-
-/* Draggable handle in the center */
-.neuron {
-    width: 50px;
-    height: 50px;
-    background-color: #4CAF50;
-    border-radius: 5px;
-    display: flex;
-    pointer-events: all; /* Allow mouse events */
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 12px;
-    color: white;
-    cursor: grab;
-    z-index: 100;
-}
 
 /* Link indicators */
 .link-indicator {
@@ -65,7 +33,7 @@
 .bottom-link {
     bottom: -25px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(180deg);
 }
 
 .left-link {
@@ -73,46 +41,6 @@
     top: 50%;
     transform: translateY(-50%) rotate(0deg);
 }
-
-.dataset-object {
-    background-color: rgb(255, 88, 88);
-}
-
-.dataset-container {
-    width: 200px; /* Increased size */
-    height: 300px;
-    position: absolute;
-    background-color: transparent; /* Transparent bounding box */
-    pointer-events: all; /* Prevent mouse events */
-    border: none;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: grab;
-    user-select: none;
-}
-
-
-/* NBC500 dataset object with image */
-.dataset-nbc500-object {
-    background-color: rgb(255, 88, 88);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 8px;
-}
-
-.dataset-nbc500-image {
-    width: 90%;
-    height: auto;
-    max-height: 120px;
-    object-fit: contain;
-    border-radius: 8px;
-    margin-top: 8px;
-}
-
 
 .nodeHandle {
     background-color: black;

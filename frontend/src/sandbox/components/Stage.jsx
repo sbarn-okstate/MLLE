@@ -18,7 +18,7 @@ import {
     DatasetFashionMNISTObject,
 
     DenseLayerObject,
-    ActivationLayerObject,
+    ActivationObject,
     ConvolutionLayerObject,
     NeuronObject,
     
@@ -65,7 +65,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         ]
     }
     */
-
+    const [activationHighlights, setActivationHighlights] = useState([]);
     const activeObjectsRef = useRef([]);
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
@@ -273,6 +273,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                         // Explicitly update the draggable's position
                         draggable.position();  
+                    }
+
+                    if (item.objectType === "activation") {
+                        updateActivationHighlight(item.id);
                     }
                 };
 
@@ -552,6 +556,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         return newObject;
     }
 
+    function updateActivationHighlight(id) {
+        const el = divRefs.current[id];
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            const stageRect = stageRef.current.getBoundingClientRect();
+            setActivationHighlights(prev => {
+                // Remove old entry for this id, add new one
+                const filtered = prev.filter(h => h.id !== id);
+                return [...filtered, { id, left: rect.left - stageRect.left, width: rect.width }];
+            });
+        }
+    }
+
     function renderObject(objectType, subType, datasetFileName, props) {
         const { key, ...restProps } = props; // Extract the key from props
 
@@ -592,7 +609,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "dense":
                 return <DenseLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "activation":
-                //return <ActivationLayerObject key={key} {...restProps} />;
+                return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
                     case "relu":
                         return <ReluObject key={key} {...restProps} linkStates={linkStates} />;
@@ -624,6 +641,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
+            {activationHighlights.map(({ id, left, width }) => (
+                <div
+                key={id}
+                className="activation-extension"
+                style={{ left: left + width / 2 - 25 }}
+              />
+            ))}
             {elements.map((item) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName, {
                     key: item.id,
