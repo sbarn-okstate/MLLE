@@ -20,7 +20,7 @@
 - [ ] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
 - [ ] Add visual component to neurons that reflect biases
 - [ ] Figure out how to package the webapp - JM
-- [ ] Add a fullscreen button in the bottom right - JM
+- [x] Add a fullscreen button in the bottom right - JM
 - [x] Make objects removeable by dragging to specific location - SB
 - [ ] Change startNode to 'Data Batcher'
 - [x] Add specific drawers for datasets and activation functions - SB
