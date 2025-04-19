@@ -95,15 +95,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
         // Check if the model is valid
         if (modelState === `valid`) {
-            const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
+            const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
     
-            if (!startNode) {
-                console.error("Start node not found!");
+            if (!dataBatcher) {
+                console.error("Data batcher not found!");
                 return;
             }
     
-            let prevObject = startNode;
-            let currentObject = startNode.rightLink;
+            let prevObject = dataBatcher;
+            let currentObject = dataBatcher.rightLink;
             let firstDense = true;
     
             while (currentObject && currentObject.rightLink != null) {
@@ -116,7 +116,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
                         while (currentLayerNode != null) {
                             const newLine = new LinkerLine({
-                                start: divRefs.current[(prevObject === startNode) ? 0 : prevObject.id],
+                                start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
                                 dash: true,
                                 path: thing
