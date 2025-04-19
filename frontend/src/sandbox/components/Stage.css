@@ -15,6 +15,7 @@
     background: transparent;
     border: 2px dashed #888;
     border-radius: 12px;
+    pointer-events: none; /* Prevent mouse events */;
     display: flex;
     align-items: center;
     justify-content: center;
