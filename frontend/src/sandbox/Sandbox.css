@@ -26,80 +26,29 @@
     transition: color 0.1s linear;
 }
 
-.drawerDiv {
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0px;
-    transition: all 0.2s ease-in;
-}
 
-.drawerDivCollapsed {
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    left: var(--nodeDrawerCollapsePos);
-    transition: all 0.2s ease-in;
-}
 
-.nodeDrawer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    position: relative;
-    width: var(--nodeDrawerWidth);
-    height: 100%;
-    background-color: rgba(69, 69, 69, 0.65);
-    backdrop-filter: blur(4px);
-    overflow-y: scroll;
-    z-index: 89000;
-}
 
-.nodeDrawerHandle {
-    position: absolute;
-    top: 40%;
-    left: 100%;
-    width: 25px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(57, 57, 57);
-    clip-path: xywh(0px 0px 100% 100% round 0px 5px 5px 0px);
-    z-index: 89001;
-    transition: all 0.2s ease-in;
-}
-
-.nodeDrawerHandle:hover {
-    background-color: rgb(78, 78, 78);
-    transition: all 0.2s ease-in;
-}
-
-.nodeDrawerHandle:active {
-    background-color: var(--activeColor);
-    transition: all 0.1s ease-in;
-}
-
-/* replacement for body, which is defined in index.css */
 .sandboxContainer {
-    margin: 0;
-    display: flex;
-    place-items: start;
-    min-width: 800px;
-    min-height: 100vh;
+    position: relative;
+    width: 100vw;
+    height: calc(100vh - 60px); /* adjust 60px to your .topBar height */
+    top: 30px; /* adjust 30px to your .topBar height */
+    overflow: hidden;
 }
 
-.bottomBar {
-    overflow: hidden;
+.topBar {
     position: fixed;
-    display: inline-flex;
-    bottom: 0;
-    width: 100%;
-    padding: 10px;
-    backdrop-filter: blur(4px);
-    z-index: 90000; /* Always on top! */
-    background-color: rgba(69, 69, 69, 0.65);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: rgb(100,100,100);
+    z-index: 1002;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-bottom: 1px solid #ddd;
 }
 
 .sandboxButton {
@@ -124,16 +73,6 @@
     background-color: var(--activeColor);
     color: black;
     transition: all 0.1s ease-in;
-}
-
-
-  
-.stage {
-    background-color: rgb(220, 220, 220);
-    position: absolute;
-    overflow: hidden;
-    width: 4000px;
-    height: 100%;
 }
 
 .drawerNode {
@@ -161,7 +100,7 @@
     justify-content: center;
     border-radius: 5px;
     width: 100%;
-    height: 20px;
+    height: 100%;
     overflow: hidden;
     transition: all 0.2s ease-in;
     z-index: 100;
@@ -191,19 +130,18 @@
 }
 
 .topRightContainer {
-    position: fixed; /* Fix the container to the viewport */
-    top: 10px; /* Distance from the top of the viewport */
-    right: 10px; /* Distance from the right of the viewport */
+    position: fixed;
+    top: 70px; /* below topBar */
+    right: 20px;
+    z-index: 1100;
     display: flex;
-    flex-direction: column; 
-    gap: 10px; 
+    flex-direction: column;
+    gap: 10px;
 }
 
 .toggleButton {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1000; /* Ensure it stays above other elements */
+    position: relative;
+    z-index: 10000; /* Ensure it stays above other elements */
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -216,4 +154,36 @@
 
 .toggleButton:hover {
     background-color: #0056b3;
+}
+
+.stageScrollWrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+}
+
+.nodeDrawerFixed {
+    position: fixed;
+    top: 60px; /* below topBar */
+    left: 0;
+    z-index: 1100;
+    min-width: 200px;
+    height: calc(100vh - 90px); /* fill only below the topBar */
+    overflow: visible;
+}
+
+.topCenterContainer {
+    position: fixed;
+    top: 60px; /* adjust to be below your .topBar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    display: flex;
+    gap: 16px;
+    background: rgba(255,255,255,0.95);
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 8px 24px;
+    pointer-events: auto;
 }

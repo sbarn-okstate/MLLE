@@ -33,9 +33,10 @@ import {
     ConvolutionLayer5x5Object,
     ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
-import StartNode from './StartNode.jsx';
+import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
 //Sandbox.jsx uses this component~
@@ -49,9 +50,25 @@ import LinkerLine from "linkerline";
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState}, ref) => {
     const stageRef = useRef(null);
-    const divRefs = useRef([]);
-    const handleRefs = useRef([]);
-    const drag = useRef([]);
+    const divRefs = useRef({});
+    const handleRefs = useRef({});
+    const drag = useRef({});
+        /*
+    {   activeObjects object structure
+        id: 1, // Unique identifier
+        element: div, // Reference to the DOM element
+        leftLink: null, // Reference to the object snapped to the left
+        rightLink: null, // Reference to the object snapped to the right
+        snapPoints: [
+            { type: "left", x: 100, y: 200 }, // Left snap point
+            { type: "right", x: 300, y: 200 } // Right snap point
+        ]
+    }
+    */
+
+    const activeObjectsRef = useRef([]);
+    const [activeObjectsState, setActiveObjectsState] = useState([]);
+
     const lineRefs = useRef([]);
     const [thing, setThing] = useState("fluent");
     const [test, setTest] = useState(0);
@@ -78,15 +95,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
         // Check if the model is valid
         if (modelState === `valid`) {
-            const startNode = activeObjectsRef.current.find(obj => obj.objectType === "startNode");
+            const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
     
-            if (!startNode) {
-                console.error("Start node not found!");
+            if (!dataBatcher) {
+                console.error("Data batcher not found!");
                 return;
             }
     
-            let prevObject = startNode;
-            let currentObject = startNode.rightLink;
+            let prevObject = dataBatcher;
+            let currentObject = dataBatcher.rightLink;
             let firstDense = true;
     
             while (currentObject && currentObject.rightLink != null) {
@@ -99,7 +116,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
                         while (currentLayerNode != null) {
                             const newLine = new LinkerLine({
-                                start: divRefs.current[(prevObject === startNode) ? 0 : prevObject.id],
+                                start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
                                 dash: true,
                                 path: thing
@@ -186,27 +203,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         }
     }
 
-    /*
-    {   activeObjects object structure
-        id: "object1", // Unique identifier
-        element: div, // Reference to the DOM element
-        leftLink: null, // Reference to the object snapped to the left
-        rightLink: null, // Reference to the object snapped to the right
-        snapPoints: [
-            { type: "left", x: 100, y: 200 }, // Left snap point
-            { type: "right", x: 300, y: 200 } // Right snap point
-        ]
-    }
-    */
-
-    const activeObjectsRef = useRef([]);
-    const [activeObjectsState, setActiveObjectsState] = useState([]);
 
 
-    // 2. Expose startNode and activeObjects via the ref
+
+    // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
-        getStartNode: () => activeObjectsRef.current.find(obj => obj.objectType === "startNode"),
+        getDataBatcher: () => activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher"),
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
         linkerChangeTest: LinkerChangeTest,
@@ -222,14 +225,17 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }, [lineRefs]);
 
     useEffect(() => {
-        //console.log("divRefs:", divRefs.current);
-        //console.log("handleRefs:", handleRefs.current);
+        //console.log("elements", elements);
+        //console.log("activeObjectsRef", activeObjectsRef.current);
+        //console.log("activeObjectsState", activeObjectsState);
 
         // This useEffect runs after the components are rendered
-        divRefs.current.forEach((div, index) => {
-            if (!drag.current[index]) {
-                drag.current[index] = 1;
-
+        elements.forEach((item) => {
+            const div = divRefs.current[item.id];
+            const handle = handleRefs.current[item.id];
+            if (!drag.current[item.id]) {
+                drag.current[item.id] = 1;
+                
                 // Subscribe to mouse move event listener
                 let mouse;
                 addEventListener("mousemove", (event) => {mouse = event});
@@ -237,14 +243,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
+                console.log("item", item);
                 // Get the type of the object from the elements array
-                const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
-                const objectType = elements[index]?.objectType || `object${index}`;   
-                const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
-                const datasetFileName = elements[index]?.datasetFileName || `dataset${index}`; // Dataset file name isn't used for snapping rules currently
-                const active = elements[index]?.active
-                const location = elements[index]?.location || {x: 0, y: 0}; // Default to (0, 0) if not specified
-                const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType, active);
+                const snapType = item?.snapType || "all"; // Default to "all" if type is not specified   
+                const objectType = item?.objectType || `object${item.id}`;   
+                const subType = item?.subType || `subtype${item.id}`; // Subtype isn't used for snapping rules currently
+                const datasetFileName = item?.datasetFileName || `none`; // Dataset file name isn't used for snapping rules currently
+                const active = item?.active
+                const location = item?.location || {x: 200, y: 50}; // Default to (0, 0) if not specified
+                const newObject = createNewObject(objectType, subType, datasetFileName, div, item.id, snapType, active);
 
                 //console.log("Active Objects:", activeObjectsRef.current);
 
@@ -272,38 +279,52 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-                    if (!currentObject.active) {
+
+
+                    if (!currentObject.isActive && false) {
                         if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 400, y: 50});
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
                         }
                         else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, false, {x: 200, y: 50});
+                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 200, y: 50});
                         }
                         currentObject.isActive = true;
                     }
-                    //console.log("Dragging:", currentObject);
-                }
 
+                }
+                
                 draggable.onDragEnd = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
                     clearLinks(currentObject);
 
-                    if (snap) {
-                        updateLinks(currentObject, snap);
-                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
+                    
+                    const recycleBin = document.getElementById("recycle-bin");
+                    const recycleRect = recycleBin.getBoundingClientRect();
+
+                    // Check if mouse or object overlaps recycle bin
+                    const mouseInBin = mouse &&
+                    mouse.clientX >= recycleRect.left &&
+                    mouse.clientX <= recycleRect.right &&
+                    mouse.clientY >= recycleRect.top &&
+                    mouse.clientY <= recycleRect.bottom;
+
+                    if (mouseInBin) {
+                        if(currentObject.id !== "dataBatcher"){
+                            RemoveObject(currentObject.id);
+                            activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
+                            setActiveObjectsState([...activeObjectsRef.current]);
+                            return;
+                        }
                     }
 
-                    if (mouse.y < 250) {
-                        // somehow remove this
-                        console.error(`TODO: Implement despawning div!`);
-                        
-                        //extAction(divRefs[index]);
+                    if (snap) {
+                        findClosestSnapPoint(currentObject, activeObjectsRef, 5, true);
+                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
 
                     LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
-
                 // Set initial position
                 draggable.top = location.y;
                 draggable.left = location.x;
@@ -314,7 +335,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 }
 
                 // Set the handle
-                draggable.handle = handleRefs.current[index];
+                draggable.handle = handleRefs.current[item.id];
 
                 // Do not override the cursor
                 draggable.draggableCursor = false;
@@ -340,15 +361,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     snap.otherObject.bottomLink = obj;
 
                     // Set left and right links to 0 when snapping to the top
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 } else if (snap.currentPoint.type === "bottom") {
                     obj.bottomLink = snap.otherObject;
                     snap.otherObject.topLink = obj;
 
                     // Set left and right links to 0 when snapping to the bottom
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 }
             }
             return obj;
@@ -378,7 +403,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
     // custom snapping behavior
-    function findClosestSnapPoint(currentObject, activeObjectsRef) {
+    function findClosestSnapPoint(currentObject, activeObjectsRef, minDistance = 50, linkIfValid = false) {
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -411,8 +436,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                    currentRect.top + currentRect.height / 2, // For left and right, y is centered
             }));
     
-        let closestPoint = null;
-        let minDistance = 50; // Max snap distance
+        let pairs = []; //
     
         activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
@@ -432,11 +456,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             .map(point => ({
                 type: point.type,
                 x: point.type === "left" ? otherRect.left :
-                point.type === "right" ? otherRect.right :
-                otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
+                    point.type === "right" ? otherRect.right :
+                    otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
                 y: point.type === "top" ? otherRect.top :
-                point.type === "bottom" ? otherRect.bottom :
-                otherRect.top + otherRect.height / 2, // For left and right, y is centered
+                    point.type === "bottom" ? otherRect.bottom :
+                    otherRect.top + otherRect.height / 2, // For left and right, y is centered
             }));
     
             // Compare current snap points with other snap points
@@ -452,18 +476,46 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     if (isValidSnap) {
                         const distance = Math.hypot(currentPoint.x - otherPoint.x, currentPoint.y - otherPoint.y);
                         if (distance < minDistance) {
-                            minDistance = distance;
-                            closestPoint = { currentPoint, otherPoint, currentObject, otherObject };
+                            pairs.push({
+                                currentPoint,
+                                otherPoint,
+                                currentObject,
+                                otherObject,
+                                distance,
+                                priority: (
+                                    (currentPoint.type === "left" && otherPoint.type === "right") ||
+                                    (currentPoint.type === "right" && otherPoint.type === "left")
+                                ) ? 1 : 2 // 1 = left/right, 2 = top/bottom
+                            });
                         }
                     }
                 });
             });
         });
-    
-        return closestPoint;
+        // Sort pairs: left/right first, then top/bottom, then by distance
+        pairs.sort((a, b) => a.priority - b.priority || a.distance - b.distance);
+
+        if (linkIfValid) {
+            // Link all left/right pairs first, then top/bottom
+            pairs.forEach(pair => {
+                if (pair.priority === 1) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            pairs.forEach(pair => {
+                if (pair.priority === 2) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            // No need to return a closest point in this mode
+            return null;
+        } else {
+            // Return the closest pair (prioritizing left/right)
+            return pairs.length > 0 ? pairs[0] : null;
+        }
     }
 
-    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active) {
+    function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active = true) {
         const snapPoints = [];
     
         // Add snap points based on the shorthand type
@@ -518,8 +570,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             : {}; // Default to an empty object if no currentObject
 
         switch (objectType) {
-            case "startNode":
-                return <StartNode key={key} {...restProps} linkStates={linkStates}/>;
+            case "dataBatcher":
+                return <DataBatcher key={key} {...restProps} linkStates={linkStates}/>;
             case "dataset":
             //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
@@ -572,15 +624,30 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
-            {elements.map((item, index) => (
-                renderObject(item.objectType, item.subType, item.datasetFileName,{
-                    key: index,
+            {elements.map((item) => (
+                renderObject(item.objectType, item.subType, item.datasetFileName, {
+                    key: item.id,
                     name: item.id,
-                    ref: (el) => (divRefs.current[index] = el),
-                    handleRef: (el) => (handleRefs.current[index] = el),
+                    ref: (el) => { 
+                        if (el) {
+                            divRefs.current[item.id] = el;
+                        } else {
+                            delete divRefs.current[item.id];
+                        }
+                    },
+                    handleRef: (el) => {
+                        if (el) {
+                            handleRefs.current[item.id] = el;
+                        } else {
+                            delete handleRefs.current[item.id];
+                        }
+                    },
                     action: extAction
                 })
             ))}
+            <div id="recycle-bin" className="recycle-bin">
+                🗑️
+            </div>
         </div>
     );
 });

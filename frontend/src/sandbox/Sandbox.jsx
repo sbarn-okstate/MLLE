@@ -41,9 +41,9 @@ import './Sandbox.css';
 import Stage from './components/Stage.jsx';
 import * as backend from '../backend/backend.js';
 import NodeDrawer from './components/NodeDrawer.jsx';
-import DatasetDrawer from './components/DatasetDrawer.jsx';
 import Status from './components/Status.jsx';
 import Report from './components/Report.jsx';
+import Toolbar from './components/Toolbar.jsx';
 
 let backend_worker = null;
 let model = null;
@@ -110,16 +110,12 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
 
 function Sandbox() {
     const activeObjects = useRef([]);
-    const [count, setCount] = useState(3); // Start from 1 to avoid collision with startNode
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with dataBatcher
     const [list, setList] = useState([
-        { id: "startNode", objectType: "startNode", snapType: "lr", location: {x: 300, y: 300}, active: true},
-        { id: 1, objectType: "neuron", snapType: "all", location: {x: 400, y: 50}, active: false},
-        { id: 2, objectType: "output", snapType: "l", location: {x: 200, y: 50}, active: false},
+        { id: "dataBatcher", objectType: "dataBatcher", snapType: "lr", location: {x: 300, y: 300}, active: true},
     ]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
-
     const [trainingState, setTrainingState] = useState('stopped');
     const [modelState, setModelState] = useState('invalid');
     const [statusContent, setStatusContent] = useState([
@@ -172,9 +168,9 @@ function Sandbox() {
         } 
         setModelState('invalid');
 
-        const startNode = stageRef.current.getStartNode();
-        if (!startNode) {
-            console.error("Start node not found!");
+        const dataBatcher = stageRef.current.getDataBatcher();
+        if (!dataBatcher) {
+            console.error("Data batcher not found!");
             return [];
         }
     
@@ -191,7 +187,7 @@ function Sandbox() {
         };
     
         // Traverse the left link for the dataset object
-        let currentObject = startNode.leftLink;
+        let currentObject = dataBatcher.leftLink;
         if (currentObject && currentObject.objectType === "dataset") {
             //const datasetValue = getFieldValue(currentObject.name + "dataset");
             const datasetValue = currentObject.datasetFileName;
@@ -200,16 +196,16 @@ function Sandbox() {
                 dataset: datasetValue,
             });
         } else {
-            console.error("No dataset object linked to the left of the start node!");
+            console.error("No dataset object linked to the left of the data batcher!");
             setStatusContent([
                 "Missing dataset object.",
-                "Please link a dataset object to the left of the start node.",
+                "Please link a dataset object to the left of the data batcher.",
             ]);
             return chain;
         }
     
         // Traverse the right link for other objects
-        currentObject = startNode.rightLink;
+        currentObject = dataBatcher.rightLink;
         while (currentObject) {
             const objectData = { type: currentObject.objectType };
             
@@ -300,7 +296,7 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 200}) {
+    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
@@ -344,10 +340,13 @@ function Sandbox() {
     };
 
     function RemoveObject(id) {
+        console.log(list);
+        console.log("Removing object with ID:", id);
         setList(prevList => {
             const updatedList = prevList.filter(item => item.id !== id);
             return updatedList;
         });
+        console.log("Updated list after removal:", list); // Debugging log
     }
 
 
@@ -366,7 +365,7 @@ function Sandbox() {
             console.error("Stage reference is not available!");
         }
     }
-
+    
     const linkerChangeTest = () => {
         if (stageRef.current) {
             stageRef.current.linkerChangeTest();
@@ -375,85 +374,89 @@ function Sandbox() {
         }
     }
 
-    return(
+    return (
         <>
-            <div className="sandboxContainer"  >
-                {/*NodeDrawer is a component that has three props passed into it 
-                    the three proprs are drawerOpen, setDrawerOpen, and createNodeFunction.
-                    createNodeFunction specifically passes the "AddObject" function into NodeDrawer.
-                    This way, NodeDrawer can call "AddObject" when a use selects a node.*/}
-
-               
-
-                <NodeDrawer drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} createNodeFunction={AddObject}/>
-                <div> {/*Let the user scroll*/}
-                <Stage
-                    ref={stageRef}
-                    elements={list} 
-                    drags={draggables} 
-                    setDrags={setDraggables} 
-                    updateDrags={UpdateDraggablePos} 
-                    AddObject={AddObject}
-                    RemoveObject={RemoveObject}
-                    drawerOpen={drawerOpen}
-                    modelState={modelState} // Might not be needed in the future, used for 
-                />
-               {/* <DatasetDrawer
-                    drawerOpen={datasetDrawerOpen}
-                    setDrawerOpen={setDatasetDrawerOpen}
-                    stageRef={stageRef}
-                /> */}
-                
-                </div>
-                {/* Toggle Button */}
-                <button
-                    className="toggleButton"
-                    onClick={toggleStatusAndReport}
-                >
-                    {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                </button>
-                {/* Conditionally Render Status and Report */}
-                {showStatusAndReport && (
-                    <div className="topRightContainer">
-                        <Status title="Training Status" content={statusContent} />
-                        <Report ref={reportRef} title="Training Report" />
-                    </div>
-                
-                )}
-                <div className="bottomBar">
-                    <Link to="/"><button className="sandboxButton">Go Back</button></Link>
-                    <div style={{
-                            width:"100%",
-                            paddingRight: "20px",
-                            display: "inline-flex",
-                            justifyContent: "flex-end",
-                            gap: "10px"
-                        }}>
-                        <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
-                        <button className="sandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button>
-                        {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
-                        <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
-
-
-                        {trainingState === 'stopped' && (
-                            <>
-                            <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button>
+            {/* Fixed Top Bar */}
+            <div className="topBar">
+                <Link to="/"><button className="sandboxButton">Go Back</button></Link>
+                <div style={{
+                    width: "100%",
+                    paddingRight: "20px",
+                    display: "inline-flex",
+                    justifyContent: "flex-end",
+                    gap: "10px"
+                }}>
+                    <button className="sandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button>
+                    <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
+                    <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+                    {trainingState === 'stopped' && (
+                        <>
+                            {/* <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button> */}
                             <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
-                            </>
-                        )}
-                        {(trainingState === 'training' || trainingState === 'simulateTraining') && (
+                        </>
+                    )}
+                    {(trainingState === 'training' || trainingState === 'simulateTraining') && (
+                        <>
+                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
+                    {trainingState === 'paused' && (
+                        <>
+                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
+                </div>
+            </div>
+    
+            {/* Main Sandbox Area */}
+            <div className="sandboxContainer">
+                {/* Fixed NodeDrawer on the left */}
+                <div className="nodeDrawerFixed">
+                    <NodeDrawer
+                        drawerOpen={drawerOpen}
+                        setDrawerOpen={setDrawerOpen}
+                        createNodeFunction={AddObject}
+                    />
+                </div>
+
+                {/* Toolbar overlay */}
+                <Toolbar createNodeFunction={AddObject} elements={list}/>
+
+                {/* Fixed Top Right Status/Report */}
+                
+                    <div className="topRightContainer">
+                        {showStatusAndReport && (
                             <>
-                                <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                                <Status title="Training Status" content={statusContent} />
+                                <Report ref={reportRef} title="Training Report" />
                             </>
                         )}
-                        {trainingState === 'paused' && (
-                            <>
-                                <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
-                                <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
-                            </>
-                        )}
+                        {/* Toggle Button (can also be fixed if you want) */}
+                        <button
+                            className="toggleButton"
+                            onClick={toggleStatusAndReport}
+                        >
+                            {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
+                        </button>
                     </div>
+    
+                
+    
+                {/* Scrollable Stage */}
+                <div className="stageScrollWrapper">
+                    <Stage
+                        ref={stageRef}
+                        elements={list}
+                        drags={draggables}
+                        setDrags={setDraggables}
+                        updateDrags={UpdateDraggablePos}
+                        AddObject={AddObject}
+                        RemoveObject={RemoveObject}
+                        drawerOpen={drawerOpen}
+                        modelState={modelState}
+                    />
                 </div>
             </div>
         </>

@@ -37,7 +37,7 @@ import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
 import closedLinkLR from "../../assets/closedLinkLR.svg";
 import closedLinkTB from "../../assets/closedLinkTB.svg";
-
+import synthetic1graph from "../../assets/synthetic1graph.png";
 const openLinkLeft = openLinkLR;
 const openLinkRight = openLinkLR;
 const openLinkTop = openLinkTB;
@@ -93,7 +93,7 @@ export function renderLinkIndicators(linkStates) {
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-container" }) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
             <div ref={handleRef} className="nodeHandle">
@@ -113,23 +113,20 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "dragg
     );
 };
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "draggable" }) {
+export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "dataset-container" }) {
     return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
+        <div ref={ref} id={name} className={classNameOverride + " dataset-nbc500-object"}>
             <div ref={handleRef} className="nodeHandle">
                 <p className="nodeDragText">Dataset</p>
             </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
-                
-            </p>
-
+            <img
+                src={synthetic1graph}
+                alt="Synthetic Dataset Graph"
+                className="dataset-nbc500-image"
+            />
         </div>
     );
-};
-
+}
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
 export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
     return (
@@ -231,13 +228,13 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "draggable", linkStates = {} }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
 
     return (
         <div
             ref={ref}
             id={name}
-            className={`${classNameOverride} neuron-container`}
+            className={`${classNameOverride}`}
         >
             {/* Draggable handle in the center */}
             <div ref={handleRef} className="neuron">
