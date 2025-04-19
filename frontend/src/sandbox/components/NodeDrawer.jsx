@@ -80,7 +80,7 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                                 - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
                                 - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
                     */}
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetNBC500Object classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetNBC500Object/></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "heart.csv") }}><DatasetHeartPredictionObject classNameOverride={"drawerNode"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "boston-housing-train.csv") }}><DatasetBostonHousingObject classNameOverride={"drawerNode"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "mnist_train.csv") }}><DatasetMNISTObject classNameOverride={"drawerNode"} /></div>

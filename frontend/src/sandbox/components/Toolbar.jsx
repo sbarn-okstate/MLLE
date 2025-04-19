@@ -1,5 +1,5 @@
 import React from "react";
-import { NeuronObject, OutputLayerObject, ReluObject } from "./LayerObjects";
+import { NeuronObject, OutputLayerObject, ActivationObject } from "./LayerObjects";
 import "./Toolbar.css";
 
 const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }) => {
@@ -11,8 +11,8 @@ const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }
         case "output":
             CenterComponent = <OutputLayerObject/>;
             break;
-        case "relu":
-            CenterComponent = <ReluObject/>;
+        case "activation":
+            CenterComponent = <ActivationObject linkStates={{}} classNameOverride="activation-container toolbar-preview"/>;
             break;
         default:
             CenterComponent = null;
@@ -60,9 +60,9 @@ const Toolbar = ({ createNodeFunction, elements }) => (
         />
         <div className="toolbarObjectDivider" />
         <ToolbarObject
-            type="relu"
+            type="activation"
             N={3}
-            count={getObjectCount(elements, "relu")}
+            count={getObjectCount(elements, "activation")}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Activation info")}
         />
