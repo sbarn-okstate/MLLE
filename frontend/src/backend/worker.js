@@ -23,7 +23,7 @@ self.onmessage = async (event) => {
             await prepareModel(args, self);
             break;
         case "trainModel":
-            await trainModel(args.fileName, args.problemType, args.chainOfObjects, self);
+            await trainModel(args.fileName, args.problemType, args.chainOfObjects, args.savePretrained, self);
             break;
         case "pauseTraining":
             await pauseTraining(self);
@@ -32,7 +32,7 @@ self.onmessage = async (event) => {
             await resumeTraining(self);
             break;
         case "stopTraining":
-            await stopTraining();
+            await stopTraining(self);
             break;
         case "validatePretrainedModel":
             await validatePretrainedModel(args.model, self);

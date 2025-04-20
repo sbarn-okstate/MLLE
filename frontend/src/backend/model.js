@@ -114,7 +114,7 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 20) {
+export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 25) {
     
     //Add checker here to see whether the model is one we have saved.
     //If not then execute the code below
@@ -219,10 +219,14 @@ export async function trainModel(fileName, problemType, chainOfObjects, self, ba
                         },
                     }
                 });
+                console.log("savePretrained in model.js is:", savePretrained);
+                if (savePretrained === true) {
                 // Call to capture training
                 //==========Obtain Training Metrics===========
                 self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
-                //==========Obtain Training Metrics===========
+                //==========Obtain Training Metrics===========    
+                }
+
                 console.log("🚀 model.fit completed without error");
             } catch (error) {
                 self.postMessage(`Error during training: ${error.message}`);

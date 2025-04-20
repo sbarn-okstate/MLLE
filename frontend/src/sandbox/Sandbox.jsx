@@ -50,6 +50,19 @@ import fullscreenIn from '../assets/fullscreen-in.svg';
 
 let backend_worker = null;
 let model = null;
+let savePretrained = false;
+
+console.log("savePretrained default:", savePretrained);
+function savePretrainedSwitcher() {
+    if (savePretrained === false) {
+        savePretrained = true;
+    }
+    else {
+        savePretrained = false;
+    }
+    console.log("savePretrained is now:", savePretrained);
+    return;
+}
 
 function createBackend(updateMetricsCallback, updateWeightsCallback) {
     backend.createBackendWorker(updateMetricsCallback, updateWeightsCallback);
@@ -72,7 +85,7 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
-        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}}); //Goes to worker.js
+        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects, savePretrained}}); //Goes to worker.js
         setTrainingState('training');
         setStatusContent([
             "Training started!",
@@ -409,6 +422,7 @@ function Sandbox() {
                     justifyContent: "flex-end",
                     gap: "10px"
                 }}>
+                    <button className="sandboxButton" onClick={() => savePretrainedSwitcher()}>(DevBtn) Save Pretrained</button>
                     <button className="sandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button>
                     <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
                     <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
