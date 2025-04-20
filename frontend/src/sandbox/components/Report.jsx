@@ -11,7 +11,7 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
 
     const width = 300; // Width of the graph
     const height = 200; // Height of the graph
-    const margin = { top: 10, right: 10, bottom: 30, left: 40 }; // Margins for axes
+    const margin = { top: 10, right: 10, bottom: 10, left: 50 }; // Margins for axes
 
     // Define scales for the graph
     const xScale = scaleLinear({
@@ -57,7 +57,7 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
                 <h3>{title}</h3>
             </div>
             <div className="reportGraph">
-            <svg width={width} height={height}>
+            <svg width={width} height={height+30}>
                     {/* Line for Accuracy */}
                     <LinePath
                         data={graphData}
@@ -98,6 +98,27 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
                             dy: "0.33em",
                         })}
                     />
+                    {/* X-Axis Label */}
+                    <text
+                        x={width / 2}
+                        y={height + 25}
+                        textAnchor="middle"
+                        fontSize="12"
+                        fill="#333"
+                    >
+                        Epoch
+                    </text>
+                    {/* Y-Axis Label */}
+                    <text
+                        x={-(height / 2)}
+                        y={8}
+                        textAnchor="middle"
+                        fontSize="12"
+                        fill="#333"
+                        transform={`rotate(-90)`}
+                    >
+                        Accuracy
+                    </text>
                 </svg>
             </div>
             <div className="reportAccuracy">

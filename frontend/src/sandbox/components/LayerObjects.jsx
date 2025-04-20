@@ -32,12 +32,15 @@
 
 import React, { forwardRef } from "react";
 import "./LayerObjects.css";
+import "./LayerObjects/Datasets.css";
+import "./LayerObjects/Neuron.css";
+import "./LayerObjects/Activation.css";
 
 import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
 import closedLinkLR from "../../assets/closedLinkLR.svg";
 import closedLinkTB from "../../assets/closedLinkTB.svg";
-
+import synthetic1graph from "../../assets/synthetic1graph.png";
 const openLinkLeft = openLinkLR;
 const openLinkRight = openLinkLR;
 const openLinkTop = openLinkTB;
@@ -48,14 +51,17 @@ const closedLinkTop = closedLinkTB;
 const closedLinkBottom = closedLinkTB;  
 
 // Helper function to render all link indicators
-export function renderLinkIndicators(linkStates) {
+export function renderLinkIndicators(linkStates, height = 100, width = 200) {
+    const x_center = width / 2;
+    const y_center = height / 2;
+
     const positionToAltText = {
         top: "Top Link",
         right: "Right Link",
         bottom: "Bottom Link",
         left: "Left Link",
     };
-    
+
     const positionToSVG = {
         top: openLinkTop,
         bottom: openLinkBottom,
@@ -70,65 +76,131 @@ export function renderLinkIndicators(linkStates) {
         right: closedLinkRight,
     };
 
-    return Object.entries(linkStates).map(([position, value]) => {
-        if (value === 0) {
-            return null; // No image for 0
-        }
+    // Map positions to coordinates (center of indicator at edge)
+    const indicatorSize = 32; // px, adjust as needed
+    const positionToCoords = {
+        top:    { x: x_center, y: 10 },
+        right:  { x: width - 10,    y: y_center },
+        bottom: { x: x_center, y: height - 10 },
+        left:   { x: 10,        y: y_center },
+    };
 
-        // Use the correct SVG based on the position and link state
-        const src = value ? closedPositionToSVG[position] : positionToSVG[position];
-        const alt = positionToAltText[position] || "Link"; // Use predefined alt text or fallback to "Link"
-
-        return (
-            <img
-                key={position} // Use position as the key
-                src={src} // Dynamically assign the correct SVG
-                alt={alt}
-                className={`link-indicator ${position}-link`}
-            />
-        );
-    });
+    return (
+        <>
+            {/* SVG lines */}
+            <svg
+                className="link-indicator-svg"
+                width={width}
+                height={height}
+                style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    pointerEvents: "none",
+                    zIndex: -1,
+                }}
+            >
+                {Object.entries(linkStates).map(([position, value]) => {
+                    if (value === 0) return null;
+                    const { x, y } = positionToCoords[position];
+                    return (
+                        <line
+                            key={position}
+                            x1={x_center}
+                            y1={y_center}
+                            x2={x}
+                            y2={y}
+                            stroke={value ? "white" : "grey"}
+                            strokeWidth="1"
+                            strokeDasharray={value ? "0" : "4 4"}
+                        />
+                    );
+                })}
+            </svg>
+            {/* Link indicator icons */}
+            {Object.entries(linkStates).map(([position, value]) => {
+                if (value === 0) return null;
+                const src = value ? closedPositionToSVG[position] : positionToSVG[position];
+                const alt = positionToAltText[position] || "Link";
+                const { x, y } = positionToCoords[position];
+                return (
+                    <img
+                        key={position}
+                        src={src}
+                        alt={alt}
+                        className={`link-indicator ${position}-link`}
+                    />
+                );
+            })}
+        </>
+    );
 }
 
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-template", linkStates = {} }) {
+    return (
+        <div 
+            ref={ref} 
+            id={name} 
+            className={"dataset-container"}>
+
+            {/* Draggable handle in the center */}
+            <div ref={handleRef} className="nodeHandle">
+                <p className="nodeDragText">Dataset</p>
+            </div>
+            <img
+                src={synthetic1graph}
+                alt="Synthetic Dataset Graph"
+                className="dataset-nbc500-image"
+            />
+        </div>
+    );
+};
+
+
+//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
+export function DatasetNBC500Object({
+    name,
+    ref,
+    handleRef,
+    classNameOverride = "dataset-container",
+    datasetLabel = "Synthetic NBC 500",
+    info = { Type: "Classification", Inputs: "Petal Length, Stem Height", Outputs: "Class" },
+    imageSrc = synthetic1graph,
+    linkStates = {}
+}) {
     return (
         <div ref={ref} id={name} className={classNameOverride}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
+            <div
+                ref={handleRef}
+                className="dataset-nbc500-interactive"
+                tabIndex={0}
+                role="group"
+            >
+                <div className="dataset-nbc500-label">{datasetLabel}</div>
+                <table className="dataset-nbc500-table">
+                    <tbody>
+                        {Object.entries(info).map(([key, value]) => (
+                            <tr key={key}>
+                                <td className="dataset-nbc500-table-key">{key}</td>
+                                <td className="dataset-nbc500-table-value">{value}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <img
+                    src={imageSrc}
+                    alt="Synthetic Dataset Graph"
+                    className="dataset-nbc500-image"
+                />
             </div>
-            <p>Dataset: 
-                <span>
-                    <select name={name + "dataset"} id={name + "dataset"}>
-                        <option value="synthetic_normal_binary_classification_500.csv">synth_normal_binary</option>
-                        <option value="dataset2.csv">Dataset 2</option>
-                        <option value="dataset3.csv">Dataset 3</option>
-                    </select>
-                </span>
-            </p>
-
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, 400, 250)}
         </div>
     );
-};
-//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetNBC500Object({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> synthetic dataset<br/><br/>synthetic_normal_binary_classification_500.csv
-                
-            </p>
-
-        </div>
-    );
-};
+}
 
 //dataset object that corresponds with synthetic_normal_binary_classification_500.csv
 export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
@@ -231,13 +303,13 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
 };
 
 // Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "draggable", linkStates = {} }) {
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
 
     return (
         <div
             ref={ref}
             id={name}
-            className={`${classNameOverride} neuron-container`}
+            className={`${classNameOverride}`}
         >
             {/* Draggable handle in the center */}
             <div ref={handleRef} className="neuron">
@@ -245,7 +317,7 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "dragga
             </div>
 
             {/* Render all link indicators */}
-            {renderLinkIndicators(linkStates)}
+            {renderLinkIndicators(linkStates, 100, 200)}
         </div>
     );
 }
@@ -254,22 +326,28 @@ export function NeuronObject({ name, ref, handleRef, classNameOverride = "dragga
 //================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================
 
 // Activation Layer Object
-export function ActivationLayerObject({ activationName, name, ref, handleRef, classNameOverride = "draggable",}) {
+// Neuron Object
+export function ActivationObject({ name, ref, handleRef, classNameOverride = "activation-container", linkStates = {}}) {
+    const isPreview = classNameOverride.includes("toolbar-preview");
+
     return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(0,153,255)", // Optional: Add a background color
-            }}
+        <div
+            ref={ref}
+            id={name}
+            className={classNameOverride}
+        >
+            {/* Draggable handle in the center */}
+            <div
+                ref={handleRef}
+                className={`activation${isPreview ? " toolbar-preview" : ""}`}
             >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Activation Layer {activationName}</p>
+                <p className="nodeDragText">Activation Function</p>
             </div>
-            <p className={"nodeText"}>
-                activation type: {activationName}
-            </p>
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, 150, 100)}
         </div>
     );
-};
+}
 
 export function ReluObject({ name, ref, handleRef, classNameOverride = "draggable",  linkStates = {}  }) {
     return (
