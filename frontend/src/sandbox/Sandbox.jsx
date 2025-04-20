@@ -81,16 +81,6 @@ function createModel() {
 function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         //testing and trying to grab information from chainOfObjects
-        let lengthOfCob = chainOfObjects.length;
-        let dataset = chainOfObjects[0]['dataset'];
-        let numOfLayers = lengthOfCob - 1;
-        console.log("-------------------------------",
-                    "\nchainOfObjects:", chainOfObjects,
-                    "\nlengthOfCob:", lengthOfCob, 
-                    "\ndataset:", dataset, 
-                    "\nnumOfLayers:", numOfLayers,
-                    "\n-------------------------------");
-
         createModel();
         //FIXME: This is just a test
         let fileName = model[0].dataset; 
