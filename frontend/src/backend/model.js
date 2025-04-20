@@ -114,10 +114,15 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(saveFile,fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 20) {
+export async function trainModel(saveFile,fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 5) {
     
     //Add checker here to see whether the model is one we have saved.
     //If not then execute the code below
+
+    //Check the name given chainofObjects so we can search in the json folder in the public folder.
+    // let lengthOfCob = chainOfObjects.length;
+    // console.log("lengthOfCob:", lengthOfCob);
+    // console.log("chainOfObjects[0]", chainOfObjects[0]);
 
     const response = await fetch('/json/sampleModel.json'); // Adjust the path if necessary
     //Deserializes JSON file as an object.
