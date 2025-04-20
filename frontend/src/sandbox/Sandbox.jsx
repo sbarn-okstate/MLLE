@@ -272,7 +272,7 @@ function Sandbox() {
             // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
                 //objectData.activation = currentObject.rightLink.subType;
-                objectData.activation = currentObject.rightLink.subType || "relu";
+                objectData.activation = currentObject.rightLink.subType;
                 currentObject = currentObject.rightLink; // move to activation object
             }
 
