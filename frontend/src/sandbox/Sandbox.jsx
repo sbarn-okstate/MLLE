@@ -272,7 +272,7 @@ function Sandbox() {
             // Handle Activation Function following any layer
             if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
                 //objectData.activation = currentObject.rightLink.subType;
-                objectData.activation = currentObject.rightLink.subType;
+                objectData.activation = currentObject.rightLink.subType || "relu";
                 currentObject = currentObject.rightLink; // move to activation object
             }
 
@@ -319,7 +319,7 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
+    function AddObject(objectType = "all", subType = null, datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
             dataset: "r",         // Dataset can only snap at the bottom
