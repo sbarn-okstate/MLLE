@@ -2,7 +2,7 @@ import React from "react";
 import { NeuronObject, OutputLayerObject, ActivationObject } from "./LayerObjects";
 import "./Toolbar.css";
 
-const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }) => {
+const ToolbarObject = ({ type, subtype = null, N = 1, count = 0, createNodeFunction, InfoClick }) => {
     let CenterComponent = null;
     switch (type) {
         case "neuron":
@@ -23,7 +23,7 @@ const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }
             <div
                 className="toolbarObjectCenter"
                 onClick={() => {
-                    if (count < N) createNodeFunction(type);
+                    if (count < N) createNodeFunction(type, subtype);
                 }}
                 tabIndex={0}
                 role="button"
@@ -61,6 +61,7 @@ const Toolbar = ({ createNodeFunction, elements }) => (
         <div className="toolbarObjectDivider" />
         <ToolbarObject
             type="activation"
+            subtype="relu"
             N={3}
             count={getObjectCount(elements, "activation")}
             createNodeFunction={createNodeFunction}
