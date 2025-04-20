@@ -71,6 +71,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                             updateWeightsCallback(weights); // Pass weights
                         }
                         break;
+                    //FOR DEV PURPOSES. Is only called if saveFile is set to true in Sandbox.jsx
                     //Used for saving the model to a file.
                     //This gets called from model.js in trainModel().
                     //args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} 

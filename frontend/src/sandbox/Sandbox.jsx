@@ -47,7 +47,21 @@ import Report from './components/Report.jsx';
 
 let backend_worker = null;
 let model = null;
+let saveFile = false;
 
+//Can comment this out when delivering project.
+console.log("saveFile:", saveFile);
+
+//for dev purposes.
+function saveFileSwitcher() {
+    if (saveFile === false) {
+        saveFile = true;
+    } else {
+        saveFile = false;
+    }
+    console.log("saveFile:", saveFile);
+    return;
+}
 function createBackend(updateMetricsCallback, updateWeightsCallback) {
     backend.createBackendWorker(updateMetricsCallback, updateWeightsCallback);
     backend_worker = backend.getBackendWorker();
@@ -69,7 +83,8 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
-        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}}); //Goes to worker.js
+                                                             //saveFile is for dev purposes.
+        backend_worker.postMessage({func: 'trainModel', args: {saveFile, fileName, problemType, chainOfObjects}}); //Goes to worker.js
         setTrainingState('training');
         setStatusContent([
             "Training started!",
@@ -424,7 +439,7 @@ function Sandbox() {
                         <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
                         {/*<button className="sandboxButton" onClick={validateModel}>Validate Model</button>*/}
                         <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
-
+                        <button className="sandboxButton" onClick={() => saveFileSwitcher(model)}>(Dev) Save JSON</button>
 
                         {trainingState === 'stopped' && (
                             <>
