@@ -30,9 +30,9 @@
 # TODO visual (Medium Priority)
 - [x] Move button bar to the top of the screen
 - [ ] Resize objects so that spacing and linker lines look good.
-- [ ] Update activation function visuals to show what data it modifys (vertical highlight)
+- [x] Update activation function visuals to show what data it modifys (vertical highlight)
 - [ ] Update all objects so that they match the style of the neurons
-- [ ] Update snap point visuals so that they're linked to their object with a line.
+- [x] Update snap point visuals so that they're linked to their object with a line.
 
 # END OF PROJECT TODO
 - [ ] Standardize inline comments
