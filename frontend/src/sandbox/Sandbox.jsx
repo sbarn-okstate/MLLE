@@ -148,6 +148,18 @@ function Sandbox() {
     const reportRef = useRef(null);
     const stageRef = useRef(null); // Reference to the stage component
 
+    // Scrollable wrapper ref
+    // This is used to scroll the stage to the center when the component mounts
+    const scrollWrapperRef = useRef(null);
+    useEffect(() => {
+        if (scrollWrapperRef.current) {
+            // Scroll to half the scrollable height
+            const wrapper = scrollWrapperRef.current;
+            wrapper.scrollTop = (wrapper.scrollHeight / 2) - (wrapper.clientHeight / 2);
+            wrapper.scrollLeft = (wrapper.scrollWidth / 2) - (wrapper.clientWidth / 2); // adjust as needed
+        }
+    }, []);
+
     // Fullscreen handler
     const [isFullscreen, setIsFullscreen] = useState(false);
     const handleFullscreen = () => {
@@ -483,7 +495,7 @@ function Sandbox() {
                 
     
                 {/* Scrollable Stage */}
-                <div className="stageScrollWrapper">
+                <div className="stageScrollWrapper" ref={scrollWrapperRef}>
                     <Stage
                         ref={stageRef}
                         elements={list}
