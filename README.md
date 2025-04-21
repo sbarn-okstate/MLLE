@@ -22,7 +22,7 @@
 - [ ] Figure out how to package the webapp - JM
 - [x] Add a fullscreen button in the bottom right - JM
 - [x] Make objects removeable by dragging to specific location - SB
-- [ ] Change startNode to 'Data Batcher'
+- [x] Change startNode to 'Data Batcher'
 - [x] Add specific drawers for datasets and activation functions - SB
 - [ ] Add tooltip buttons for each type of object and some buttons. (possibly add links to websites with more information)
 - [ ] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
