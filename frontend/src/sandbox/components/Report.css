@@ -12,7 +12,7 @@
 .reportHeader {
     border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .reportHeader h3 {
@@ -23,6 +23,8 @@
 
 .reportGraph {
     margin-top: 0px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 5px;
 }
 
 .reportAccuracy {

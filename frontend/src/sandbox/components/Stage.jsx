@@ -11,6 +11,7 @@
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DatasetObject,
+    DataBatcher,
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
     DatasetBostonHousingObject,
@@ -33,7 +34,7 @@ import {
     ConvolutionLayer5x5Object,
     ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
-import DataBatcher from './DataBatcher.jsx';
+//import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
 import "./Stage.css";

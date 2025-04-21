@@ -1,0 +1,58 @@
+.dataBatcher-container {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    width: 200px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: none;
+}
+
+.dataBatcher {
+    background: rgb(146, 189, 250);
+    border-radius: 10px;
+    width: 170px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: all;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.dataBatcher-title {
+    font-weight: bold;
+    color: #ffffff;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 1em;
+    text-align: center;
+}
+
+
+.dataBatcher-display {
+    background: white;
+    border-radius: 6px;
+    width: 150px;
+    min-height: 40px;
+    flex: 1 1 auto;           /* Fills remaining space */
+    display: flex;            /* Use flex, not fill */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    text-align: center;
+    overflow: hidden;
+    padding: 3px;
+}
+
+.dataBatcher-graphic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 8px;      /* Adds space below the graphic */
+}

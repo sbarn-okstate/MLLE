@@ -35,12 +35,15 @@ import "./LayerObjects.css";
 import "./LayerObjects/Datasets.css";
 import "./LayerObjects/Neuron.css";
 import "./LayerObjects/Activation.css";
+import "./LayerObjects/DataBatcher.css";
 
 import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
 import closedLinkLR from "../../assets/closedLinkLR.svg";
 import closedLinkTB from "../../assets/closedLinkTB.svg";
 import synthetic1graph from "../../assets/synthetic1graph.png";
+import dataBatcherGraphic from "../../assets/data-batcher.svg";
+
 const openLinkLeft = openLinkLR;
 const openLinkRight = openLinkLR;
 const openLinkTop = openLinkTB;
@@ -136,10 +139,34 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
     );
 }
 
+export function DataBatcher({ ref, handleRef, name, classNameOverride = "", displayText = "", linkStates = {} }) {
+    return (
+        <div ref={ref} id={name} className={`dataBatcher-container ${classNameOverride}`}>
+            <div ref={handleRef} className="dataBatcher">
+                <div className="dataBatcher-title">Data Batcher</div>
+                <div className="dataBatcher-display">
+                    {displayText}
+                </div>
+                <div className="dataBatcher-graphic">
+                        <img
+                            src={dataBatcherGraphic}
+                            alt="Data Batcher Graphic"
+                            style={{ width: "160px", height: "auto", display: "block", margin: "0 auto" }}
+                        />
+                    </div>
+                
+            </div>
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, 250, 200)}
+        </div>
+    );
+}
+
+
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-template", linkStates = {} }) {
+export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-template" }) {
     return (
         <div 
             ref={ref} 
