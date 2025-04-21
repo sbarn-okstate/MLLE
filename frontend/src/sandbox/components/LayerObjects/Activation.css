@@ -48,6 +48,7 @@
     text-orientation: mixed;        /* Keeps letters upright */
     letter-spacing: 2px;
     text-align: center;
+    box-shadow: var(--box-shadow-default);
 }
 
 .activation.toolbar-preview {

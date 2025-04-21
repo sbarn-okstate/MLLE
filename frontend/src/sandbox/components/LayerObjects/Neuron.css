@@ -29,4 +29,5 @@
     color: white;
     cursor: grab;
     z-index: 100;
+    box-shadow: var(--box-shadow-default);
 }

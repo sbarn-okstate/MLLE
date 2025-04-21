@@ -592,7 +592,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         switch (objectType) {
             case "dataBatcher":
-                return <DataBatcher key={key} {...restProps} linkStates={linkStates}/>;
+                return <DataBatcher key={key} {...restProps} displayText="" linkStates={linkStates}/>;
             case "dataset":
             //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
