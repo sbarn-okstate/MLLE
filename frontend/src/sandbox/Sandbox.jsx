@@ -301,13 +301,22 @@ function Sandbox() {
             }
 
             // Handle Output Layer
-            if (!currentObject.rightLink && currentObject.objectType == "output") {
-                setModelState('valid');
-                setStatusContent([
-                    "Model validated successfully!",
-                    "You can now start training your model.",
-                ]);
-                console.log("Model validated successfully!");
+            if (!currentObject.rightLink) {
+                if (currentObject.objectType === "output") {
+                    setModelState('valid');
+                    setStatusContent([
+                        "Model validated successfully!",
+                        "You can now start training your model.",
+                    ]);
+                    console.log("Model validated successfully!");
+                } else {
+                    console.error("Output layer not found!");
+                    setModelState('invalid');
+                    setStatusContent([
+                        "Output layer not found!",
+                        "Please link an output layer to the right of the last object.",
+                    ]);
+                }
                 break;
             } else {
                 currentObject = currentObject.rightLink; // Move to the next object

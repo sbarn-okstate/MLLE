@@ -284,18 +284,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-
-
-                    if (!currentObject.isActive && false) {
-                        if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
-                        }
-                        else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 200, y: 50});
-                        }
-                        currentObject.isActive = true;
-                    }
-
                 }
                 
                 draggable.onDragEnd = function () {
