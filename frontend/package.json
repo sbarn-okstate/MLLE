@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@visx/axis": "^3.12.0",
+    "@visx/shape": "^3.12.0",
+    "@visx/visx": "^3.12.0",
     "anim-event": "^1.0.17",
     "babel": "^6.23.0",
     "babel-loader": "^10.0.0",
