@@ -640,12 +640,20 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 if (!hasActiveLink) return null;
 
                 return (
+                    <React.Fragment key={`${id}-highlight`}>
                     <div
-                        key={`${id}-a`}
-                        id={`${id}-a`}
-                        className="activation-extension"
-                        style={{ left: left + width / 2 - 25 }}
+                        key={`${id}-a-left`}
+                        id={`${id}-a-left`}
+                        className="activation-extension-left"
+                        style={{ left: left + width / 4, width: width / 4 }}
                     />
+                    <div
+                        key={`${id}-a-right`}
+                        id={`${id}-a-right`}
+                        className="activation-extension-right"
+                        style={{ left: left + width / 2, width: width / 4 }}
+                    />
+                </React.Fragment>
                 );
             })}
             {elements.map((item) => (
