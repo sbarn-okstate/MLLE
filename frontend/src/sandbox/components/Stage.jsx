@@ -11,6 +11,7 @@
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DatasetObject,
+    DataBatcher,
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
     DatasetBostonHousingObject,
@@ -33,7 +34,7 @@ import {
     ConvolutionLayer5x5Object,
     ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
-import DataBatcher from './DataBatcher.jsx';
+//import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
 import "./Stage.css";
@@ -283,18 +284,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-
-
-                    if (!currentObject.isActive && false) {
-                        if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
-                        }
-                        else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 200, y: 50});
-                        }
-                        currentObject.isActive = true;
-                    }
-
                 }
                 
                 draggable.onDragEnd = function () {
@@ -314,12 +303,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     mouse.clientY <= recycleRect.bottom;
 
                     if (mouseInBin) {
-                        if(currentObject.id !== "dataBatcher"){
-                            RemoveObject(currentObject.id);
-                            activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
-                            setActiveObjectsState([...activeObjectsRef.current]);
-                            return;
+                        if (currentObject.objectType === "activation") {
+                            setActivationHighlights(prev => prev.filter(h => h.id !== currentObject.id));
                         }
+                        activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
+                        setActiveObjectsState([...activeObjectsRef.current]);
+                        RemoveObject(currentObject.id);
+                        return;
                     }
 
                     if (snap) {
@@ -571,8 +561,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     function renderObject(objectType, subType, datasetFileName, props) {
         const { key, ...restProps } = props; // Extract the key from props
-
-        const currentObject = activeObjectsState.find(obj => obj.id === props.key);
+        const currentObject = activeObjectsState.find(obj => obj.id === key);
 
         // Dynamically construct activeLinks based on snapPoints
         const linkStates = currentObject
@@ -588,7 +577,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         switch (objectType) {
             case "dataBatcher":
-                return <DataBatcher key={key} {...restProps} linkStates={linkStates}/>;
+                return <DataBatcher key={key} {...restProps} displayText="" linkStates={linkStates}/>;
             case "dataset":
             //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
@@ -641,13 +630,32 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
-            {activationHighlights.map(({ id, left, width }) => (
-                <div
-                key={id}
-                className="activation-extension"
-                style={{ left: left + width / 2 - 25 }}
-              />
-            ))}
+            {activationHighlights.map(({ id, left, width }) => {
+                // Find the corresponding activation object in state
+                const activationObj = activeObjectsState.find(obj => obj.id === id);
+                // Only show the highlight if the activation object exists and has at least one active link
+                const hasActiveLink = activationObj &&
+                    (activationObj.leftLink || activationObj.rightLink || activationObj.topLink || activationObj.bottomLink);
+
+                if (!hasActiveLink) return null;
+
+                return (
+                    <React.Fragment key={`${id}-highlight`}>
+                    <div
+                        key={`${id}-a-left`}
+                        id={`${id}-a-left`}
+                        className="activation-extension-left"
+                        style={{ left: left + width / 4, width: width / 4 }}
+                    />
+                    <div
+                        key={`${id}-a-right`}
+                        id={`${id}-a-right`}
+                        className="activation-extension-right"
+                        style={{ left: left + width / 2, width: width / 4 }}
+                    />
+                </React.Fragment>
+                );
+            })}
             {elements.map((item) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName, {
                     key: item.id,

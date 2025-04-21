@@ -29,4 +29,9 @@
     color: white;
     cursor: grab;
     z-index: 100;
+    box-shadow: var(--box-shadow-default);
+}
+
+.neuron.toolbar-preview{
+    position: relative !important; /* Ensure it stays in place */
 }

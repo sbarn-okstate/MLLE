@@ -12,6 +12,7 @@
     --nodeDrawerWidth: 250px;
     --nodeDrawerCollapsePos: -250px;
     --activeColor: rgb(123, 183, 33);
+    --box-shadow-default: 0 1.5px 6px 0 rgba(60, 60, 60, 0.12), 0 1.5px 6px 0 rgba(60, 60, 60, 0.12);
 }
 
 .DELETEME {
@@ -143,17 +144,19 @@
     position: relative;
     z-index: 10000; /* Ensure it stays above other elements */
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    background-color: #ffffff;
+    width: 180px;
+    color: rgb(0, 0, 0);
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
+    font-size: 0.7em;
+    transition: 0.3s ease;
+    box-shadow: var(--box-shadow-default);
 }
 
 .toggleButton:hover {
-    background-color: #0056b3;
+    background: #4a90e2;
 }
 
 .stageScrollWrapper {
@@ -181,10 +184,6 @@
     z-index: 1100;
     display: flex;
     gap: 16px;
-    background: rgba(255,255,255,0.95);
-
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 8px 24px;
     pointer-events: auto;
 }
 
@@ -201,7 +200,7 @@
     height: 48px;
     font-size: 2em;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--box-shadow-default);
     display: flex;
     align-items: center;
     justify-content: center;

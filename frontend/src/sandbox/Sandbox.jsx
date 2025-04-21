@@ -80,6 +80,7 @@ function createModel() {
 
 function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
     if (modelState === 'valid') { //FIXME: check if model is valid
+        //testing and trying to grab information from chainOfObjects
         createModel();
         //FIXME: This is just a test
         let fileName = model[0].dataset; 
@@ -127,9 +128,7 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
 function Sandbox() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(1); // Start from 1 to avoid collision with dataBatcher
-    const [list, setList] = useState([
-        { id: "dataBatcher", objectType: "dataBatcher", snapType: "lr", location: {x: 300, y: 300}, active: true},
-    ]);
+    const [list, setList] = useState([]); // List of objects on the stage]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [trainingState, setTrainingState] = useState('stopped');
@@ -146,6 +145,18 @@ function Sandbox() {
 
     const reportRef = useRef(null);
     const stageRef = useRef(null); // Reference to the stage component
+
+    // Scrollable wrapper ref
+    // This is used to scroll the stage to the center when the component mounts
+    const scrollWrapperRef = useRef(null);
+    useEffect(() => {
+        if (scrollWrapperRef.current) {
+            // Scroll to half the scrollable height
+            const wrapper = scrollWrapperRef.current;
+            wrapper.scrollTop = (wrapper.scrollHeight / 2) - (wrapper.clientHeight / 2);
+            wrapper.scrollLeft = (wrapper.scrollWidth / 2) - (wrapper.clientWidth / 2); // adjust as needed
+        }
+    }, []);
 
     // Fullscreen handler
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -290,13 +301,22 @@ function Sandbox() {
             }
 
             // Handle Output Layer
-            if (!currentObject.rightLink && currentObject.objectType == "output") {
-                setModelState('valid');
-                setStatusContent([
-                    "Model validated successfully!",
-                    "You can now start training your model.",
-                ]);
-                console.log("Model validated successfully!");
+            if (!currentObject.rightLink) {
+                if (currentObject.objectType === "output") {
+                    setModelState('valid');
+                    setStatusContent([
+                        "Model validated successfully!",
+                        "You can now start training your model.",
+                    ]);
+                    console.log("Model validated successfully!");
+                } else {
+                    console.error("Output layer not found!");
+                    setModelState('invalid');
+                    setStatusContent([
+                        "Output layer not found!",
+                        "Please link an output layer to the right of the last object.",
+                    ]);
+                }
                 break;
             } else {
                 currentObject = currentObject.rightLink; // Move to the next object
@@ -332,9 +352,10 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = null, datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
+    function AddObject(objectType = "all", subType = null, datasetFileName = "none", active = true, location = null) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
+            dataBatcher: "lr", // Data batcher can snap left and right
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
@@ -350,6 +371,14 @@ function Sandbox() {
             neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
         };
+
+        if (!location) {
+            // If no location is provided, generate a random one
+            location = {
+                x: 300 + (Math.random() * 100 - 50),
+                y: 300 + (Math.random() * 100 - 50)
+            };
+        }
 
         const snapType = snapTypeMap[objectType] || "all";
         // Determine the snap points for the given type
@@ -449,6 +478,7 @@ function Sandbox() {
     
             {/* Main Sandbox Area */}
             <div className="sandboxContainer">
+                
                 {/* Fixed NodeDrawer on the left */}
                 <div className="nodeDrawerFixed">
                     <NodeDrawer
@@ -458,31 +488,32 @@ function Sandbox() {
                     />
                 </div>
 
-                {/* Toolbar overlay */}
-                <Toolbar createNodeFunction={AddObject} elements={list}/>
+                {/* Top Center Container */}
+                <div className="topCenterContainer">
+                    <Toolbar createNodeFunction={AddObject} elements={list}/>
+                </div>
 
                 {/* Fixed Top Right Status/Report */}
-                
-                    <div className="topRightContainer">
-                        {showStatusAndReport && (
-                            <>
-                                <Status title="Training Status" content={statusContent} />
-                                <Report ref={reportRef} title="Training Report" />
-                            </>
-                        )}
-                        {/* Toggle Button (can also be fixed if you want) */}
-                        <button
-                            className="toggleButton"
-                            onClick={toggleStatusAndReport}
-                        >
-                            {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                        </button>
-                    </div>
+                <div className="topRightContainer">
+                    {showStatusAndReport && (
+                        <>
+                            <Status title="Training Status" content={statusContent} />
+                            <Report ref={reportRef} title="Training Report" />
+                        </>
+                    )}
+                    {/* Toggle Button (can also be fixed if you want) */}
+                    <button
+                        className="toggleButton"
+                        onClick={toggleStatusAndReport}
+                    >
+                        {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
+                    </button>
+                </div>
     
                 
     
                 {/* Scrollable Stage */}
-                <div className="stageScrollWrapper">
+                <div className="stageScrollWrapper" ref={scrollWrapperRef}>
                     <Stage
                         ref={stageRef}
                         elements={list}

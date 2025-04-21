@@ -14,7 +14,7 @@ import { prepareModel, trainModel, pauseTraining, resumeTraining, stopTraining, 
 
 let csvDataset; //Will probably need this here so webworker can make use of the dataset. Need to have dataloader return something to it.
 
-//args can consist of fileName, problemType, and/or chainOfObjects.
+//args can consist of saveFile, fileName, problemType, and/or chainOfObjects.
 self.onmessage = async (event) => {
     const { func, args } = event.data;
 

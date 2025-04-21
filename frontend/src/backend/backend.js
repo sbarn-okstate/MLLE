@@ -71,6 +71,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                             updateWeightsCallback(weights); // Pass weights
                         }
                         break;
+                    //FOR DEV PURPOSES. Is only called if saveFile is set to true in Sandbox.jsx
                     //Used for saving the model to a file.
                     //This gets called from model.js in trainModel().
                     //args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} 
@@ -105,33 +106,6 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                         let jsonData = args.jsonData;
                         simulateTrainingWithDelay(jsonData, updateMetricsCallback);
                         break;
-                    // Leaving this here for future reference. 
-                    // but will be deleted in when shipping final product.
-                    // 
-                    // case "saveFile":
-                    //     //Obtain file name and model information
-                    //     //Model information includes epoch, loss, accuracy, and weights.
-                    //     fileName = args.fileName;
-                    //     modelInfo = args.modelInfo;
-
-                    //     //Serialize data to JSON
-                    //     //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
-                    //     const serializedData = JSON.stringify(modelInfo); // No pretty print
-
-                    //     //==========Needs to be removed when creating the end product=======
-                    //     //Used for downloading the serialized data as a .JSON.
-                    //     const blob = new Blob([serializedData], { type: 'application/json' });
-                    //     const url = URL.createObjectURL(blob);
-                    //     const a = document.createElement('a');
-                    //     a.href = url;
-                    //     a.download = fileName;
-                    //     document.body.appendChild(a);
-                    //     a.click();
-                    //     document.body.removeChild(a);
-                    //     URL.revokeObjectURL(url);
-                    //     //==========Needs to be removed when creating the end product=======
-
-                    //     break;
                     case "pauseSimulatedTraining":
                         pauseSimulatedTraining();
                         break;

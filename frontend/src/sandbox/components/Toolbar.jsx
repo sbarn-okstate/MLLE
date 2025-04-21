@@ -1,18 +1,21 @@
 import React from "react";
-import { NeuronObject, OutputLayerObject, ActivationObject } from "./LayerObjects";
+import { NeuronObject, OutputLayerObject, ActivationObject, DataBatcher } from "./LayerObjects";
 import "./Toolbar.css";
 
 const ToolbarObject = ({ type, subtype = null, N = 1, count = 0, createNodeFunction, InfoClick }) => {
     let CenterComponent = null;
     switch (type) {
         case "neuron":
-            CenterComponent = <NeuronObject linkStates={{}}/>; 
+            CenterComponent = <NeuronObject linkStates={{}} classNameOverride="neuron-container toolbar-preview"/>; 
             break;
         case "output":
-            CenterComponent = <OutputLayerObject/>;
+            CenterComponent = <OutputLayerObject linkStates={{}} classNameOverride="output-container toolbar-preview"/>;
             break;
         case "activation":
             CenterComponent = <ActivationObject linkStates={{}} classNameOverride="activation-container toolbar-preview"/>;
+            break;
+        case "dataBatcher":
+            CenterComponent = <DataBatcher linkStates={{}} classNameOverride="dataBatcher-container toolbar-preview"/>;
             break;
         default:
             CenterComponent = null;
@@ -50,7 +53,15 @@ const getObjectCount = (elements, type) =>
     elements.filter(el => el.objectType === type).length;
 
 const Toolbar = ({ createNodeFunction, elements }) => (
-    <div className="topCenterContainer">
+    <div className="toolbarOverlay">
+        <ToolbarObject
+            type="dataBatcher"
+            N={1}
+            count={getObjectCount(elements, "dataBatcher")}
+            createNodeFunction={createNodeFunction}
+            InfoClick={() => alert("Data Batcher info")}
+        />
+        <div className="toolbarObjectDivider" />
         <ToolbarObject
             type="neuron"
             N={12}
