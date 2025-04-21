@@ -14,7 +14,6 @@
 
 .activation-extension {
     position: absolute;
-    top: 0;
     /* left should be set via inline style for dynamic positioning */
     width: 50px;
     height: 100%;
@@ -26,7 +25,6 @@
     );
     z-index: 1;
     pointer-events: none;
-    border-radius: 16px;
 }
 
 .activation {
@@ -37,8 +35,7 @@
     margin: 0 auto;
     margin-top: 10px;
     margin-bottom: 10px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+    border-radius: 5px;;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -318,6 +318,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             RemoveObject(currentObject.id);
                             activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
                             setActiveObjectsState([...activeObjectsRef.current]);
+                            if (currentObject.objectType === "activation") {
+                                setActivationHighlights(prev => prev.filter(h => h.id !== currentObject.id));
+                            }
                             return;
                         }
                     }
@@ -641,13 +644,24 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
-            {activationHighlights.map(({ id, left, width }) => (
-                <div
-                key={id}
-                className="activation-extension"
-                style={{ left: left + width / 2 - 25 }}
-              />
-            ))}
+            {activationHighlights.map(({ id, left, width }) => {
+                // Find the corresponding activation object in state
+                const activationObj = activeObjectsState.find(obj => obj.id === id);
+                // Only show the highlight if the activation object exists and has at least one active link
+                const hasActiveLink = activationObj &&
+                    (activationObj.leftLink || activationObj.rightLink || activationObj.topLink || activationObj.bottomLink);
+
+                if (!hasActiveLink) return null;
+
+                return (
+                    <div
+                        key={`${id}-a`}
+                        id={`${id}-a`}
+                        className="activation-extension"
+                        style={{ left: left + width / 2 - 25 }}
+                    />
+                );
+            })}
             {elements.map((item) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName, {
                     key: item.id,
