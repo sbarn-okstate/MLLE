@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    position: absolute;
     pointer-events: none;
 }
 
@@ -57,3 +57,9 @@
     margin-top: 8px;
     margin-bottom: 8px;      /* Adds space below the graphic */
 }
+
+.dataBatcher-container.toolbox-preview {
+    position: relative !important; /* Ensure it stays in place */
+    height: 50px !important;
+}
+

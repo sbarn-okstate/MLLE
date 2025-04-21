@@ -128,9 +128,7 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
 function Sandbox() {
     const activeObjects = useRef([]);
     const [count, setCount] = useState(1); // Start from 1 to avoid collision with dataBatcher
-    const [list, setList] = useState([
-        { id: "dataBatcher", objectType: "dataBatcher", snapType: "lr", location: {x: 300, y: 300}, active: true},
-    ]);
+    const [list, setList] = useState([]); // List of objects on the stage]);
     const [draggables, setDraggables] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [trainingState, setTrainingState] = useState('stopped');
@@ -345,9 +343,10 @@ function Sandbox() {
             - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
             - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
     */
-    function AddObject(objectType = "all", subType = null, datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
+    function AddObject(objectType = "all", subType = null, datasetFileName = "none", active = true, location = null) {
         // Map layer types to their corresponding snap point configurations
         const snapTypeMap = {
+            dataBatcher: "lr", // Data batcher can snap left and right
             dataset: "r",         // Dataset can only snap at the bottom
             dense: "lr",          // Dense layer snaps left and right
             activation: "lr",     // Activation layer snaps left and right
@@ -363,6 +362,14 @@ function Sandbox() {
             neuron: "all",        // Neuron can snap at all points
             all: "all"            // Default to all snap points
         };
+
+        if (!location) {
+            // If no location is provided, generate a random one
+            location = {
+                x: 300 + (Math.random() * 100 - 50),
+                y: 300 + (Math.random() * 100 - 50)
+            };
+        }
 
         const snapType = snapTypeMap[objectType] || "all";
         // Determine the snap points for the given type
@@ -471,26 +478,27 @@ function Sandbox() {
                     />
                 </div>
 
-                {/* Toolbar overlay */}
-                <Toolbar createNodeFunction={AddObject} elements={list}/>
+                {/* Top Center Container */}
+                <div className="topCenterContainer">
+                    <Toolbar createNodeFunction={AddObject} elements={list}/>
+                </div>
 
                 {/* Fixed Top Right Status/Report */}
-                
-                    <div className="topRightContainer">
-                        {showStatusAndReport && (
-                            <>
-                                <Status title="Training Status" content={statusContent} />
-                                <Report ref={reportRef} title="Training Report" />
-                            </>
-                        )}
-                        {/* Toggle Button (can also be fixed if you want) */}
-                        <button
-                            className="toggleButton"
-                            onClick={toggleStatusAndReport}
-                        >
-                            {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                        </button>
-                    </div>
+                <div className="topRightContainer">
+                    {showStatusAndReport && (
+                        <>
+                            <Status title="Training Status" content={statusContent} />
+                            <Report ref={reportRef} title="Training Report" />
+                        </>
+                    )}
+                    {/* Toggle Button (can also be fixed if you want) */}
+                    <button
+                        className="toggleButton"
+                        onClick={toggleStatusAndReport}
+                    >
+                        {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
+                    </button>
+                </div>
     
                 
     

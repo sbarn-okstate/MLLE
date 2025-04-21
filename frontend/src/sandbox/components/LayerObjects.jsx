@@ -140,21 +140,29 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
 }
 
 export function DataBatcher({ ref, handleRef, name, classNameOverride = "", displayText = "", linkStates = {} }) {
+    const isPreview = classNameOverride.includes("toolbar-preview");
     return (
-        <div ref={ref} id={name} className={`dataBatcher-container ${classNameOverride}`}>
+        <div 
+            ref={ref} 
+            id={name} 
+            className={`dataBatcher-container${isPreview ? " toolbar-preview" : ""}`}
+            >   
             <div ref={handleRef} className="dataBatcher">
                 <div className="dataBatcher-title">Data Batcher</div>
-                <div className="dataBatcher-display">
-                    {displayText}
-                </div>
-                <div className="dataBatcher-graphic">
-                        <img
-                            src={dataBatcherGraphic}
-                            alt="Data Batcher Graphic"
-                            style={{ width: "160px", height: "auto", display: "block", margin: "0 auto" }}
-                        />
-                    </div>
-                
+                {!isPreview && (
+                    <>
+                        <div className="dataBatcher-display">
+                            {displayText}
+                        </div>
+                        <div className="dataBatcher-graphic">
+                                <img
+                                    src={dataBatcherGraphic}
+                                    alt="Data Batcher Graphic"
+                                    style={{ width: "160px", height: "auto", display: "block", margin: "0 auto" }}
+                                />
+                            </div>
+                    </>
+                )}
             </div>
             {/* Render all link indicators */}
             {renderLinkIndicators(linkStates, 250, 200)}
@@ -331,15 +339,19 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
 
 // Neuron Object
 export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
+    const isPreview = classNameOverride.includes("toolbar-preview");
 
     return (
         <div
             ref={ref}
             id={name}
-            className={`${classNameOverride}`}
+            className={classNameOverride}
         >
             {/* Draggable handle in the center */}
-            <div ref={handleRef} className="neuron">
+            <div 
+                ref={handleRef} 
+                className={`neuron${isPreview ? " toolbar-preview" : ""}`}
+                >
                 <p className="nodeDragText">Neuron</p>
             </div>
 

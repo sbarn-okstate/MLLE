@@ -315,15 +315,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     mouse.clientY <= recycleRect.bottom;
 
                     if (mouseInBin) {
-                        if(currentObject.id !== "dataBatcher"){
-                            RemoveObject(currentObject.id);
-                            activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
-                            setActiveObjectsState([...activeObjectsRef.current]);
-                            if (currentObject.objectType === "activation") {
-                                setActivationHighlights(prev => prev.filter(h => h.id !== currentObject.id));
-                            }
-                            return;
+                        if (currentObject.objectType === "activation") {
+                            setActivationHighlights(prev => prev.filter(h => h.id !== currentObject.id));
                         }
+                        activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
+                        setActiveObjectsState([...activeObjectsRef.current]);
+                        RemoveObject(currentObject.id);
+                        return;
                     }
 
                     if (snap) {
@@ -575,8 +573,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     function renderObject(objectType, subType, datasetFileName, props) {
         const { key, ...restProps } = props; // Extract the key from props
-
-        const currentObject = activeObjectsState.find(obj => obj.id === props.key);
+        const currentObject = activeObjectsState.find(obj => obj.id === key);
 
         // Dynamically construct activeLinks based on snapPoints
         const linkStates = currentObject
