@@ -478,6 +478,7 @@ function Sandbox() {
     
             {/* Main Sandbox Area */}
             <div className="sandboxContainer">
+                
                 {/* Fixed NodeDrawer on the left */}
                 <div className="nodeDrawerFixed">
                     <NodeDrawer
