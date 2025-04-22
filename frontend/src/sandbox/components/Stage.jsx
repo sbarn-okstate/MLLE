@@ -71,20 +71,38 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
     const lineRefs = useRef([]);
-    const [thing, setThing] = useState("fluent");
     const [test, setTest] = useState(0);
-    var lines = [];
-    var lineTexts = [];
 
     function LinkerChangeTest() {
-        console.log(`LINKER CHANGE!`);
-        lineRefs.current.forEach(line => {
-            if(line.path == `straight`) {
-                line.path = `fluent`;
-            } else {
-                line.path = `straight`;
-            }
-            //line.setOptions({ path: `straight` });
+        //console.log(`LINKER CHANGE!`);
+
+        let ss = `right`;
+        let es = `left`;
+        let sp = `behind`;
+        let ep = `arrow1`;
+        let color = `coral`;
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                if(line.startSocket === `right`) {
+                    ss = `left`;
+                    es = `right`;
+                }
+    
+                //console.log(line.endPlug);
+                if(line.endPlug === `arrow1`) {
+                    sp = `arrow1`;
+                    ep = `behind`;
+                }
+    
+                if(line.color === `coral`) {
+                    color = `green`;
+                }
+    
+                let end = line.end;
+                let start = line.start;
+                line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, startPlug: sp, endPlug: ep, color: color});
+            });
         });
     }
 
@@ -108,6 +126,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             let firstDense = true;
     
             while (currentObject && currentObject.rightLink != null) {
+                // Create an array to store single group of lines
+                let popArray = [];
+
                 if (currentObject.objectType === 'neuron') {
                     if (firstDense) {
                         let currentLayerNode = currentObject;
@@ -119,15 +140,18 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             const newLine = new LinkerLine({
                                 start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
-                                dash: true,
-                                path: thing
+                                dash: {animation: true},
+                                path: `straight`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
                             newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
     
-                            lineRefs.current.push(newLine);
+                            popArray.push(newLine);
                             currentLayerNode = currentLayerNode.bottomLink;
                         }
+
+                        // Store the group in the ref var
+                        lineRefs.current.push(popArray);
     
                         firstDense = false;
                     }
@@ -156,20 +180,24 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
                         let currentNextLayerNode = currentNextLayerTopNode;
     
+                        popArray = []; // Clear the popArray
                         while (currentLayerNode != null) {
                             while (currentNextLayerNode != null) {
                                 const newLine = new LinkerLine({
                                     start: handleRefs.current[currentLayerNode.id],
                                     end: handleRefs.current[currentNextLayerNode.id],
-                                    dash: true,
-                                    path: thing
+                                    dash: {animation: true},
+                                    path: `fluent`
                                 });
                                 newLine.name = `line${lineRefs.current.length}`;
                                 newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
     
-                                lineRefs.current.push(newLine);
+                                popArray.push(newLine);
                                 currentNextLayerNode = currentNextLayerNode.bottomLink;
                             }
+
+                            // Store the group in ref var
+                            lineRefs.current.push(popArray);
     
                             currentLayerNode = currentLayerNode.bottomLink;
                             currentNextLayerNode = currentNextLayerTopNode;
@@ -180,19 +208,23 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             currentLayerNode = currentLayerNode.topLink;
                         }
     
+                        popArray = []; // Clear the pop array
                         while (currentLayerNode != null) {
                             const newLine = new LinkerLine({
                                 start: handleRefs.current[currentLayerNode.id],
                                 end: divRefs.current[nextDenseLayer.id],
-                                dash: true,
-                                path: thing
+                                dash: {animation: true},
+                                path: `straight`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
                             newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
     
-                            lineRefs.current.push(newLine);
+                            popArray.push(newLine);
                             currentLayerNode = currentLayerNode.bottomLink;
                         }
+
+                        // Store the group in ref var
+                        lineRefs.current.push(popArray);
                     }
                 }
     

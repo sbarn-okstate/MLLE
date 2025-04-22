@@ -534,7 +534,7 @@ function Sandbox() {
                         <img
                             src={isFullscreen ? fullscreenIn : fullscreenOut}
                             alt={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                            style={{ width: 32, height: 32 }}
+                            style={{ width: 32, height: 32, userSelect: `none` }}
                         />
                     </button>
                 </div>
