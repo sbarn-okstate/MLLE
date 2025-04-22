@@ -104,21 +104,25 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
     }
 }
 
-function pauseTraining(setTrainingState, setStatusContent) {
+function pauseTraining(setTrainingState, setStatusContent, stageRef) {
     backend_worker.postMessage({func: 'pauseTraining'});
     setTrainingState('paused');
     setStatusContent([
         "Training paused.",
         "Click 'Resume Training' to continue.",
     ]);
+
+    stageRef.current.stopAnimLinkerLines();
 }
 
-function resumeTraining(setTrainingState) {
+function resumeTraining(setTrainingState, stageRef) {
     backend_worker.postMessage({func: 'resumeTraining'});
     setTrainingState('training');
+
+    stageRef.current.startAnimLinkerLines();
 }
 
-function stopTraining(setTrainingState, setStatusContent, reportRef) {
+function stopTraining(setTrainingState, setStatusContent, reportRef, stageRef) {
     backend_worker.postMessage({func: 'stopTraining'});
     setTrainingState('stopped');
     setStatusContent([
@@ -126,6 +130,9 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
         "Validate your model to start training.",
     ]);
     reportRef.current.clearGraphData(); // Clear the graph data
+
+    stageRef.current.stopAnimLinkerLines();
+    stageRef.current.retractLinkerLines();
 }
 
 function Sandbox() {
@@ -466,14 +473,14 @@ function Sandbox() {
                     )}
                     {(trainingState === 'training' || trainingState === 'simulateTraining') && (
                         <>
-                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent, stageRef)}>Pause Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                     {trainingState === 'paused' && (
                         <>
-                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState, stageRef)}>Resume Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                 </div>

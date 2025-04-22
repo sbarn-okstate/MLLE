@@ -253,6 +253,36 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         }
     }
 
+    function RetractLinkerLines() {
+        setUpdating(false);
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.hide(`draw`);
+            });
+        });
+    }
+
+    function StopAnimLinkerLines() {
+        setUpdating(false);
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.setOptions({dash: `true`});
+            });
+        });
+    }
+
+    function StartAnimLinkerLines() {
+        setUpdating(false);
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.setOptions({dash: {animation: true}});
+            });
+        });
+    }
+
     // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
@@ -260,6 +290,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
         linkerChangeTest: LinkerChangeTest,
+        startAnimLinkerLines: StartAnimLinkerLines,
+        stopAnimLinkerLines: StopAnimLinkerLines,
+        retractLinkerLines: RetractLinkerLines
     }));
 
     // draggables do not know about state variables? so the need an external helper
@@ -267,18 +300,24 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         console.log(`an element has called for external action: ${typeof ref}`);
     }
     
+    const iterRef = useRef(iter);
+
+    useEffect(() => {
+        iterRef.current = iter;
+    }, [iter]);
+
     // Ticker for 
     useEffect(() => {
         const timerID = setInterval(() => {
             if(linesReady && updating) {
-                if(iter <= lineRefs.current.length) {
-                    lineRefs.current[iter].forEach(line => {
+                if(iter < lineRefs.current.length) {
+                    lineRefs.current[iterRef.current].forEach(line => {
                         line.show(`draw`);
                     });
                 }
 
                 setIter(i => {
-                    //console.log(`TICK: current iter: ${i}`);
+                    console.log(`TICK: current iter: ${i}`);
                     return i + 1;
                 });
             } else {
@@ -287,7 +326,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         }, 1000);
     
         return () => clearInterval(timerID);
-      }, [linesReady, updating]);
+    }, [linesReady, updating, lineRefs]);
 
     useEffect(() => {
         //console.log("elements", elements);
