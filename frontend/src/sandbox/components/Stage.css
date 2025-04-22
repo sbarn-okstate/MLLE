@@ -1,0 +1,7 @@
+.stage {
+    background-color: rgb(220, 220, 220);
+    position: absolute;
+    overflow: hidden;
+    width: 4000px;
+    height: 100%;
+}

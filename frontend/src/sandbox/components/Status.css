@@ -1,0 +1,34 @@
+.statusContainer {
+    width: 300px; /* Match the width of the Report */
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.statusHeader {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.statusHeader h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.statusContent {
+    font-size: 14px;
+    color: #555;
+}
+
+.statusItem {
+    margin: 5px 0;
+}
+
+.statusPlaceholder {
+    color: #999;
+    font-style: italic;
+    text-align: center;
+}

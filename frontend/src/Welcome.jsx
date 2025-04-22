@@ -1,28 +1,33 @@
+/* Welcome.jsx
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Landing page for the webapp.
+  * 
+  * NOTES: Maybe at some point we just go directly to the sandbox? Would we
+  *        need this page?
+  */
+
 import { Link } from "react-router";
 import './Welcome.css'
 
-function useLearn() {
-    console.log("useLearn: Not yet implemented!");
-}
-
-function useSandbox() {
-    console.log("useSandbox: Not yet inplemented!");
-}
-
-function useTest() {
-    console.log("useTest: Not yet implemented!");
-}
 
 function Welcome() {
     return(
         <>
-            <h1>Welcome</h1>
+            <body class="welcomeBody">
+            <h1 class="WelcomeTitle">Welcome to the MLLE!</h1>
             <div>
-                <p><span><button onClick={() => useLearn()}>Learn</button></span> &nbsp; &nbsp; &nbsp; <span><button onClick={() => useSandbox()}>Use Sandbox</button></span></p>
+                <p>
+                    <span>
+                        <Link to="/sandbox">
+                            <button class="useSandboxButton" >Use Sandbox</button>
+                        </Link>
+                    </span>
+                </p>
             </div>
-            <button onClick={() => useTest()}>Test Env</button>
             <p className="footertext">Work in progress. Content is content to change.</p>
-            <Link to="/sandbox">CRAP</Link>
+            </body>
         </>
     )
 

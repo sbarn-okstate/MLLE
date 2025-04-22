@@ -1,0 +1,456 @@
+/* Sandbox.jsx
+  *
+  * AUTHOR(S): Mark Taylor, Samuel Barney, Justin Moua
+  *
+  * PURPOSE: Page for the Sandbox to occupy.
+  * 
+  * Sandbox.jsx Strcture:
+  *     - createBackend(): Creates the backend worker.
+  *     - createModel(): Creates the model for the backend worker.  
+  *     - startTraining(): Starts the training process.
+  *     - pauseTraining(): Pauses the training process.
+  *     - resumeTraining(): Resumes the training process.
+  *     - stopTraining(): Stops the training process.
+  *     - Sandbox(): The main function that creates the sandbox page.
+  * *           - validateModel(): Validates the model by checking the chain of linked objects.
+  * *           - AddObject(): Adds an object to the list of objects on the stage.
+  * *                   - Takes in three optional parameters: objectType, subType, and datasetFileName.
+  * * *                         - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
+  * * *                         - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)
+  * * * *                       - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+  * *           - UpdateDraggablePos(): Updates the position of the draggable objects.
+  * *           - return: Returns the JSX for the sandbox page.
+  * * *                 - Returns NodeDrawer, Stage, and bottom bar with options. 
+  * 
+  * =====
+  * NOTES
+  * =====
+  * 4/13/2025 (Justin) - Pretrained models can now be read and have their training simulated on the training report graph
+  *                      Currently, there is a stored sample model in D:\GitHub\MLLE\frontend\public\json\sampleModel.json. To simulate its
+  *                      training, the "validate model" needs to be clicked first. Otherwise, the information being read from the pretrained model
+  *                      will not be read. This is when the information is passed to the training report graph, it goes through the same code
+  *                      that the "start training" button does where a validation of the model must have occured. **NOTE** that this DOES NOT affect
+  *                      "start training" from running if you are wanting to create a model that does not match the pretrained model. 
+  * 
+*/
+
+import React, { useState, useEffect, useRef } from "react";
+import { data, Link } from "react-router";
+import PlainDraggable from "plain-draggable";
+import './Sandbox.css';
+import Stage from './components/Stage.jsx';
+import * as backend from '../backend/backend.js';
+import NodeDrawer from './components/NodeDrawer.jsx';
+import Status from './components/Status.jsx';
+import Report from './components/Report.jsx';
+import Toolbar from './components/Toolbar.jsx';
+
+let backend_worker = null;
+let model = null;
+
+function createBackend(updateMetricsCallback, updateWeightsCallback) {
+    backend.createBackendWorker(updateMetricsCallback, updateWeightsCallback);
+    backend_worker = backend.getBackendWorker();
+}
+
+//called by startTraining() to create the model.
+function createModel() {
+    //FIXME: This is just a test
+    const dataset = model[0].dataset;
+    console.log("dataset in createModel() is:", dataset);
+    let layers = model.slice(1);
+    backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
+}
+
+function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
+    if (modelState === 'valid') { //FIXME: check if model is valid
+        createModel();
+        //FIXME: This is just a test
+        let fileName = model[0].dataset; 
+        console.log("fileName in startTraining() is:", fileName);
+        let problemType = 'classification';
+        backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects}}); //Goes to worker.js
+        setTrainingState('training');
+        setStatusContent([
+            "Training started!",
+            "Click 'Pause Training' to pause.",
+        ]);
+    } else {
+        console.error("Chain of objects not validated!");
+        setStatusContent([
+            "Chain of objects not validated!",
+            "Please validate your model before starting training.",
+        ]);
+    }
+}
+
+function pauseTraining(setTrainingState, setStatusContent) {
+    backend_worker.postMessage({func: 'pauseTraining'});
+    setTrainingState('paused');
+    setStatusContent([
+        "Training paused.",
+        "Click 'Resume Training' to continue.",
+    ]);
+}
+
+function resumeTraining(setTrainingState) {
+    backend_worker.postMessage({func: 'resumeTraining'});
+    setTrainingState('training');
+}
+
+function stopTraining(setTrainingState, setStatusContent, reportRef) {
+    backend_worker.postMessage({func: 'stopTraining'});
+    setTrainingState('stopped');
+    setStatusContent([
+        "Welcome to the Sandbox!",
+        "Validate your model to start training.",
+    ]);
+    reportRef.current.clearGraphData(); // Clear the graph data
+}
+
+function Sandbox() {
+    const activeObjects = useRef([]);
+    const [count, setCount] = useState(1); // Start from 1 to avoid collision with dataBatcher
+    const [list, setList] = useState([
+        { id: "dataBatcher", objectType: "dataBatcher", snapType: "lr", location: {x: 300, y: 300}, active: true},
+    ]);
+    const [draggables, setDraggables] = useState([]);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [trainingState, setTrainingState] = useState('stopped');
+    const [modelState, setModelState] = useState('invalid');
+    const [statusContent, setStatusContent] = useState([
+        "Welcome to the Sandbox!",
+        "Validate your model to start training.",
+    ]);
+    const [showStatusAndReport, setShowStatusAndReport] = useState(true); // State to toggle visibility
+
+    const toggleStatusAndReport = () => {
+        setShowStatusAndReport((prev) => !prev); // Toggle the state
+    };
+
+    const reportRef = useRef(null);
+    const stageRef = useRef(null); // Reference to the stage component
+
+    // This gets executed when the DOM is updated
+    useEffect(() => {
+        UpdateDraggablePos();
+    })
+
+    const updateMetricsCallback = (epoch, loss, accuracy) => {
+        updateGraphData(epoch, accuracy); // Pass accuracy to the graph
+        updateAccuracy(accuracy); // Update the accuracy percentage
+    }
+
+    const updateGraphData = (epoch, accuracy) => {
+        if (reportRef.current) {
+            reportRef.current.addGraphData(epoch, accuracy);
+        }
+    };
+
+    const updateAccuracy = (accuracy) => {
+        if (reportRef.current) {
+            reportRef.current.updateAccuracy(accuracy);
+        }
+    };
+
+    const updateWeightsCallback = (weights) => {
+        //console.log("Weights updated:", weights);
+    }
+
+    createBackend(updateMetricsCallback, updateWeightsCallback);
+
+    
+
+    const validateModel = () => {
+        if (!stageRef.current) {
+            console.error("Stage reference is not available!");
+            return [];
+        } 
+        setModelState('invalid');
+
+        const dataBatcher = stageRef.current.getDataBatcher();
+        if (!dataBatcher) {
+            console.error("Data batcher not found!");
+            return [];
+        }
+    
+        const chain = [];
+    
+        // Helper function to get field values
+        const getFieldValue = (fieldId) => {
+            const field = document.getElementById(fieldId);
+            
+            if (field && field.type && field.type === "number") {
+                return Number(field.value); // Convert to a number
+            }
+            return field ? field.value : null;
+        };
+    
+        // Traverse the left link for the dataset object
+        let currentObject = dataBatcher.leftLink;
+        if (currentObject && currentObject.objectType === "dataset") {
+            //const datasetValue = getFieldValue(currentObject.name + "dataset");
+            const datasetValue = currentObject.datasetFileName;
+            chain.push({
+                type: currentObject.objectType,
+                dataset: datasetValue,
+            });
+        } else {
+            console.error("No dataset object linked to the left of the data batcher!");
+            setStatusContent([
+                "Missing dataset object.",
+                "Please link a dataset object to the left of the data batcher.",
+            ]);
+            return chain;
+        }
+    
+        // Traverse the right link for other objects
+        currentObject = dataBatcher.rightLink;
+        while (currentObject) {
+            const objectData = { type: currentObject.objectType };
+            
+            // Handle activation function not preceded by a layer
+            if (currentObject.objectType === "activation") {
+                console.log("Invalid activation function");
+                setModelState('invalid');
+                setStatusContent([
+                    "Invalid activation function.",
+                    "Activation functions must be preceded by a layer.",
+                ]);
+                break;
+            }
+ 
+            // Handle Dense Layer
+            if (currentObject.objectType === "dense"){
+                objectData.units = getFieldValue(currentObject.name + "units");
+            } 
+            // Handle Stacked Neurons
+            else if (currentObject.objectType === "neuron") {
+                let units = 1;
+                let nextNeuron = currentObject.topLink
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.topLink;
+                }
+                nextNeuron = currentObject.bottomLink;
+                while (nextNeuron) {
+                    units++;
+                    nextNeuron = nextNeuron.bottomLink;
+                }
+                objectData.units = units;
+                objectData.type = "dense";
+            } 
+            // Handle Convolution Layer
+            else if (currentObject.objectType === "convolution") {
+                //objectData.filter = getFieldValue(currentObject.name + "filter");
+                objectData.filter = currentObject.subType;
+            }
+            
+            // Handle Activation Function following any layer
+            if (currentObject.rightLink && currentObject.rightLink.objectType === "activation") {
+                //objectData.activation = currentObject.rightLink.subType;
+                objectData.activation = currentObject.rightLink.subType;
+                currentObject = currentObject.rightLink; // move to activation object
+            }
+
+            // Handle Output Layer
+            if (!currentObject.rightLink && currentObject.objectType == "output") {
+                setModelState('valid');
+                setStatusContent([
+                    "Model validated successfully!",
+                    "You can now start training your model.",
+                ]);
+                console.log("Model validated successfully!");
+                break;
+            } else {
+                currentObject = currentObject.rightLink; // Move to the next object
+            }
+            chain.push(objectData);
+        }
+
+        model = chain;
+        console.log("Chain of objects:", chain);
+        
+        //Might delete this in the future.
+        //backend_worker.postMessage({ func: 'validateModel', args: { model } });
+        
+        
+        return chain;
+    };
+
+    const simulateTrainingFromPretrainedModel = () => {
+        setTrainingState('simulateTraining');
+        setStatusContent([
+            "Simulating Training from Pretrained Model (will not say this in end product)",
+            "Click 'Resume Training' to continue.",
+        ]);
+        backend_worker.postMessage({ func: 'validatePretrainedModel', args: { model } });
+    };
+    // localized test div add
+    //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
+    //This is because NodeDrawer calls the AddObject function when a user selects a node.
+    /*
+    addObject takes in three possible parameters. They are:
+        - objectType, subType, and datasetFileName.
+            - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
+            - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
+            - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
+    */
+    function AddObject(objectType = "all", subType = "all", datasetFileName = "none", active = true, location = {x: 300, y: 300}) {
+        // Map layer types to their corresponding snap point configurations
+        const snapTypeMap = {
+            dataset: "r",         // Dataset can only snap at the bottom
+            dense: "lr",          // Dense layer snaps left and right
+            activation: "lr",     // Activation layer snaps left and right
+            relu: "lr",                 // Might not need this. Have to do testing later to see if we can remove this. 
+            sigmoid: "lr",              // Might not need this. Have to do testing later to see if we can remove this. 
+            tanh: "lr",                 // Might not need this. Have to do testing later to see if we can remove this. 
+            softmax: "lr",              // Might not need this. Have to do testing later to see if we can remove this. 
+            convolution: "lr",    // Convolution layer snaps top and bottom
+            filter3x3: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
+            filter5x5: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
+            filter7x7: "lr",            // Might not need this. Have to do testing later to see if we can remove this. 
+            output: "l",          // Output layer can only snap at the top
+            neuron: "all",        // Neuron can snap at all points
+            all: "all"            // Default to all snap points
+        };
+
+        const snapType = snapTypeMap[objectType] || "all";
+        // Determine the snap points for the given type
+        //console.log("Snap points:", snapPoints); // Debugging log
+        // Add the new object to the list
+        setList(prevList => {
+            const updatedList = [
+                ...prevList,
+                {
+                    id: count,
+                    objectType, //passed in from NodeDrawer.jsx
+                    subType, //passed in from NodeDrawer.jsx
+                    datasetFileName,
+                    snapType,
+                    active,
+                    location,
+                }
+            ];
+            //console.log("Updated list:", updatedList); // Debugging log
+            return updatedList;
+        });
+
+        setCount(count + 1);
+    };
+
+    function RemoveObject(id) {
+        console.log(list);
+        console.log("Removing object with ID:", id);
+        setList(prevList => {
+            const updatedList = prevList.filter(item => item.id !== id);
+            return updatedList;
+        });
+        console.log("Updated list after removal:", list); // Debugging log
+    }
+
+
+    // Recalculate position for all draggables
+    // Required for bounds to function properly
+    function UpdateDraggablePos() {
+        draggables.forEach((thing) => {
+            thing.position();
+        });
+    };
+
+    const createLinkerLines = () => {
+        if (stageRef.current) {
+            stageRef.current.createLinkerLines();
+        } else {
+            console.error("Stage reference is not available!");
+        }
+    }
+
+    return (
+        <>
+            {/* Fixed Top Bar */}
+            <div className="topBar">
+                <Link to="/"><button className="sandboxButton">Go Back</button></Link>
+                <div style={{
+                    width: "100%",
+                    paddingRight: "20px",
+                    display: "inline-flex",
+                    justifyContent: "flex-end",
+                    gap: "10px"
+                }}>
+                    <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
+                    <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+                    {trainingState === 'stopped' && (
+                        <>
+                            <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
+                        </>
+                    )}
+                    {(trainingState === 'training' || trainingState === 'simulateTraining') && (
+                        <>
+                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
+                    {trainingState === 'paused' && (
+                        <>
+                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                        </>
+                    )}
+                </div>
+            </div>
+    
+            {/* Main Sandbox Area */}
+            <div className="sandboxContainer">
+                {/* Fixed NodeDrawer on the left */}
+                <div className="nodeDrawerFixed">
+                    <NodeDrawer
+                        drawerOpen={drawerOpen}
+                        setDrawerOpen={setDrawerOpen}
+                        createNodeFunction={AddObject}
+                    />
+                </div>
+
+                {/* Toolbar overlay */}
+                <Toolbar createNodeFunction={AddObject}/>
+
+                {/* Fixed Top Right Status/Report */}
+                
+                    <div className="topRightContainer">
+                        {showStatusAndReport && (
+                            <>
+                                <Status title="Training Status" content={statusContent} />
+                                <Report ref={reportRef} title="Training Report" />
+                            </>
+                        )}
+                        {/* Toggle Button (can also be fixed if you want) */}
+                        <button
+                            className="toggleButton"
+                            onClick={toggleStatusAndReport}
+                        >
+                            {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
+                        </button>
+                    </div>
+    
+                
+    
+                {/* Scrollable Stage */}
+                <div className="stageScrollWrapper">
+                    <Stage
+                        ref={stageRef}
+                        elements={list}
+                        drags={draggables}
+                        setDrags={setDraggables}
+                        updateDrags={UpdateDraggablePos}
+                        AddObject={AddObject}
+                        RemoveObject={RemoveObject}
+                        drawerOpen={drawerOpen}
+                        modelState={modelState}
+                    />
+                </div>
+            </div>
+        </>
+    );
+}
+export default Sandbox

@@ -1,0 +1,199 @@
+/* Sandbox.css
+  *
+  * AUTHOR(S): Mark Taylor
+  *
+  * PURPOSE: Stylesheet for the Sandbox page
+  * 
+  * NOTES: This file should be renamed at some point in
+  *        conjunction with Sandbox.jsx
+  */
+
+:root {
+    --nodeDrawerWidth: 250px;
+    --nodeDrawerCollapsePos: -250px;
+    --activeColor: rgb(123, 183, 33);
+}
+
+.DELETEME {
+    width: 100px;
+    height: 100px;
+    background-color: palevioletred;
+    border-radius: 5px;
+}
+
+.graphText {
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
+    transition: color 0.1s linear;
+}
+
+
+
+
+.sandboxContainer {
+    position: relative;
+    width: 100vw;
+    height: calc(100vh - 60px); /* adjust 60px to your .topBar height */
+    top: 30px; /* adjust 30px to your .topBar height */
+    overflow: hidden;
+}
+
+.topBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: rgb(100,100,100);
+    z-index: 1002;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-bottom: 1px solid #ddd;
+}
+
+.sandboxButton {
+    height: 3em;
+    width: 10em;
+    border-radius: 100px;
+    background-color: rgba(104, 104, 104, 0.375);
+    border-color: grey;
+    color: white;
+    border-style: solid;
+    user-select: none;
+    transition: all 0.2s ease-in;
+}
+
+.sandboxButton:hover {
+    background-color: rgb(56, 56, 56);
+    color: white;
+    transition: all 0.2s ease-in;
+}
+
+.sandboxButton:active {
+    background-color: var(--activeColor);
+    color: black;
+    transition: all 0.1s ease-in;
+}
+
+
+  
+.stage {
+    background-color: rgb(220, 220, 220);
+    position: absolute;
+    overflow: hidden;
+    width: 150%;
+    height: 150%;
+}
+
+.drawerNode {
+    position: relative;
+    background-color: red;
+    display: inline-block;
+    padding: 2px;
+    border-radius: 5px;
+    z-index: 89001;
+}
+
+.draggable {
+    position: absolute;
+    background-color: red;
+    display: inline-block;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.nodeHandle {
+    background-color: black;
+    /*position: fixed;*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+    z-index: 100;
+}
+
+.nodeHandle:hover {
+    background-color: green;
+    transition: all 0.2s ease-in;
+    cursor: grab;
+}
+
+.nodeHandle:active {
+    background-color: rgb(0, 79, 0);
+    transition: all 0.1s ease-in;
+    cursor: grabbing;
+}
+
+.nodeDragText {
+    display: inline;
+    color: white;
+    font-size: 12px;
+    user-select: none;
+}
+
+.nodeText {
+    user-select: none;
+}
+
+.topRightContainer {
+    position: fixed;
+    top: 70px; /* below topBar */
+    right: 20px;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toggleButton {
+    position: relative;
+    z-index: 10000; /* Ensure it stays above other elements */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.toggleButton:hover {
+    background-color: #0056b3;
+}
+
+.stageScrollWrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+}
+
+.nodeDrawerFixed {
+    position: fixed;
+    top: 60px; /* below topBar */
+    left: 0;
+    z-index: 1100;
+    min-width: 200px;
+    height: calc(100vh - 90px); /* fill only below the topBar */
+    overflow: visible;
+}
+
+.topCenterContainer {
+    position: fixed;
+    top: 60px; /* adjust to be below your .topBar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    display: flex;
+    gap: 16px;
+    background: rgba(255,255,255,0.95);
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 8px 24px;
+    pointer-events: auto;
+}
