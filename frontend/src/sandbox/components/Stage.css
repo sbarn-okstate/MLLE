@@ -29,3 +29,8 @@
 use {
     transition: stroke 0.1s ease-in, fill 0.1s ease-in;
 }
+
+/* Disable highlighting the nodes */
+img {
+    user-select: none;
+}

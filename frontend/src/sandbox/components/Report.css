@@ -8,6 +8,7 @@
     box-shadow: var(--box-shadow-default);
     padding: 10px;
     z-index: 1000;
+    user-select: none;
 }
 .reportHeader {
     border-bottom: 1px solid #ddd;

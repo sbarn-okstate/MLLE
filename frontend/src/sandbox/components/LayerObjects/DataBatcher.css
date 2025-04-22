@@ -9,6 +9,7 @@
     justify-content: center;
     position: absolute;
     pointer-events: none;
+    user-select: none;
 }
 
 .dataBatcher {

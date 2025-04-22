@@ -12,6 +12,7 @@
     position: relative;
     pointer-events: none; /* Only allow events on interactive area */
     z-index: 1000; /* Ensure it's above other elements */
+    user-select: none;
 }
 
 /* Interactive area inside dataset-container */

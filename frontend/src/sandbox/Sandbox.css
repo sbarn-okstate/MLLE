@@ -27,9 +27,6 @@
     transition: color 0.1s linear;
 }
 
-
-
-
 .sandboxContainer {
     position: relative;
     width: 100vw;
@@ -153,6 +150,7 @@
     font-size: 0.7em;
     transition: 0.3s ease;
     box-shadow: var(--box-shadow-default);
+    user-select: none;
 }
 
 .toggleButton:hover {
