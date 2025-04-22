@@ -1,0 +1,74 @@
+.activation-container {
+    --activation-width: 50px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    pointer-events: none;
+    z-index: calc(var(--middle) + 2); /* Above activation hightlight */
+}
+
+.activation-container.toolbar-preview {
+    position: relative !important; /* Ensure it stays in place */
+    transform: rotate(-90deg) !important; /* Rotate the container */
+}
+
+.activation {
+    background: rgb(74, 145, 226) ;
+    color: #fff;
+    width: var(--activation-width);
+    height: 120px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    pointer-events: all;
+    position: relative;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 2px;
+    text-align: center;
+    box-shadow: var(--box-shadow-default);
+    z-index: calc(var(--middle) + 2); /* Above activation hightlight */
+}
+
+.activation.toolbar-preview {
+    background: rgba(74, 144, 226, 1) !important;
+    position: relative !important;
+}
+
+.activation-extension-left {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(74, 144, 226, 0.1) 0%,
+        rgba(74, 144, 226, 0.2) 20%,
+        rgba(74, 144, 226, 0.3) 20%,
+        rgba(74, 144, 226, 0.65) 100%
+    );
+    z-index: var(--floor);
+    pointer-events: none;
+}
+
+.activation-extension-right {
+    position: absolute;
+    right: 0;
+    height: 100%; /* Width is determined in Stage.jsx at render time */
+    background: linear-gradient(
+        to right,
+        rgba(74, 144, 226, 0.65) 0%,
+        rgba(74, 144, 226, 0.9) 80%,
+        rgba(74, 144, 226, 1) 80%,
+        rgba(74, 144, 226, 0.9) 100%
+    );
+    z-index: calc(var(--middle) + 1);
+    pointer-events: none;
+}

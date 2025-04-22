@@ -1,3 +1,18 @@
+# pretrainedModelFinder.json 
+finder.json represents pretrained models in this way:
+
+    [
+        {
+            "synth500csv1lyr1dn1rel": "/json/synth500csv1lyr1dn1rel.json",
+            "synth500csv2lyr3dn1r1dn1rel": "/json/synth500csv2lyr3dn1rel1dn1rel.json"
+        }
+    ]
+
+- synth500csv1lyr1dn1rel = synthetic_normal_binary_classification_500.csv + 1 layer + 1 dense neuron in first layer + 1 relu activation function in first layer
+- synth500csv2lyr3dn1rel1dn1rel = synthetic_normal_binary_classificiation_500.csv + 2 layers + 3 dense neurons in first layer + 1 relu activation function in first layer + 1 dense neuron in second layer + 1 relu activation function in second layer
+
+# pretrained models
+
 The serialized models are formatted as shown below.
 It has been set up so that within the array (as shown by the outer brackets) can contain multiple models. This example contains one model. A higher overview of what having multiple models would look like could be this exapmle that holds three models: [{...},{...},{...}]
             

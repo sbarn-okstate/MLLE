@@ -1,18 +1,21 @@
 import React from "react";
-import { NeuronObject, OutputLayerObject, ReluObject } from "./LayerObjects";
+import { NeuronObject, OutputLayerObject, ActivationObject, DataBatcher } from "./LayerObjects";
 import "./Toolbar.css";
 
-const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }) => {
+const ToolbarObject = ({ type, subtype = null, N = 1, count = 0, createNodeFunction, InfoClick }) => {
     let CenterComponent = null;
     switch (type) {
         case "neuron":
-            CenterComponent = <NeuronObject linkStates={{ top: null, left: null, bottom: null, right: null }} />;
+            CenterComponent = <NeuronObject linkStates={{}} classNameOverride="neuron-container toolbar-preview"/>; 
             break;
         case "output":
-            CenterComponent = <OutputLayerObject/>;
+            CenterComponent = <OutputLayerObject linkStates={{}} classNameOverride="output-container toolbar-preview"/>;
             break;
-        case "relu":
-            CenterComponent = <ReluObject/>;
+        case "activation":
+            CenterComponent = <ActivationObject linkStates={{}} classNameOverride="activation-container toolbar-preview"/>;
+            break;
+        case "dataBatcher":
+            CenterComponent = <DataBatcher linkStates={{}} classNameOverride="dataBatcher-container toolbar-preview"/>;
             break;
         default:
             CenterComponent = null;
@@ -22,10 +25,13 @@ const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }
         <div className="toolbarObjectContainer">
             <div
                 className="toolbarObjectCenter"
-                onClick={() => createNodeFunction(type)}
+                onClick={() => {
+                    if (count < N) createNodeFunction(type, subtype);
+                }}
                 tabIndex={0}
                 role="button"
                 aria-label={`Add ${type}`}
+                style={{ opacity: count < N ? 1 : 0.5, pointerEvents: count < N ? "auto" : "none" }}
             >
                 {CenterComponent}
             </div>
@@ -43,21 +49,32 @@ const ToolbarObject = ({ type, N = 1, count = 0, createNodeFunction, InfoClick }
         </div>
     );
 };
+const getObjectCount = (elements, type) =>
+    elements.filter(el => el.objectType === type).length;
 
-const Toolbar = ({ createNodeFunction }) => (
-    <div className="topCenterContainer">
+const Toolbar = ({ createNodeFunction, elements }) => (
+    <div className="toolbarOverlay">
+        <ToolbarObject
+            type="dataBatcher"
+            N={1}
+            count={getObjectCount(elements, "dataBatcher")}
+            createNodeFunction={createNodeFunction}
+            InfoClick={() => alert("Data Batcher info")}
+        />
+        <div className="toolbarObjectDivider" />
         <ToolbarObject
             type="neuron"
             N={12}
-            count={0}
+            count={getObjectCount(elements, "neuron")}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Neuron info")}
         />
         <div className="toolbarObjectDivider" />
         <ToolbarObject
-            type="relu"
+            type="activation"
+            subtype="relu"
             N={3}
-            count={0}
+            count={getObjectCount(elements, "activation")}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Activation info")}
         />
@@ -65,11 +82,13 @@ const Toolbar = ({ createNodeFunction }) => (
         <ToolbarObject
             type="output"
             N={1}
-            count={0}
+            count={getObjectCount(elements, "output")}
             createNodeFunction={createNodeFunction}
             InfoClick={() => alert("Output layer info")}
         />
     </div>
 );
+
+
 
 export default Toolbar;

@@ -1,16 +1,11 @@
 .toolbarOverlay {
-    position: fixed;
-    top: 70px; /* adjust to be below your .topBar */
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 1100;
     display: flex;
     gap: 16px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 8px 24px;
-    pointer-events: auto;
+    background: rgb(255, 255, 255);
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-default);
 }
 
 .toolNode {
@@ -19,24 +14,27 @@
     display: inline-block;
     padding: 2px;
     border-radius: 5px;
-    z-index: 89001;
 }
 
 .toolbarObjectContainer {
     position: relative;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     /* Remove fixed width/height so it wraps the center object */
-    padding: 30px; /* Optional: add some breathing room */
+    padding: 0px; /* Optional: add some breathing room */
 }
 
 .toolbarObjectCenter {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    position: relative;
     justify-content: center;
+    padding: 0px;
+    width: 100px; /* Adjust as needed */
+    height: 100px; /* Adjust as needed */
     cursor: pointer;
-    /* Let the object define the size */
+    background: rgba(0, 0, 0, 0);
 }
 
 .toolbarObjectInfo {
@@ -75,6 +73,6 @@
     width: 1px;
     height: 150px; /* or match your object height */
     background: #ccc;
-    margin: 0 12px;
+    margin: 0px 12px;
     align-self: center;
 }

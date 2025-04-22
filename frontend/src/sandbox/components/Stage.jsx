@@ -10,32 +10,20 @@
 
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
-    DatasetObject,
+    DataBatcher,
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
     DatasetBostonHousingObject,
     DatasetMNISTObject,
     DatasetFashionMNISTObject,
-
-    DenseLayerObject,
-    ActivationLayerObject,
-    ConvolutionLayerObject,
+    ActivationObject,
     NeuronObject,
-    
     OutputLayerObject,
-    
-    ReluObject,
-    SigmoidObject,
-    TanhObject,
-    SoftmaxObject,
-    
-    ConvolutionLayer3x3Object,
-    ConvolutionLayer5x5Object,
-    ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
-import DataBatcher from './DataBatcher.jsx';
+//import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
 //Sandbox.jsx uses this component~
@@ -51,178 +39,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
-    const drag = useRef([]);
-    var lines = [];
-    var lineTexts = [];
-
-    // Creates LinkerLines for dense layers
-    function CreateLinkerLines() {
-        LinkerLine.removeAll();
-        lines = [];
-        lineTexts = [];
-
-        // We need to see if the model is valid first and foremost
-        if(modelState === `valid`) {
-            //console.info(`LinkerLines DEBUG: Model is validated! Creating lines!`);
-
-            // Data batcher has to exist if the model validated
-            const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
-
-            // We need both current and previous object
-            let prevObject = dataBatcher;
-            let currentObject = dataBatcher.rightLink;
-            
-            // As far as I know
-            //  - The first dense layer needs connections to the object to its left
-            //  - All further dense layers need to be fully connected to each other
-            //  - The last dense layer needs to connect to the output node
-            let firstDense = true;
-
-            // // TEST TEST TEST
-            // console.log(`LinkerLine DEBUG: Beginning 1D traversal test...`);
-            // while(currentObject.rightLink != null) {
-            //     console.log(`${currentObject.objectType} -> ${currentObject.rightLink.objectType}`);
-            //     currentObject = currentObject.rightLink;
-            // }
-            // // TEST TEST TEST
-
-            currentObject = dataBatcher.rightLink;
-
-            while(currentObject.rightLink != null) {
-                if(currentObject.objectType === 'neuron') {
-                    //console.log(`LinkerLines DEBUG: Found a neuron/dense layer!`);
-
-                    if (firstDense) {
-                        // Being the first has a special case, fully connected to starting node
-
-                        // More efficient and clean line creating algorithm
-                        // We need to traverse to the top of the dense layer
-                        let currentLayerNode = currentObject;
-                        while(currentLayerNode.topLink != null) {
-                            // We aren't at the top of the layer yet
-                            currentLayerNode = currentLayerNode.topLink;
-                        }
-
-                        // Now that we are at the top of the layer, we can go down and create the lines
-                        while(currentLayerNode != null) {
-                            // Create a LinkerLine
-                            //console.log("LinkerLine DEBUG: Creating a LinkerLine for first dense layer!");
-                            lineTexts.push(`line${lines.length}`);
-                            lines.push(
-                                new LinkerLine({
-                                    start: divRefs.current[(prevObject == dataBatcher) ? 0 : prevObject.id],
-                                    end: handleRefs.current[currentLayerNode.id],
-                                    endLabel: lineTexts[lines.length],
-                                    path: `straight`}));
-                            lines[lines.length - 1].name = `line${lines.length - 1}`;
-                            lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
-
-                            currentLayerNode = currentLayerNode.bottomLink;
-                        }
-
-                        firstDense = !firstDense; // Flip firstDense so we know we have passed the first dense layer
-                    }
-
-                    // Now that we have established the position of the current dense layer we need to see if there is
-                    // another dense layer...
-                    let nextDenseLayer = currentObject;
-                    let noLayer = true;
-
-                    // We are only looking for the next dense layer
-                    //while((nextDenseLayer.objectType != "neuron") && noLayer) {
-                    while((nextDenseLayer.rightLink != null) && noLayer) {
-                        if(nextDenseLayer.rightLink.objectType === "neuron") {
-                            // Break the while loop because we found the next dense layer
-                            noLayer = false;
-                        }
-                        nextDenseLayer = nextDenseLayer.rightLink;
-                    }
-
-                    if (noLayer === false) {
-                        // If we are here, there is another dense layer to connect to
-                        let currentLayerNode = currentObject;
-                        let currentNextLayerTopNode = nextDenseLayer;
-
-                        // Traverse to the tops of the dense layers
-                        while(currentLayerNode.topLink != null) {
-                            // We aren't at the top of the layer yet
-                            currentLayerNode = currentLayerNode.topLink;
-                        }
-
-                        while(currentNextLayerTopNode.topLink != null) {
-                            // We aren't at the top of the layer yet
-                            currentNextLayerTopNode = currentNextLayerTopNode.topLink;
-                        }
-
-                        // Create a new variable so that we don't have to traverse the dense layer up again
-                        let currentNextLayerNode = currentNextLayerTopNode;
-
-                        //console.log(`linkerline from ${currentLayerNode.objectType} to ${currentNextLayerNode.objectType} ??`);
-
-                        // Create the fully connected LinkerLines between the dense layers
-                        while(currentLayerNode != null) {
-                            while(currentNextLayerNode != null) {
-                                // Create LinkerLines
-                                lineTexts.push(`line${lines.length}`);
-                                lines.push(
-                                    new LinkerLine({
-                                        //start: divRefs.current[(currentLayerNode == dataBatcher) ? 0 : currentLayerNode.id],
-                                        start: handleRefs.current[currentLayerNode.id],
-                                        end: handleRefs.current[currentNextLayerNode.id],
-                                        endLabel: lineTexts[lines.length],
-                                        path: `straight`}));
-                                lines[lines.length - 1].name = `line${lines.length - 1}`;
-                                lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
-
-                                currentNextLayerNode = currentNextLayerNode.bottomLink;
-                            }
-
-                            currentLayerNode = currentLayerNode.bottomLink;
-                            currentNextLayerNode = currentNextLayerTopNode;
-                        }
-
-                    } else {
-                        // We didn't find another dense layer, so we need to create lines to the end node
-                        // TODO
-
-                        // We need to traverse to the top of the dense layer
-                        let currentLayerNode = currentObject;
-                        while(currentLayerNode.topLink != null) {
-                            // We aren't at the top of the layer yet
-                            currentLayerNode = currentLayerNode.topLink;
-                        }
-
-                        // Now that we are at the top of the layer, we can go down and create the lines
-                        while(currentLayerNode != null) {
-                            // Create a LinkerLine
-                            //console.log("LinkerLine DEBUG: Creating a LinkerLine for first dense layer!");
-                            lineTexts.push(`line${lines.length}`);
-                            lines.push(
-                                new LinkerLine({
-                                    start: handleRefs.current[currentLayerNode.id],
-                                    end: divRefs.current[nextDenseLayer.id],
-                                    endLabel: lineTexts[lines.length],
-                                    path: `straight`}));
-                            lines[lines.length - 1].name = `line${lines.length - 1}`;
-                            lines[lines.length - 1].setOptions({startSocket: 'right', endSocket: 'left'});
-
-                            currentLayerNode = currentLayerNode.bottomLink;
-                        }
-                    }
-                }
-
-                prevObject = currentObject;
-                currentObject = currentObject.rightLink;
-            }
-
-        } else {
-            console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
-        }
-    }
-
-    /*
+    const drag = useRef({});
+        /*
     {   activeObjects object structure
-        id: "object1", // Unique identifier
+        id: 1, // Unique identifier
         element: div, // Reference to the DOM element
         leftLink: null, // Reference to the object snapped to the left
         rightLink: null, // Reference to the object snapped to the right
@@ -232,9 +52,145 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         ]
     }
     */
-
+    const [activationHighlights, setActivationHighlights] = useState([]);
     const activeObjectsRef = useRef([]);
     const [activeObjectsState, setActiveObjectsState] = useState([]);
+
+    const lineRefs = useRef([]);
+    const [thing, setThing] = useState("fluent");
+    const [test, setTest] = useState(0);
+    var lines = [];
+    var lineTexts = [];
+
+    function LinkerChangeTest() {
+        console.log(`LINKER CHANGE!`);
+        lineRefs.current.forEach(line => {
+            if(line.path == `straight`) {
+                line.path = `fluent`;
+            } else {
+                line.path = `straight`;
+            }
+            //line.setOptions({ path: `straight` });
+        });
+    }
+
+    // Creates LinkerLines for dense layers
+    function CreateLinkerLines() {
+        // Clear existing LinkerLines in lineRefs
+        LinkerLine.removeAll();
+        lineRefs.current = [];
+    
+        // Check if the model is valid
+        if (modelState === `valid`) {
+            const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
+    
+            if (!dataBatcher) {
+                console.error("Data batcher not found!");
+                return;
+            }
+    
+            let prevObject = dataBatcher;
+            let currentObject = dataBatcher.rightLink;
+            let firstDense = true;
+    
+            while (currentObject && currentObject.rightLink != null) {
+                if (currentObject.objectType === 'neuron') {
+                    if (firstDense) {
+                        let currentLayerNode = currentObject;
+                        while (currentLayerNode.topLink != null) {
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+    
+                        while (currentLayerNode != null) {
+                            const newLine = new LinkerLine({
+                                start: divRefs.current[prevObject.id],
+                                end: handleRefs.current[currentLayerNode.id],
+                                dash: true,
+                                path: thing
+                            });
+                            newLine.name = `line${lineRefs.current.length}`;
+                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+    
+                            lineRefs.current.push(newLine);
+                            currentLayerNode = currentLayerNode.bottomLink;
+                        }
+    
+                        firstDense = false;
+                    }
+    
+                    let nextDenseLayer = currentObject;
+                    let noLayer = true;
+    
+                    while (nextDenseLayer.rightLink != null && noLayer) {
+                        if (nextDenseLayer.rightLink.objectType === "neuron") {
+                            noLayer = false;
+                        }
+                        nextDenseLayer = nextDenseLayer.rightLink;
+                    }
+    
+                    if (!noLayer) {
+                        let currentLayerNode = currentObject;
+                        let currentNextLayerTopNode = nextDenseLayer;
+    
+                        while (currentLayerNode.topLink != null) {
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+    
+                        while (currentNextLayerTopNode.topLink != null) {
+                            currentNextLayerTopNode = currentNextLayerTopNode.topLink;
+                        }
+    
+                        let currentNextLayerNode = currentNextLayerTopNode;
+    
+                        while (currentLayerNode != null) {
+                            while (currentNextLayerNode != null) {
+                                const newLine = new LinkerLine({
+                                    start: handleRefs.current[currentLayerNode.id],
+                                    end: handleRefs.current[currentNextLayerNode.id],
+                                    dash: true,
+                                    path: thing
+                                });
+                                newLine.name = `line${lineRefs.current.length}`;
+                                newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+    
+                                lineRefs.current.push(newLine);
+                                currentNextLayerNode = currentNextLayerNode.bottomLink;
+                            }
+    
+                            currentLayerNode = currentLayerNode.bottomLink;
+                            currentNextLayerNode = currentNextLayerTopNode;
+                        }
+                    } else {
+                        let currentLayerNode = currentObject;
+                        while (currentLayerNode.topLink != null) {
+                            currentLayerNode = currentLayerNode.topLink;
+                        }
+    
+                        while (currentLayerNode != null) {
+                            const newLine = new LinkerLine({
+                                start: handleRefs.current[currentLayerNode.id],
+                                end: divRefs.current[nextDenseLayer.id],
+                                dash: true,
+                                path: thing
+                            });
+                            newLine.name = `line${lineRefs.current.length}`;
+                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+    
+                            lineRefs.current.push(newLine);
+                            currentLayerNode = currentLayerNode.bottomLink;
+                        }
+                    }
+                }
+    
+                prevObject = currentObject;
+                currentObject = currentObject.rightLink;
+            }
+        } else {
+            console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
+        }
+    }
+
+
 
 
     // 2. Expose dataBatcher and activeObjects via the ref
@@ -243,6 +199,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         getDataBatcher: () => activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher"),
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
+        linkerChangeTest: LinkerChangeTest,
     }));
 
     // draggables do not know about state variables? so the need an external helper
@@ -251,16 +208,20 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     useEffect(() => {
-        console.log("divRefs:", divRefs.current);
-        console.log("handleRefs:", handleRefs.current);
+        console.log("crap");
+    }, [lineRefs]);
+
+    useEffect(() => {
+        //console.log("elements", elements);
+        //console.log("activeObjectsRef", activeObjectsRef.current);
+        //console.log("activeObjectsState", activeObjectsState);
 
         // This useEffect runs after the components are rendered
         elements.forEach((item) => {
-            const index = item.id;
-            const div = divRefs.current[index];
-            const handle = handleRefs.current[index];
-            if (!drag.current[index]) {
-                drag.current[index] = 1;
+            const div = divRefs.current[item.id];
+            const handle = handleRefs.current[item.id];
+            if (!drag.current[item.id]) {
+                drag.current[item.id] = 1;
                 
                 // Subscribe to mouse move event listener
                 let mouse;
@@ -269,21 +230,22 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
+                console.log("item", item);
                 // Get the type of the object from the elements array
-                const snapType = elements[index]?.snapType || "all"; // Default to "all" if type is not specified   
-                const objectType = elements[index]?.objectType || `object${index}`;   
-                const subType = elements[index]?.subType || `subtype${index}`; // Subtype isn't used for snapping rules currently
-                const datasetFileName = elements[index]?.datasetFileName || `none`; // Dataset file name isn't used for snapping rules currently
-                const active = elements[index]?.active
-                const location = elements[index]?.location || {x: 200, y: 50}; // Default to (0, 0) if not specified
-                const newObject = createNewObject(objectType, subType, datasetFileName, div, index, snapType, active);
+                const snapType = item?.snapType || "all"; // Default to "all" if type is not specified   
+                const objectType = item?.objectType || `object${item.id}`;   
+                const subType = item?.subType || `subtype${item.id}`; // Subtype isn't used for snapping rules currently
+                const datasetFileName = item?.datasetFileName || `none`; // Dataset file name isn't used for snapping rules currently
+                const active = item?.active
+                const location = item?.location || {x: 200, y: 50}; // Default to (0, 0) if not specified
+                const newObject = createNewObject(objectType, subType, datasetFileName, div, item.id, snapType, active);
 
                 //console.log("Active Objects:", activeObjectsRef.current);
 
                 // Define draggable behavior
                 draggable.onMove = function () {
-                    // Update the linkerlines
-                    LinkerLine.positionAll();
+                    // Delete the linkerlines
+                    //LinkerLine.removeAll();
 
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
@@ -299,45 +261,50 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         // Explicitly update the draggable's position
                         draggable.position();  
                     }
+
+                    if (item.objectType === "activation") {
+                        updateActivationHighlight(item.id);
+                    }
                 };
 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     clearLinks(currentObject);
-
-
-                    if (!currentObject.isActive && false) {
-                        if(currentObject.objectType === "neuron"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 400, y: 50});
-                        }
-                        else if (currentObject.objectType === "output"){
-                            AddObject(currentObject.objectType, currentObject.subType, currentObject.datasetFileName, true, {x: 200, y: 50});
-                        }
-                        currentObject.isActive = true;
-                    }
-
                 }
-
+                
                 draggable.onDragEnd = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
                     clearLinks(currentObject);
 
-                    if (snap) {
-                        updateLinks(currentObject, snap);
-                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
+                    
+                    const recycleBin = document.getElementById("recycle-bin");
+                    const recycleRect = recycleBin.getBoundingClientRect();
+
+                    // Check if mouse or object overlaps recycle bin
+                    const mouseInBin = mouse &&
+                    mouse.clientX >= recycleRect.left &&
+                    mouse.clientX <= recycleRect.right &&
+                    mouse.clientY >= recycleRect.top &&
+                    mouse.clientY <= recycleRect.bottom;
+
+                    if (mouseInBin) {
+                        if (currentObject.objectType === "activation") {
+                            setActivationHighlights(prev => prev.filter(h => h.id !== currentObject.id));
+                        }
+                        activeObjectsRef.current = activeObjectsRef.current.filter(obj => obj.id !== currentObject.id);
+                        setActiveObjectsState([...activeObjectsRef.current]);
+                        RemoveObject(currentObject.id);
+                        return;
                     }
 
-                    if (mouse.y < 250) {
-                        if(currentObject.id !== "dataBatcher"){
-                            RemoveObject(currentObject.id);
-                        }
-                        //extAction(divRefs[index]);
+                    if (snap) {
+                        findClosestSnapPoint(currentObject, activeObjectsRef, 5, true);
+                        //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
 
                     LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
-
                 // Set initial position
                 draggable.top = location.y;
                 draggable.left = location.x;
@@ -348,7 +315,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 }
 
                 // Set the handle
-                draggable.handle = handleRefs.current[index];
+                draggable.handle = handleRefs.current[item.id];
 
                 // Do not override the cursor
                 draggable.draggableCursor = false;
@@ -374,15 +341,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     snap.otherObject.bottomLink = obj;
 
                     // Set left and right links to 0 when snapping to the top
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 } else if (snap.currentPoint.type === "bottom") {
                     obj.bottomLink = snap.otherObject;
                     snap.otherObject.topLink = obj;
 
                     // Set left and right links to 0 when snapping to the bottom
-                    obj.leftLink = 0;
-                    obj.rightLink = 0;
+                    if (!obj.leftLink && !obj.rightLink) {
+                        obj.leftLink = 0;
+                        obj.rightLink = 0;
+                    }
                 }
             }
             return obj;
@@ -412,7 +383,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setActiveObjectsState(updatedObjects); // Trigger a re-render
     }
     // custom snapping behavior
-    function findClosestSnapPoint(currentObject, activeObjectsRef) {
+    function findClosestSnapPoint(currentObject, activeObjectsRef, minDistance = 50, linkIfValid = false) {
         if (!currentObject || !currentObject.element) {
             console.error("findClosestSnapPoint: currentObject or its element is undefined.");
             return null;
@@ -445,8 +416,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                    currentRect.top + currentRect.height / 2, // For left and right, y is centered
             }));
     
-        let closestPoint = null;
-        let minDistance = 50; // Max snap distance
+        let pairs = []; //
     
         activeObjectsRef.current.forEach(otherObject => {
             if (otherObject === currentObject) return; // Skip the same object
@@ -466,11 +436,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             .map(point => ({
                 type: point.type,
                 x: point.type === "left" ? otherRect.left :
-                point.type === "right" ? otherRect.right :
-                otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
+                    point.type === "right" ? otherRect.right :
+                    otherRect.left + otherRect.width / 2, // For top and bottom, x is centered
                 y: point.type === "top" ? otherRect.top :
-                point.type === "bottom" ? otherRect.bottom :
-                otherRect.top + otherRect.height / 2, // For left and right, y is centered
+                    point.type === "bottom" ? otherRect.bottom :
+                    otherRect.top + otherRect.height / 2, // For left and right, y is centered
             }));
     
             // Compare current snap points with other snap points
@@ -486,15 +456,43 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     if (isValidSnap) {
                         const distance = Math.hypot(currentPoint.x - otherPoint.x, currentPoint.y - otherPoint.y);
                         if (distance < minDistance) {
-                            minDistance = distance;
-                            closestPoint = { currentPoint, otherPoint, currentObject, otherObject };
+                            pairs.push({
+                                currentPoint,
+                                otherPoint,
+                                currentObject,
+                                otherObject,
+                                distance,
+                                priority: (
+                                    (currentPoint.type === "left" && otherPoint.type === "right") ||
+                                    (currentPoint.type === "right" && otherPoint.type === "left")
+                                ) ? 1 : 2 // 1 = left/right, 2 = top/bottom
+                            });
                         }
                     }
                 });
             });
         });
-    
-        return closestPoint;
+        // Sort pairs: left/right first, then top/bottom, then by distance
+        pairs.sort((a, b) => a.priority - b.priority || a.distance - b.distance);
+
+        if (linkIfValid) {
+            // Link all left/right pairs first, then top/bottom
+            pairs.forEach(pair => {
+                if (pair.priority === 1) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            pairs.forEach(pair => {
+                if (pair.priority === 2) {
+                    updateLinks(pair.currentObject, pair);
+                }
+            });
+            // No need to return a closest point in this mode
+            return null;
+        } else {
+            // Return the closest pair (prioritizing left/right)
+            return pairs.length > 0 ? pairs[0] : null;
+        }
     }
 
     function createNewObject(objectType, subType, datasetFileName, div, index, snapType = "all", active = true) {
@@ -534,10 +532,22 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         return newObject;
     }
 
+    function updateActivationHighlight(id) {
+        const el = divRefs.current[id];
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            const stageRect = stageRef.current.getBoundingClientRect();
+            setActivationHighlights(prev => {
+                // Remove old entry for this id, add new one
+                const filtered = prev.filter(h => h.id !== id);
+                return [...filtered, { id, left: rect.left - stageRect.left, width: rect.width }];
+            });
+        }
+    }
+
     function renderObject(objectType, subType, datasetFileName, props) {
         const { key, ...restProps } = props; // Extract the key from props
-
-        const currentObject = activeObjectsState.find(obj => obj.id === props.key);
+        const currentObject = activeObjectsState.find(obj => obj.id === key);
 
         // Dynamically construct activeLinks based on snapPoints
         const linkStates = currentObject
@@ -553,9 +563,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         switch (objectType) {
             case "dataBatcher":
-                return <DataBatcher key={key} {...restProps} linkStates={linkStates}/>;
+                return <DataBatcher key={key} {...restProps} displayText="" linkStates={linkStates}/>;
             case "dataset":
-            //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
                     case ".csv":
                         switch (datasetFileName) {
@@ -571,30 +580,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 return <DatasetFashionMNISTObject key={key} {...restProps} linkStates={linkStates} />;
                         }
                 }
-            case "dense":
-                return <DenseLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "activation":
-                //return <ActivationLayerObject key={key} {...restProps} />;
-                switch (subType) {
-                    case "relu":
-                        return <ReluObject key={key} {...restProps} linkStates={linkStates} />;
-                    case "sigmoid":
-                        return <SigmoidObject key={key} {...restProps} linkStates={linkStates}/>;
-                    case "tanh":
-                        return <TanhObject key={key} {...restProps} linkStates={linkStates}/>;
-                    case "softmax":
-                        return <SoftmaxObject key={key} {...restProps} linkStates={linkStates}/>;
-                }
-            case "convolution":
-                //return <ConvolutionLayerObject key={key} {...restProps} />;
-                switch (subType) {
-                    case "3x3":
-                        return <ConvolutionLayer3x3Object key={key} {...restProps} linkStates={linkStates}/>;
-                    case "5x5":
-                        return <ConvolutionLayer5x5Object key={key} {...restProps} linkStates={linkStates}/>;
-                    case "7x7":
-                        return <ConvolutionLayer7x7Object key={key} {...restProps} linkStates={linkStates}/>;
-                }
+                return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
             case "output":
                 return <OutputLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "neuron":
@@ -606,6 +593,32 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     return (
         <div id="stage" className="stage" ref={stageRef}>
+            {activationHighlights.map(({ id, left, width }) => {
+                // Find the corresponding activation object in state
+                const activationObj = activeObjectsState.find(obj => obj.id === id);
+                // Only show the highlight if the activation object exists and has at least one active link
+                const hasActiveLink = activationObj &&
+                    (activationObj.leftLink || activationObj.rightLink || activationObj.topLink || activationObj.bottomLink);
+
+                if (!hasActiveLink) return null;
+
+                return (
+                    <React.Fragment key={`${id}-highlight`}>
+                    <div
+                        key={`${id}-a-left`}
+                        id={`${id}-a-left`}
+                        className="activation-extension-left"
+                        style={{ left: left + width / 4, width: width / 4 }}
+                    />
+                    <div
+                        key={`${id}-a-right`}
+                        id={`${id}-a-right`}
+                        className="activation-extension-right"
+                        style={{ left: left + width / 2, width: width / 4 }}
+                    />
+                </React.Fragment>
+                );
+            })}
             {elements.map((item) => (
                 renderObject(item.objectType, item.subType, item.datasetFileName, {
                     key: item.id,
@@ -627,6 +640,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     action: extAction
                 })
             ))}
+            <div id="recycle-bin" className="recycle-bin">
+                🗑️
+            </div>
         </div>
     );
 });

@@ -1,0 +1,66 @@
+
+/* Transparent container, like neuron-container */
+.dataset-container {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    width: 250px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    pointer-events: none; /* Only allow events on interactive area */
+    z-index: var(--middle);
+}
+
+/* Interactive area inside dataset-container */
+.dataset-nbc500-interactive {
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-default);
+    padding: 10px 10px 10px 10px;
+    width: 200px;
+    pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: var(--middle);
+}
+
+/* Dataset label */
+.dataset-nbc500-label {
+    font-weight: bold;
+    font-size: 1.1em;
+    color:#222;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+/* Info table */
+.dataset-nbc500-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+.dataset-nbc500-table-key {
+    font-weight: 600;
+    text-align: right;
+    padding-right: 8px;
+    color: #444;
+}
+.dataset-nbc500-table-value {
+    text-align: left;
+    color: #222;
+}
+
+/* Dataset image */
+.dataset-nbc500-image {
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    margin-top: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}

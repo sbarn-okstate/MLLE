@@ -1,0 +1,62 @@
+<svg width="530" height="330" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Layer 1</title>
+  <rect stroke="#000" fill="none" x="9.34483" y="27.63927" width="140" height="275.76924" id="svg_1" rx="10"/>
+  <g id="svg_11">
+   <rect fill="#d4ffaa" x="18.34483" y="65.87426" width="120" height="20" id="svg_2" rx="10"/>
+   <rect fill="#d4ffaa" x="18.34483" y="90.79312" width="120" height="20" id="svg_3" rx="10"/>
+   <rect fill="#d4ffaa" x="18.34483" y="115.79312" width="120" height="20" id="svg_4" rx="10" stroke="null"/>
+  </g>
+  <g id="svg_15">
+   <rect fill="#aaffff" x="18.34483" y="144.87426" width="120" height="20" id="svg_12" rx="10"/>
+   <rect fill="#aaffff" x="18.34483" y="169.79312" width="120" height="20" id="svg_13" rx="10"/>
+   <rect fill="#aaffff" x="18.34483" y="194.79312" width="120" height="20" id="svg_14" rx="10" stroke="null"/>
+  </g>
+  <g id="svg_19">
+   <rect fill="#ffffaa" x="18.34483" y="222.87426" width="120" height="20" id="svg_16" rx="10"/>
+   <rect fill="#ffffaa" x="18.34483" y="247.79312" width="120" height="20" id="svg_17" rx="10"/>
+   <rect fill="#ffffaa" x="18.34483" y="272.79312" width="120" height="20" id="svg_18" rx="10" stroke="null"/>
+  </g>
+  <g id="svg_21">
+   <rect rx="10" id="svg_5" height="20" width="120" y="37.56236" x="18.34483" stroke="#000" fill="#fff"/>
+   <line id="svg_7" y2="57.35645" x2="59.16834" y1="37.94468" x1="59.16834" stroke="#000" fill="none"/>
+   <line id="svg_8" y2="57.35645" x2="97.99187" y1="37.94468" x1="97.99187" stroke="#000" fill="none"/>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" stroke-width="0" id="svg_9" y="53.68637" x="33.80146" stroke="#000" fill="#000000">x</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" stroke-width="0" id="svg_10" y="53.42864" x="71.52128" stroke="#000" fill="#000000">y</text>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" id="svg_20" y="53.68637" x="111.44851" stroke-width="0" stroke="#000" fill="#000000">c</text>
+  </g>
+  <g id="svg_44">
+   <rect rx="10" id="svg_43" height="85.57692" width="135" y="6.58158" x="323.80637" stroke="#000000" fill="none"/>
+   <g id="svg_26">
+    <rect fill="#d4ffaa" x="331.30635" y="14.41061" width="120" height="20" id="svg_23" rx="10"/>
+    <rect fill="#d4ffaa" x="331.30635" y="39.32947" width="120" height="20" id="svg_24" rx="10"/>
+    <rect fill="#d4ffaa" x="331.30635" y="64.32947" width="120" height="20" id="svg_25" rx="10" stroke="null"/>
+   </g>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" stroke-width="0" id="svg_42" y="58.02388" x="351.42505" stroke="#000" fill="#000000">Batch 1</text>
+  </g>
+  <g id="svg_59">
+   <rect rx="10" id="svg_45" height="85.57692" width="135" y="122.92773" x="244.96022" stroke="#000000" fill="none"/>
+   <g id="svg_49">
+    <rect fill="#aaffff" x="252.46019" y="130.75676" width="120" height="20" id="svg_46" rx="10"/>
+    <rect fill="#aaffff" x="252.46019" y="155.67562" width="120" height="20" id="svg_47" rx="10"/>
+    <rect fill="#aaffff" x="252.46019" y="180.67562" width="120" height="20" id="svg_48" rx="10" stroke="null"/>
+   </g>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" stroke-width="0" id="svg_50" y="174.37003" x="272.5789" stroke="#000" fill="#000000">Batch 2</text>
+  </g>
+  <g id="svg_60">
+   <rect rx="10" id="svg_52" height="85.57692" width="135" y="240.23544" x="243.99868" stroke="#000000" fill="none"/>
+   <g id="svg_56">
+    <rect fill="#ffffaa" x="251.49866" y="248.06447" width="120" height="20" id="svg_53" rx="10"/>
+    <rect fill="#ffffaa" x="251.49866" y="272.98333" width="120" height="20" id="svg_54" rx="10"/>
+    <rect fill="#ffffaa" x="251.49866" y="297.98333" width="120" height="20" id="svg_55" rx="10" stroke="null"/>
+   </g>
+   <text xml:space="preserve" text-anchor="start" font-family="'Andada Pro'" font-size="24" stroke-width="0" id="svg_57" y="291.67774" x="271.61736" stroke="#000" fill="#000000">Batch 3</text>
+  </g>
+  <line stroke-width="3" stroke="#000" id="svg_61" y2="50.81235" x2="243.99867" y1="166.19697" x1="149.76791" fill="none"/>
+  <line stroke-width="3" id="svg_62" y2="50.81235" x2="243.99868" y1="50.81235" x1="323.80637" stroke="#000" fill="none"/>
+  <line stroke-width="3" stroke="#000" id="svg_64" y2="164.27389" x2="148.80637" y1="283.50466" x1="243.99868" fill="none"/>
+  <line stroke-width="3" id="svg_65" y2="166.19697" x2="244.96022" y1="166.19697" x1="148.80637" stroke="#000" fill="none"/>
+  <path stroke="#000000" id="svg_76" d="m498.48286,24.55871c-14.58119,0 -26.40165,11.70168 -26.40165,26.13637c0,14.43463 11.82046,26.13637 26.40165,26.13637c14.58119,0 26.40163,-11.70174 26.40163,-26.13637c0,-14.43468 -11.82045,-26.13637 -26.40163,-26.13637zm-4.24158,43.62511l-6.42372,-6.3647l11.23906,-11.12543l-11.23906,-11.12542l6.42372,-6.3592l17.66413,17.48462l-17.66413,17.49013z" fill="#d4ffaa"/>
+ </g>
+
+</svg>
