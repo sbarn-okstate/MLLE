@@ -30,12 +30,13 @@
   * * *               - OutputLayerObject(): Output layer object  
   */
 
-import React, { forwardRef } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./LayerObjects.css";
 import "./LayerObjects/Datasets.css";
 import "./LayerObjects/Neuron.css";
 import "./LayerObjects/Activation.css";
 import "./LayerObjects/DataBatcher.css";
+import "./LayerObjects/Output.css";
 
 import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
@@ -100,7 +101,7 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
                     left: 0,
                     top: 0,
                     pointerEvents: "none",
-                    zIndex: -1,
+                    zIndex: 0,
                 }}
             >
                 {Object.entries(linkStates).map(([position, value]) => {
@@ -116,6 +117,7 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
                             stroke={value ? "white" : "grey"}
                             strokeWidth="1"
                             strokeDasharray={value ? "0" : "4 4"}
+                            zIndex={0}
                         />
                     );
                 })}
@@ -139,11 +141,40 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
     );
 }
 
+
+// Custom reach hook to get container dimensions
+export function useContainerDimensions(forwardedRef, defaultDims = { width: 400, height: 250 }) {
+    const localRef = useRef(null);
+    const [dimensions, setDimensions] = useState(defaultDims);
+
+    // Combined ref callback
+    const setRefs = useCallback(
+        (el) => {
+            localRef.current = el;
+            if (typeof forwardedRef === "function") forwardedRef(el);
+            else if (forwardedRef) forwardedRef.current = el;
+        },
+        [forwardedRef]
+    );
+
+    useEffect(() => {
+        if (localRef.current) {
+            const rect = localRef.current.getBoundingClientRect();
+            setDimensions({ width: rect.width, height: rect.height });
+        }
+    }, []);
+
+    return [setRefs, dimensions];
+}
+
+
 export function DataBatcher({ ref, handleRef, name, classNameOverride = "", displayText = "", linkStates = {} }) {
     const isPreview = classNameOverride.includes("toolbar-preview");
+    const [setRefs, dimensions] = useContainerDimensions(ref);
+
     return (
         <div 
-            ref={ref} 
+            ref={setRefs} 
             id={name} 
             className={`dataBatcher-container${isPreview ? " toolbar-preview" : ""}`}
             >   
@@ -165,7 +196,125 @@ export function DataBatcher({ ref, handleRef, name, classNameOverride = "", disp
                 )}
             </div>
             {/* Render all link indicators */}
-            {renderLinkIndicators(linkStates, 250, 200)}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
+        </div>
+    );
+}
+
+
+// Neuron Object
+export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
+    const isPreview = classNameOverride.includes("toolbar-preview");
+    const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    return (
+        <div
+            ref={setRefs}
+            id={name}
+            className={classNameOverride}
+        >
+            {/* Draggable handle in the center */}
+            <div 
+                ref={handleRef} 
+                className={`neuron${isPreview ? " toolbar-preview" : ""}`}
+                >
+                <p className="nodeDragText">Neuron</p>
+            </div>
+
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
+        </div>
+    );
+}
+
+// Activation Layer Object
+export function ActivationObject({ name, ref, handleRef, classNameOverride = "activation-container", linkStates = {}}) {
+    const isPreview = classNameOverride.includes("toolbar-preview");
+    const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    return (
+        <div
+            ref={setRefs}
+            id={name}
+            className={classNameOverride}
+        >
+            {/* Draggable handle in the center */}
+            <div
+                ref={handleRef}
+                className={`activation${isPreview ? " toolbar-preview" : ""}`}
+            >
+                <p className="nodeDragText">Activation Function</p>
+            </div>
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
+        </div>
+    );
+}
+
+
+// Output Layer Object for Classification (Batch Animation)
+export function OutputLayerObject({
+    name,
+    ref,
+    handleRef,
+    classNameOverride = "output-container",
+    predictions = [7, 2, 1, 9], //example values
+    confidences = [0.92, 0.85, 0.60, 0.99],
+    targets = [9, 2, 1, 7],
+    losses = [0.35, 0.12, 0.22, 0.40],
+    step = "forward",
+    explanation = "",
+    linkStates = {},
+}) {
+    // Calculate batch accuracy
+    const correctCount = predictions.reduce((acc, pred, i) => acc + (pred === targets[i] ? 1 : 0), 0);
+    const accuracy = ((correctCount / predictions.length) * 100).toFixed(1);
+
+    const isPreview = classNameOverride.includes("toolbar-preview");
+    const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    if (isPreview) {
+        return (
+            <div ref={ref} id={name} className="output-container toolbar-preview">
+                <div className="output-title">Output Layer</div>
+            </div>
+        );
+    }
+
+    return (
+        <div ref={setRefs} id={name} className={classNameOverride}>
+            <div ref={handleRef} className="output">
+                <div className="output-title">Output Layer</div>
+                <div className="output-batch-table">
+                    <div className="output-batch-header">
+                        <span>Sample</span>
+                        <span>Prediction</span>
+                        <span>Confidence</span>
+                        <span>Target</span>
+                        <span>Loss</span>
+                    </div>
+                    {predictions.map((pred, i) => (
+                        <div
+                            key={i}
+                            className="output-batch-row"
+                        >
+                            <span>{i + 1}</span>
+                            <span>{pred}</span>
+                            <span>{(confidences[i] * 100).toFixed(1)}%</span>
+                            <span>{targets[i]}</span>
+                            <span>{losses[i].toFixed(3)}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="output-batch-summary">
+                    Batch predictions: <b>{correctCount} out of {predictions.length}</b> correct ({accuracy}%)
+                </div>
+                <div className="output-explanation">
+                    {explanation}
+                </div>
+            </div>
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
         </div>
     );
 }
@@ -307,241 +456,3 @@ export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverr
     );
 };
 //================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================
-
-//================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================================DENSE OBJECTS START HERE================
-// Dense Layer Object
-export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "draggable", text = "placeholder" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "#4CAF50", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dense Layer</p>
-            </div>
-            <p className={"nodeText"}>Number of Nodes: 
-                <span>
-                    <input
-                        type="number"
-                        name={name + "units"}
-                        id={name + "units"}
-                        min="1"
-                        max="16"
-                        defaultValue="2"
-                        style={{ width: "60px" }}
-                    />
-                </span>
-            </p>
-        </div>
-    );
-};
-
-// Neuron Object
-export function NeuronObject({ name, ref, handleRef, classNameOverride = "neuron-container", linkStates = {} }) {
-    const isPreview = classNameOverride.includes("toolbar-preview");
-
-    return (
-        <div
-            ref={ref}
-            id={name}
-            className={classNameOverride}
-        >
-            {/* Draggable handle in the center */}
-            <div 
-                ref={handleRef} 
-                className={`neuron${isPreview ? " toolbar-preview" : ""}`}
-                >
-                <p className="nodeDragText">Neuron</p>
-            </div>
-
-            {/* Render all link indicators */}
-            {renderLinkIndicators(linkStates, 100, 200)}
-        </div>
-    );
-}
-//================DENSE OBJECTS ENDS HERE================================DENSE OBJECTS ENDS HERE================================DENSE OBJECTS ENDS HERE================
-
-//================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================================ACTIVATION OBJECTS START HERE================
-
-// Activation Layer Object
-// Neuron Object
-export function ActivationObject({ name, ref, handleRef, classNameOverride = "activation-container", linkStates = {}}) {
-    const isPreview = classNameOverride.includes("toolbar-preview");
-
-    return (
-        <div
-            ref={ref}
-            id={name}
-            className={classNameOverride}
-        >
-            {/* Draggable handle in the center */}
-            <div
-                ref={handleRef}
-                className={`activation${isPreview ? " toolbar-preview" : ""}`}
-            >
-                <p className="nodeDragText">Activation Function</p>
-            </div>
-            {/* Render all link indicators */}
-            {renderLinkIndicators(linkStates, 150, 100)}
-        </div>
-    );
-}
-
-export function ReluObject({ name, ref, handleRef, classNameOverride = "draggable",  linkStates = {}  }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
-            }}
-            >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Activation Layer</p>
-            </div>
-            <p className={"nodeText"}>
-                ReLu
-            </p>
-            
-
-            {renderLinkIndicators(linkStates)}
-        </div>
-    );
-}
-
-export function SigmoidObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
-            }}
-            >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Activation Layer</p>
-            </div>
-            <p className={"nodeText"}>
-                Sigmoid
-            </p>
-        </div>
-    );
-}
-
-export function TanhObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
-            }}
-            >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Activation Layer</p>
-            </div>
-            <p className={"nodeText"}>
-                Tanh
-            </p>
-        </div>
-    );
-}
-
-export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
-            }}
-            >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Activation Layer</p>
-            </div>
-            <p className={"nodeText"}>
-                Softmax
-            </p>
-        </div>
-    );
-}
-//================ACTIVATION OBJECTS ENDS HERE================================ACTIVATION OBJECTS ENDS HERE================================ACTIVATION OBJECTS ENDS HERE================
-
-//================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================================CONVOLUTION OBJECTS START HERE================
-// // Convolution Layer Object
-export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Convolution Layer</p>
-            </div>
-            <p className={"nodeText"}>{filterSize} Filter size
-            </p>
-        </div>
-    );
-};
-
-//Convolution Layer Object
-export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Convolution Layer</p>
-            </div>
-            <p className={"nodeText"}>Filter Size of 3x3
-            </p>
-        </div>
-    );
-};
-
-// Convolution Layer Object
-export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Convolution Layer</p>
-            </div>
-            <p className={"nodeText"}>Filter Size of 5x5
-            </p>
-        </div>
-    );
-};
-
-// Convolution Layer Object
-export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Convolution Layer</p>
-            </div>
-            <p className={"nodeText"}>Filter Size of 7x7
-            </p>
-        </div>
-    );
-};
-//================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================================CONVOLUTION OBJECTS ENDS HERE================
-
-// Output Layer Object
-export function OutputLayerObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-            style={{
-                backgroundColor: "rgb(255, 140, 0)", // Optional: Add a background color
-            }}
-        >
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Output</p>
-            </div>
-            <p className={"nodeText"}>Output Layer</p>
-        </div>
-    );
-};
