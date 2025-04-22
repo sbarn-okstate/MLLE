@@ -71,7 +71,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
     const lineRefs = useRef([]);
-    const [test, setTest] = useState(0);
+    const [iter, setIter] = useState(0);
+    const [updating, setUpdating] = useState(false);
+    const [linesReady, setLinesReady] = useState(false);
 
     function LinkerChangeTest() {
         //console.log(`LINKER CHANGE!`);
@@ -79,6 +81,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         lineRefs.current.forEach(group => {
             console.log(i++);
             group.forEach(line => {
+
                 let ss = `right`;
                 let es = `left`;
                 let sp = `behind`;
@@ -118,7 +121,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
     
             if (!dataBatcher) {
-                console.error("Data batcher not found!");
+                console.error("LinkerLines: Data batcher not found!");
                 return;
             }
     
@@ -142,10 +145,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
                                 dash: {animation: true},
-                                path: `straight`
+                                path: `straight`,
+                                startSocket: `right`,
+                                endSocket: `left`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
-                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                            newLine.hide(`none`);
     
                             popArray.push(newLine);
                             currentLayerNode = currentLayerNode.bottomLink;
@@ -188,10 +193,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                     start: handleRefs.current[currentLayerNode.id],
                                     end: handleRefs.current[currentNextLayerNode.id],
                                     dash: {animation: true},
-                                    path: `fluent`
+                                    path: `fluent`,
+                                    startSocket: `right`,
+                                    endSocket: `left`
                                 });
                                 newLine.name = `line${lineRefs.current.length}`;
-                                newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                                newLine.hide(`none`);
     
                                 popArray.push(newLine);
                                 currentNextLayerNode = currentNextLayerNode.bottomLink;
@@ -215,10 +222,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 start: handleRefs.current[currentLayerNode.id],
                                 end: divRefs.current[nextDenseLayer.id],
                                 dash: {animation: true},
-                                path: `straight`
+                                path: `straight`,
+                                startSocket: `right`,
+                                endSocket: `left`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
-                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                            newLine.hide(`none`);
     
                             popArray.push(newLine);
                             currentLayerNode = currentLayerNode.bottomLink;
@@ -232,13 +241,17 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
+
+            // Reset iterator
+            setIter(0);
+
+            // Set lines as ready
+            setLinesReady(true);
+            setUpdating(true); // TEST - REMOVE ME; this should be called when we are training
         } else {
             console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
         }
     }
-
-
-
 
     // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
@@ -253,10 +266,28 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     function extAction(ref) {
         console.log(`an element has called for external action: ${typeof ref}`);
     }
-
+    
+    // Ticker for 
     useEffect(() => {
-        console.log("crap");
-    }, [lineRefs]);
+        const timerID = setInterval(() => {
+            if(linesReady && updating) {
+                if(iter <= lineRefs.current.length) {
+                    lineRefs.current[iter].forEach(line => {
+                        line.show(`draw`);
+                    });
+                }
+
+                setIter(i => {
+                    //console.log(`TICK: current iter: ${i}`);
+                    return i + 1;
+                });
+            } else {
+                // weight update stuff
+            }
+        }, 1000);
+    
+        return () => clearInterval(timerID);
+      }, [linesReady, updating]);
 
     useEffect(() => {
         //console.log("elements", elements);
@@ -292,7 +323,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Define draggable behavior
                 draggable.onMove = function () {
                     // Delete the linkerlines
-                    //LinkerLine.removeAll();
+                    LinkerLine.removeAll();
+                    lineRefs.current = [];
+                    setLinesReady(false);
 
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);

@@ -78,7 +78,7 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
+function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects, stageRef) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         //testing and trying to grab information from chainOfObjects
         createModel();
@@ -92,6 +92,9 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
             "Training started!",
             "Click 'Pause Training' to pause.",
         ]);
+
+        // Create the LinkerLines
+        stageRef.current.createLinkerLines();
     } else {
         console.error("Chain of objects not validated!");
         setStatusContent([
@@ -458,7 +461,7 @@ function Sandbox() {
                     {trainingState === 'stopped' && (
                         <>
                             {/* <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button> */}
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model, stageRef)}>Start Training</button>
                         </>
                     )}
                     {(trainingState === 'training' || trainingState === 'simulateTraining') && (
