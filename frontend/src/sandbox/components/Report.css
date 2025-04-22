@@ -7,7 +7,6 @@
     border-radius: 8px;
     box-shadow: var(--box-shadow-default);
     padding: 10px;
-    z-index: 1000;
     user-select: none;
 }
 .reportHeader {

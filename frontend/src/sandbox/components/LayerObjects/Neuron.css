@@ -12,6 +12,7 @@
     align-items: center;
     cursor: grab;
     user-select: none;
+    z-index: var(--middle);
 }
 
 /* Draggable handle in the center */
@@ -28,8 +29,8 @@
     font-size: 12px;
     color: white;
     cursor: grab;
-    z-index: 100;
     box-shadow: var(--box-shadow-default);
+    z-index: var(--middle);
 }
 
 .neuron.toolbar-preview{

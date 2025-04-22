@@ -44,3 +44,4 @@
 
 # Notes for presentation
  - Future work: allow user to select which input features to utilize
+ - Talk about what components are dynamic vs state (e.g. dataset graphs)

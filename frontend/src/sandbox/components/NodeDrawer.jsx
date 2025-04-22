@@ -14,28 +14,11 @@
 
 import { useState } from "react";
 import {
-    DatasetObject,
-    DenseLayerObject,
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
     DatasetBostonHousingObject,
     DatasetMNISTObject,
     DatasetFashionMNISTObject,
-
-
-    //ActivationLayerObject,
-    //ConvolutionLayerObject,
-    NeuronObject,
-    OutputLayerObject,
-    
-    ReluObject,
-    SigmoidObject,
-    TanhObject,
-    SoftmaxObject,
-    
-    ConvolutionLayer3x3Object,
-    ConvolutionLayer5x5Object,
-    ConvolutionLayer7x7Object,
  } from './LayerObjects.jsx';
  import './NodeDrawer.css';
 

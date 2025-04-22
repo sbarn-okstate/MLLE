@@ -10,29 +10,15 @@
 
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
-    DatasetObject,
     DataBatcher,
     DatasetNBC500Object,
     DatasetHeartPredictionObject,
     DatasetBostonHousingObject,
     DatasetMNISTObject,
     DatasetFashionMNISTObject,
-
-    DenseLayerObject,
     ActivationObject,
-    ConvolutionLayerObject,
     NeuronObject,
-    
     OutputLayerObject,
-    
-    ReluObject,
-    SigmoidObject,
-    TanhObject,
-    SoftmaxObject,
-    
-    ConvolutionLayer3x3Object,
-    ConvolutionLayer5x5Object,
-    ConvolutionLayer7x7Object
  } from './LayerObjects.jsx';
 //import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
@@ -687,7 +673,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "dataBatcher":
                 return <DataBatcher key={key} {...restProps} displayText="" linkStates={linkStates}/>;
             case "dataset":
-            //return <DatasetObject key={key} {...restProps} linkStates={linkStates}/>;
                 switch (subType) {
                     case ".csv":
                         switch (datasetFileName) {
@@ -703,30 +688,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 return <DatasetFashionMNISTObject key={key} {...restProps} linkStates={linkStates} />;
                         }
                 }
-            case "dense":
-                return <DenseLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "activation":
                 return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
-                switch (subType) {
-                    case "relu":
-                        return <ReluObject key={key} {...restProps} linkStates={linkStates} />;
-                    case "sigmoid":
-                        return <SigmoidObject key={key} {...restProps} linkStates={linkStates}/>;
-                    case "tanh":
-                        return <TanhObject key={key} {...restProps} linkStates={linkStates}/>;
-                    case "softmax":
-                        return <SoftmaxObject key={key} {...restProps} linkStates={linkStates}/>;
-                }
-            case "convolution":
-                //return <ConvolutionLayerObject key={key} {...restProps} />;
-                switch (subType) {
-                    case "3x3":
-                        return <ConvolutionLayer3x3Object key={key} {...restProps} linkStates={linkStates}/>;
-                    case "5x5":
-                        return <ConvolutionLayer5x5Object key={key} {...restProps} linkStates={linkStates}/>;
-                    case "7x7":
-                        return <ConvolutionLayer7x7Object key={key} {...restProps} linkStates={linkStates}/>;
-                }
             case "output":
                 return <OutputLayerObject key={key} {...restProps} linkStates={linkStates}/>;
             case "neuron":
