@@ -75,15 +75,16 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     function LinkerChangeTest() {
         //console.log(`LINKER CHANGE!`);
-
-        let ss = `right`;
-        let es = `left`;
-        let sp = `behind`;
-        let ep = `arrow1`;
-        let color = `coral`;
-
+        let i = 0;
         lineRefs.current.forEach(group => {
+            console.log(i++);
             group.forEach(line => {
+                let ss = `right`;
+                let es = `left`;
+                let sp = `behind`;
+                let ep = `arrow1`;
+                let color = `coral`;
+
                 if(line.startSocket === `right`) {
                     ss = `left`;
                     es = `right`;
@@ -166,7 +167,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         nextDenseLayer = nextDenseLayer.rightLink;
                     }
     
-                    if (!noLayer) {
+                    if (!noLayer) { // If there is another dense layer
                         let currentLayerNode = currentObject;
                         let currentNextLayerTopNode = nextDenseLayer;
     
@@ -195,14 +196,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 popArray.push(newLine);
                                 currentNextLayerNode = currentNextLayerNode.bottomLink;
                             }
-
-                            // Store the group in ref var
-                            lineRefs.current.push(popArray);
     
                             currentLayerNode = currentLayerNode.bottomLink;
                             currentNextLayerNode = currentNextLayerTopNode;
                         }
-                    } else {
+
+                        // Store the group in ref var
+                        lineRefs.current.push(popArray);
+                    } else { // No more dense layers means that we need to create lines to the end node
                         let currentLayerNode = currentObject;
                         while (currentLayerNode.topLink != null) {
                             currentLayerNode = currentLayerNode.topLink;
