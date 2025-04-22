@@ -2,13 +2,14 @@
     background: transparent;
     border: none;
     border-radius: 10px;
-    width: 200px;
+    width: 210px;
     height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: absolute;
     pointer-events: none;
+    z-index: var(--middle);
 }
 
 .dataBatcher {
@@ -22,6 +23,8 @@
     pointer-events: all;
     box-shadow: var(--box-shadow-default);
     position: relative;
+    padding: 6px;
+    z-index: var(--middle);
 }
 
 .dataBatcher-title {
@@ -36,7 +39,7 @@
 
 .dataBatcher-display {
     background: rgb(255, 255, 255);
-    width: 150px;
+    width: 100%;
     min-height: 40px;
     flex: 1 1 auto;           /* Fills remaining space */
     display: flex;            /* Use flex, not fill */
@@ -45,6 +48,7 @@
     font-size: 0.7em;
     text-align: left;
     overflow: hidden;
+    border-radius: 5px;
     padding: 3px;
     color: #333;
     

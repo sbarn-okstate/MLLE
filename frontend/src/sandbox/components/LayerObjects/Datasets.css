@@ -11,7 +11,7 @@
     align-items: center;
     position: relative;
     pointer-events: none; /* Only allow events on interactive area */
-    z-index: 1000; /* Ensure it's above other elements */
+    z-index: var(--middle);
 }
 
 /* Interactive area inside dataset-container */
@@ -25,6 +25,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: var(--middle);
 }
 
 /* Dataset label */
