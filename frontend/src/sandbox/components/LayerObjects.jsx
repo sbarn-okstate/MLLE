@@ -258,7 +258,7 @@ export function OutputLayerObject({
     ref,
     handleRef,
     classNameOverride = "output-container",
-    predictions = [7, 2, 1, 9],
+    predictions = [7, 2, 1, 9], //example values
     confidences = [0.92, 0.85, 0.60, 0.99],
     targets = [9, 2, 1, 7],
     losses = [0.35, 0.12, 0.22, 0.40],
