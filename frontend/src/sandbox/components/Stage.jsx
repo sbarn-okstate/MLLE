@@ -306,7 +306,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         iterRef.current = iter;
     }, [iter]);
 
-    // Ticker for 
+    // Ticker for updating LinkerLines
+    // Thickness of line: relative weight (log scale?)
+    // Color of line: weight increase/decrease
+    // Direction of dash: forward/back propagation
     useEffect(() => {
         const timerID = setInterval(() => {
             if(linesReady && updating) {
@@ -362,7 +365,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Define draggable behavior
                 draggable.onMove = function () {
                     // Delete the linkerlines
-                    LinkerLine.removeAll();
+                    RetractLinkerLines();
                     lineRefs.current = [];
                     setLinesReady(false);
 
