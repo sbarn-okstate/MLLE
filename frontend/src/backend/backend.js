@@ -7,6 +7,10 @@
  * 
  * NOTES: None
  * 
+ * A main thread file that is used to communicate with the worker. 
+ * This is where the main thread is. 
+ * Messaging posting is to go to the worker. 
+ * 
  * TODO (4/10/2025 by Justin Moua): 
  * - (DONE) Put "pretrained model" (.json file of chainOfObjects and model hyperparamters)
  *   into public folder. (Before doing so, create a "JSON" folder in the public folder.) 
@@ -25,6 +29,11 @@ let data;
 let modelInfo;
 
 //Called by Sandbox.jsx from it's createBackend() function.
+//updateMetricsCallback is a function PASSED FROM Sandbox.jsx. It looks like this:
+//              const updateMetricsCallback = (epoch, loss, accuracy) => {
+//                  updateGraphData(epoch, accuracy); // Pass accuracy to the graph
+//                  updateAccuracy(accuracy); // Update the accuracy percentage
+//              }
 export function createBackendWorker(updateMetricsCallback, updateWeightsCallback) {
     if (!backend_worker) {
         backend_worker = new Worker(new URL("./worker.js", import.meta.url), {type: 'module'});
@@ -43,8 +52,8 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                 
                 switch (func) {
                     case "sharedBuffer":
-                        sharedBuffer = args.sharedBuffer;
-                        layerSizes = args.layerSizes;
+                        sharedBuffer = args.sharedBuffer; //obtained from model.js
+                        layerSizes = args.layerSizes; //obtained from model.js
 
                         const weightsBufferSize = layerSizes.reduce((sum, size) => sum + size, 0) * 4; // Total size of weights in bytes
                         const metricsBufferSize = 12; // 4 bytes for epoch + 4 bytes for loss + 4 bytes for accuracy
@@ -77,22 +86,11 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                     //args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} 
                     //      - trainingMetrics contains weights, epoch, loss, and accuracy.
                     case "captureTraining":
+                        let url = args.url;
                         let fileName = args.fileName;
-                        let chainOfObjects = args.chainOfObjects;
-                        let trainingMetrics = args.trainingMetrics;
-                        // console.log("Epochs, loss, and accuracy are:", metricsArray);
-                        // console.log("Weights are:", weightArray);
-                        // console.log("Chain of objects is:", chainOfObjects)
-                        //console.log("weight array is:", weightArray);
-                        modelInfo = [{ chainOfObjects, trainingMetrics }];
-                        //Serialize data to JSON
-                        //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
-                        const serializedData = JSON.stringify(modelInfo); // No pretty print
-
-                        //==========Needs to be removed when creating the end product=======
-                        //Used for downloading the serialized data as a .JSON.
-                        const blob = new Blob([serializedData], { type: 'application/json' });
-                        const url = URL.createObjectURL(blob);
+                        
+                        //All this does is create a download link, clicks it, and gets rid of it.
+                        //The serialization takes place in the backend.
                         const a = document.createElement('a');
                         a.href = url;
                         a.download = fileName;
@@ -100,7 +98,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                         a.click();
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
-                        //==========Needs to be removed when creating the end product=======
+                        console.log("Now it should save");
                         break;
                     case "simulateTrainingWithDelay":
                         let jsonData = args.jsonData;

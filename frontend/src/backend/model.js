@@ -5,6 +5,20 @@
  * PURPOSE: FIXME
  * 
  * NOTES: FIXME->prepareModel and trainModel use different argument names for the dataset filename
+ *        
+ *        Justin Moua's Note as of 4/22/2025 10:39 PM
+ *             * Main Note: Global "allWeights" and "allMetrics" were created to store weights and metrics when saveWeightsAndMetricsToSharedMemory() was called.
+ *                          However, I noticed that trainingMetrics (which contains epoch, loss, accuracy, and weights in one structure!)
+ *                          in trainModel() actually contains an entire array of exactly what allWeights and allMetrics attempts to do.
+ *                          So, perhaps we do not need allWeights and allMetrics. As for now I have the code use trainingMetrics when training has ended (and if the devs 
+ *                          enabled pre-trained model saving) instead of allWieghts and allMetrics. But this can be easily changed.
+ *                  * Important Note #1: If we euse allWeights and allMetrics: Have to ensure that the .json format is structured correctly for ease of parsing.
+ *                                       I also want to make sure that I can make it so when the .json is read from, it gets fed into the weightsArray 
+ *                                       and metricsArray correctly.
+ *                  * Important Note #2: The codes that I was referring to in the main note above that takes place after the end of model training are these two.
+ *                                       These two are also next to each other in the actual code below.
+ *                                       let modelInfo = [{ chainOfObjects, trainingMetrics }]
+ *                                       let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
  * 
  * Functions:
  *  - prepareModel({layers, dataset}, self): Prepares the model for training.
@@ -31,6 +45,8 @@ let weightArray = null;
 let metricsArray = null; // Stores loss and accuracy
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
+let allWeights = []; //Created to store to json file
+let allMetrics = []; //Created to store to json file
 
 //TRAINING SIMULATION/SIMULATE
 //Model information is passed into here so we can check if it exists in the JSON folder.
@@ -251,11 +267,12 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
                         });
 
                         //console.log(JSON.stringify(trainingMetrics));
-                        console.log("training metrics:", trainingMetrics)
+                        //console.log("training metrics:", trainingMetrics)
                         //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
             
                         // Save weights, epoch, loss, and accuracy to shared memory
                         saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
+                        
                     },
                     onTrainingEnd: () => {
                         //console.log("✅ Reached onTrainingEnd callback");
@@ -271,10 +288,26 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
             });
             console.log("savePretrained in model.js is:", savePretrained);
             if (savePretrained === true) {
-            // Call to capture training
-            //==========Obtain Training Metrics===========
-            self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
-            //==========Obtain Training Metrics===========    
+                // Call to capture training
+                //==========Obtain Training Metrics===========
+                let modelInfo = [{ chainOfObjects, trainingMetrics }]
+                //let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
+                console.log("modelInfo:", modelInfo);
+                //Serialize data to JSON
+                //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
+                const serializedData = JSON.stringify(modelInfo); // No pretty print
+                
+                //==========Needs to be removed when creating the end product=======
+                //Used for downloading the serialized data as a .JSON.
+                const blob = new Blob([serializedData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                //https://stackoverflow.com/questions/36436075/is-it-possible-to-save-a-file-directly-from-a-web-worker
+                //https://www.w3schools.com/Html/html5_webworkers.asp#:~:text=Since%20web%20workers%20are%20in,The%20document%20object
+                self.postMessage({ func: "captureTraining", args: {fileName: "modelInfo.json", url} });
+                //==========Needs to be removed when creating the end product=======
+                //==========Obtain Training Metrics===========    
+                //Save the model here
+            
             }
 
             console.log("🚀 model.fit completed without error");
@@ -357,9 +390,26 @@ function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
     metricsArray[1] = parseFloat(loss); // Save loss
     metricsArray[2] = parseFloat(accuracy); // Save accuracy
 
+    //console.log("weightArray:", weightArray);
+    // console.log("metricsArray[0]:", metricsArray[0]);
+    // console.log("metricsArray[1]:", metricsArray[1]);
+    // console.log("metricsArray[2]:", metricsArray[2]);
+    // console.log("metricsArray:", metricsArray);
+
+    //Saving to global weight and metrics array.
+    allWeights.push({weightArray});
+    allMetrics.push({metricsArray});
+
+    // console.log("allweights is:", allWeights);
+    // console.log("allMetrics is:", allMetrics);
+
     // Notify the frontend that weights, loss, and accuracy have been updated
     self.postMessage({ func: "weightsAndMetricsUpdated"});
 }
+
+//Have a function here that will read the pretrained model's information and then feed it into the shared buffer by calling this function
+//SELF.POSTmESSAGE({func: })
+
 
 class PauseResumeCallback extends tf.Callback {
     constructor() {
