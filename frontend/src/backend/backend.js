@@ -110,13 +110,6 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                             updateMetricsCallback(currentEpoch, currentLoss, currentAccuracy, currentWeights); // Pass epoch, loss, accuracy, and weights
                         }
                         break;
-                    case "pauseSimulatedTraining":
-                        pauseSimulatedTraining();
-                        break;
-                    case "resumeSimulatedTraining":
-                        resumeSimulatedTraining();
-                        break;
-
                     default:
                         console.log('Unknown function call from backend worker:', func);
                 }
@@ -131,18 +124,6 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
     //console.log('Backend worker already created.');
 }
 
-
-let isPaused = false; // Flag to track pause state
-
-// Function to pause training
-export function pauseSimulatedTraining() {
-    isPaused = true;
-}
-
-// Function to resume training
-export function resumeSimulatedTraining() {
-    isPaused = false;
-}
 
 function getWeightsAndMetrics() {
     let offset = 0;

@@ -10,7 +10,7 @@
 
 import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs';
 
-import { prepareModel, trainModel, pauseTraining, resumeTraining, stopTraining, validatePretrainedModel} from './model.js';
+import { prepareModel, trainModel, pauseTraining, resumeTraining, stopTraining} from './model.js';
 
 let csvDataset; //Will probably need this here so webworker can make use of the dataset. Need to have dataloader return something to it.
 
@@ -33,9 +33,6 @@ self.onmessage = async (event) => {
             break;
         case "stopTraining":
             await stopTraining(self);
-            break;
-        case "validatePretrainedModel":
-            await validatePretrainedModel(args.model, self);
             break;
         default:
             console.error(`Unknown function: ${func}`);
