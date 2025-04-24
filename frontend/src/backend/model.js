@@ -6,22 +6,6 @@
  * 
  * NOTES: FIXME->prepareModel and trainModel use different argument names for the dataset filename
  *        
- *        Justin Moua's Note as of 4/24/2025 12:36 AM
- *              * Main Note: Moved code to read from json file from backend to model.js now.
- *                           Reading of the file is done in model.js and so is saving information from the pretrained model.
- *                           After that information is saved, it is passed into backend.js to perform graphical updates.
- *                  * Todo #1: Will have to revisit this later today and ensure that the code matches any formats that may
- *                                       need to be kept in mind of. (For example, maybe there is some format it has to return to or be in for
- *                                       Mark to read from).
- *                      - STATUS: Currently working on. Refer to 4/24/2025 note.
- *                  * Todo #2: Have to implement pausing and stopping.
- *                      - STATUS: DONE
- * 
- *        Justin Moua's Note as of 4/24/2025 at 12:50 PM
- *              * Main Note: Todo #1 from my 4/24/2025 note is currently being worked on. Epochs, loss, and accuracy
- *                           from the pretrained model should be saved into the shared buffer now. However, I will have to figure
- *                           out how to go about that for the weights. Might be able to do so using some for loop
- *                           to loop through the pretrained model and grab the weights from there.
  * 
  * Functions: 
  *  - NEED TO UPDATE THIS - JM (4/24/2025 @ 12:54 PM)
@@ -115,7 +99,7 @@ export function setStateOfSimulatedTraining(setState){
 
 //This function is used to train models from scratch and simulate training.
 //Firstly, the end-user's model's information is grabbed. 
-export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 25) {
+export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 100) {
     let modelFinderKey = ""; //Example of modelFinderKey: synth500csv1lyr1dn1rel
     let modelFinderValue; //Value to the key in the line above.
     let lengthOfCob = chainOfObjects.length;
@@ -184,6 +168,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
 
     //==============IF PRETRAINED MODEL EXISTS, READ FROM JSON==============
     if (pretrainedModelFilePath) {
+        console.log(`SIMULATING TRAINING! pretrained model (${modelFinderKey}) FOUNDED in pretrainedModelFinder.json!`)
         isSimulating = true;
         const response = await fetch(pretrainedModelFilePath); //fetches the file path of the pretrained model.
         jsonData = await response.json(); //Deserializes the pretrained model's contents.
@@ -192,9 +177,8 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
     
     //==============IF PRETRAINED MODEL DNE, TRAIN FROM SCRATCH==============
     else {
-        //==============TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================
         isSimulating = false;
-        console.log(`modelFinderKey (${modelFinderKey}) not found in pretrainedModelFinder.json. Training from scratch now.`);
+        console.log(`TRAINING FROM SCRATCH! pretrained model (${modelFinderKey}) NOT FOUNDED in pretrainedModelFinder.json.`);
         if (!model) {
             self.postMessage('Model not prepared. Please prepare model before training.');
             return;
@@ -354,7 +338,8 @@ function calculateBufferSize() {
     return totalParams * 4; // 4 bytes per float32
 }
 
-function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
+//weightsFromPreTrained is null when training from scratch.
+function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy, weightsFromPretrained) {
     // console.log("model is:", model)
     // console.log("epoch number:", epoch);
     // console.log("loss:", loss);
@@ -364,13 +349,22 @@ function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
     //FIXME 4/24/2025 Justin Moua - simulated training puts epoch, loss, and accuracy into shared buffer. 
     //BUT it does not do that for the weights.
     let offset = 0;
-    model.layers.forEach((layer) => {
-        layer.getWeights().forEach((tensor) => {
-            const data = tensor.dataSync();
-            weightArray.set(data, offset);
-            offset += data.length;
-        });
-    });
+    if (isSimulating == false) {
+        model.layers.forEach((layer) => {
+            layer.getWeights().forEach((tensor) => {
+                const data = tensor.dataSync();
+                weightArray.set(data, offset);
+                offset += data.length;
+            });
+        });   
+    }
+    //pushes simulated weights into weight array shared buffer. 
+    else if (isSimulating == true) {
+        const data = weightsFromPretrained;
+        weightArray.set(data, offset)
+        offset += data.length;
+        //console.log("weightArray while simulating training is:", weightArray);
+    }
 
     // Save epoch, loss, and accuracy into metricsArray which is in the sharedbuffer.
     metricsArray[0] = epoch; // Save epoch
@@ -429,15 +423,13 @@ async function prepareSimulateTrainingWithDelay(jsonData) {
         const currentLoss = getAllLoss(i); //Grabs the current loss
         const currentAccuracy = getAllAccuracy(i); //Grabs the current accuracy
         const currentWeights = getAllWeights(i); //Grabs the current weights
-
-        saveWeightsAndMetricsToSharedMemory(currentEpoch, currentLoss, currentAccuracy); //Note that isSimulating will have been set to true before prepareSimulateTrainingWithDelay is called()!
+        saveWeightsAndMetricsToSharedMemory(currentEpoch, currentLoss, currentAccuracy, currentWeights); //Note that isSimulating will have been set to true before prepareSimulateTrainingWithDelay is called()!
         //Updates the graph on the front-end side.
         self.postMessage({ func: "simulateTrainingWithDelay", args: { currentEpoch, currentLoss, currentAccuracy, currentWeights } });
 
         // Wait for 500ms before the next iteration to simulate training. 
         // Can adjust number if needed.
         await delay(500);
-        console.log("finished simulated training for epoch #", currentEpoch); //For dev purposes. 
     }
 }
 
