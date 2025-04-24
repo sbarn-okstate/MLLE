@@ -7,6 +7,9 @@
  * NOTES: FIXME->prepareModel and trainModel use different argument names for the dataset filename
  *        
  *        Justin Moua's Note as of 4/22/2025 10:39 PM
+ *             * 4/23/2025 update to this note:
+ *                  * We want to use "allWeights" and "allMetrics" so we can save the information in the right format. Also,
+ *                  * trainingMetrics does not properly save the weights. It saves the previous weights into the current epoch. 
  *             * Main Note: Global "allWeights" and "allMetrics" were created to store weights and metrics when saveWeightsAndMetricsToSharedMemory() was called.
  *                          However, I noticed that trainingMetrics (which contains epoch, loss, accuracy, and weights in one structure!)
  *                          in trainModel() actually contains an entire array of exactly what allWeights and allMetrics attempts to do.
@@ -19,6 +22,15 @@
  *                                       These two are also next to each other in the actual code below.
  *                                       let modelInfo = [{ chainOfObjects, trainingMetrics }]
  *                                       let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
+ * 
+ *        Justin Moua's Note as of 4/24/2025 12:36 AM
+ *              * Main Note: Moved code to read from json file from backend to model.js now.
+ *                           Reading o th file is done in model.js and so is saving information from the pretrained model.
+ *                           After that information is saved, it is passed into backend.js to perform graphical updates.
+ *                  * Important Note #1: Will have to revisit this tomorrow and ensure that the code matches any formats that may
+ *                                       need to be kept in mind of. (For example, maybe there is some format it has to return to or be in for
+ *                                       Mark to read from).
+ *                  * Important Note #2: Have to implement pausing and stopping.
  * 
  * Functions:
  *  - prepareModel({layers, dataset}, self): Prepares the model for training.
@@ -208,7 +220,8 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
             const response = await fetch(pretrainedModelFilePath); 
             //Deserializes JSON file as an object.
             jsonData = await response.json();
-            self.postMessage({ func: "simulateTrainingWithDelay", args: { jsonData } });
+            //self.postMessage({ func: "simulateTrainingWithDelay", args: { jsonData } });
+            prepareSimulateTrainingWithDelay(jsonData, modelFinderKey)
         //==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER ENDS HERE==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER ENDS HERE==================
         } else {
             //==============TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================
@@ -263,7 +276,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
                             epoch: epoch + 1,
                             loss: parseFloat(loss),
                             accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
-                            weight: weightArray,
+                            //weight: weightArray, //This was previously added by justin. But removing it since it is not accurately showing the CURRENT weights. Shows the previous weights.
                         });
 
                         //console.log(JSON.stringify(trainingMetrics));
@@ -289,24 +302,19 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
             console.log("savePretrained in model.js is:", savePretrained);
             if (savePretrained === true) {
                 // Call to capture training
-                //==========Obtain Training Metrics===========
-                let modelInfo = [{ chainOfObjects, trainingMetrics }]
-                //let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
+                let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
                 console.log("modelInfo:", modelInfo);
                 //Serialize data to JSON
                 //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
                 const serializedData = JSON.stringify(modelInfo); // No pretty print
                 
-                //==========Needs to be removed when creating the end product=======
                 //Used for downloading the serialized data as a .JSON.
                 const blob = new Blob([serializedData], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
+                //Have to pass the file name and url to mainthread!
                 //https://stackoverflow.com/questions/36436075/is-it-possible-to-save-a-file-directly-from-a-web-worker
                 //https://www.w3schools.com/Html/html5_webworkers.asp#:~:text=Since%20web%20workers%20are%20in,The%20document%20object
-                self.postMessage({ func: "captureTraining", args: {fileName: "modelInfo.json", url} });
-                //==========Needs to be removed when creating the end product=======
-                //==========Obtain Training Metrics===========    
-                //Save the model here
+                self.postMessage({ func: "captureTraining", args: {fileName: (modelFinderKey+".json"), url} });
             
             }
 
@@ -375,8 +383,10 @@ function calculateBufferSize() {
 }
 
 function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
+    console.log("epoch number", (epoch));
     // Save weights
     let offset = 0;
+    
     model.layers.forEach((layer) => {
         layer.getWeights().forEach((tensor) => {
             const data = tensor.dataSync();
@@ -384,32 +394,68 @@ function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
             offset += data.length;
         });
     });
-    //console.log("weightArray is: ", weightArray);
     // Save epoch, loss, and accuracy
     metricsArray[0] = epoch; // Save epoch
     metricsArray[1] = parseFloat(loss); // Save loss
     metricsArray[2] = parseFloat(accuracy); // Save accuracy
 
-    //console.log("weightArray:", weightArray);
-    // console.log("metricsArray[0]:", metricsArray[0]);
-    // console.log("metricsArray[1]:", metricsArray[1]);
-    // console.log("metricsArray[2]:", metricsArray[2]);
-    // console.log("metricsArray:", metricsArray);
+    //Save snapshots of weights and metrics for current epoch.
 
-    //Saving to global weight and metrics array.
-    allWeights.push({weightArray});
-    allMetrics.push({metricsArray});
+    let currentLayerWeights = Array.from(weightArray);
+    console.log("currentLayerWeights is:", currentLayerWeights);
 
-    // console.log("allweights is:", allWeights);
-    // console.log("allMetrics is:", allMetrics);
+    //FIXME: NOT CURRENTLY WORKING!!!
+    allWeights.push(currentLayerWeights) //of type array.
+    allMetrics.push({
+        epoch: epoch,
+        loss: parseFloat(loss),
+        accuracy: parseFloat(accuracy)
+    });
 
+    //console.log("allWeights is:", allWeights);
+    console.log("================");
     // Notify the frontend that weights, loss, and accuracy have been updated
     self.postMessage({ func: "weightsAndMetricsUpdated"});
 }
 
 //Have a function here that will read the pretrained model's information and then feed it into the shared buffer by calling this function
 //SELF.POSTmESSAGE({func: })
+// Simulate training with delay and pause functionality
+async function prepareSimulateTrainingWithDelay(jsonData) {
 
+    console.log("jsonData is:", jsonData);
+    const num_of_epochs = jsonData[0]["allMetrics"].length;
+
+    // Arrow functions to extract data for each variable
+    const getAllEpoch = (index) => jsonData[0]["allMetrics"][index]["epoch"];
+    const getAllLoss = (index) => jsonData[0]["allMetrics"][index]["loss"];
+    const getAllAccuracy = (index) => jsonData[0]["allMetrics"][index]["accuracy"];
+    const getAllWeights = (index) => jsonData[0]["allWeights"][index]; //Grabs an array of weights
+
+    // Helper function to introduce a delay
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (let i = 0; i < num_of_epochs; i++) {
+        // Check if paused
+        // while (isPaused) {
+        //     await delay(100); // Wait 100ms before checking again
+        // }
+        const currentEpoch = getAllEpoch(i);
+        const currentLoss = getAllLoss(i);
+        const currentAccuracy = getAllAccuracy(i);
+        const currentWeights = getAllWeights(i);
+
+        self.postMessage({ func: "simulateTrainingWithDelay", args: { currentEpoch, currentLoss, currentAccuracy, currentWeights } });
+        //Moved this to backend.js via line above. Hoping that after this if statement is called, then it we come back to this code!
+        // if (updateMetricsCallback) {
+        //     updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights
+        // }
+
+        // // Wait for 500ms before the next iteration
+        await delay(500);
+        console.log("finished simulated training for epoch #", currentEpoch);
+    }
+}
 
 class PauseResumeCallback extends tf.Callback {
     constructor() {
