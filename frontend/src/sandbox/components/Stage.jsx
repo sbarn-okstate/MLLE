@@ -68,6 +68,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     const lineRefs = useRef([]);
 
+    // Could still use this function later
+    // It should be renamed first
     function LinkerChangeTest() {
         if(true) {
             setUpdating(true);
@@ -81,19 +83,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 let ss = `right`;
                 let es = `left`;
-                let sp = `behind`;
-                let ep = `arrow1`;
                 let color = `coral`;
 
                 if(line.startSocket === `right`) {
                     ss = `left`;
                     es = `right`;
-                }
-    
-                //console.log(line.endPlug);
-                if(line.endPlug === `arrow1`) {
-                    sp = `arrow1`;
-                    ep = `behind`;
                 }
     
                 if(line.color === `coral`) {
@@ -103,7 +97,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 let end = line.end;
                 let start = line.start;
                 line.setOptions({startPlug: `behind`, endPlug: `behind`});
-                line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, startPlug: sp, endPlug: ep, color: color});
+                line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
             });
         });}
     }
@@ -296,7 +290,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
-                line.setOptions({dash: {animation: true}});
+                line.setOptions({dash: {animation: {duration: 500, timing: 'linear'}}});
             });
         });
     }
@@ -332,19 +326,11 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         // TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
                         let ss = `right`;
                         let es = `left`;
-                        let sp = `behind`;
-                        let ep = `arrow1`;
                         let color = `coral`;
 
                         if(line.startSocket === `right`) {
                             ss = `left`;
                             es = `right`;
-                        }
-
-                        //console.log(line.endPlug);
-                        if(line.endPlug === `arrow1`) {
-                            sp = `arrow1`;
-                            ep = `behind`;
                         }
 
                         if(line.color === `coral`) {
@@ -354,7 +340,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         let end = line.end;
                         let start = line.start;
                         line.setOptions({startPlug: `behind`, endPlug: `behind`});
-                        line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, startPlug: sp, endPlug: ep, color: color});
+                        line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
                     });
                 }
 
