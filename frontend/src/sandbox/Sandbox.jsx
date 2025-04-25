@@ -69,7 +69,7 @@ function createBackend(updateMetricsCallback, updateWeightsCallback) {
     backend_worker = backend.getBackendWorker();
 }
 
-//called by startTraining() to create the model.
+//called by validateModel() to create the model.
 function createModel() {
     //FIXME: This is just a test
     const dataset = model[0].dataset;
@@ -78,11 +78,9 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects) {
+function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects, stageRef) {
     if (modelState === 'valid') { //FIXME: check if model is valid
-        //testing and trying to grab information from chainOfObjects
-        createModel();
-        //FIXME: This is just a test
+        
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
@@ -92,6 +90,9 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
             "Training started!",
             "Click 'Pause Training' to pause.",
         ]);
+
+        // Create the LinkerLines
+        stageRef.current.createLinkerLines();
     } else {
         console.error("Chain of objects not validated!");
         setStatusContent([
@@ -101,21 +102,25 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
     }
 }
 
-function pauseTraining(setTrainingState, setStatusContent) {
+function pauseTraining(setTrainingState, setStatusContent, stageRef) {
     backend_worker.postMessage({func: 'pauseTraining'});
     setTrainingState('paused');
     setStatusContent([
         "Training paused.",
         "Click 'Resume Training' to continue.",
     ]);
+
+    stageRef.current.stopAnimLinkerLines();
 }
 
-function resumeTraining(setTrainingState) {
+function resumeTraining(setTrainingState, stageRef) {
     backend_worker.postMessage({func: 'resumeTraining'});
     setTrainingState('training');
+
+    stageRef.current.startAnimLinkerLines();
 }
 
-function stopTraining(setTrainingState, setStatusContent, reportRef) {
+function stopTraining(setTrainingState, setStatusContent, reportRef, stageRef) {
     backend_worker.postMessage({func: 'stopTraining'});
     setTrainingState('stopped');
     setStatusContent([
@@ -123,6 +128,9 @@ function stopTraining(setTrainingState, setStatusContent, reportRef) {
         "Validate your model to start training.",
     ]);
     reportRef.current.clearGraphData(); // Clear the graph data
+
+    stageRef.current.stopAnimLinkerLines();
+    stageRef.current.retractLinkerLines();
 }
 
 function Sandbox() {
@@ -330,18 +338,12 @@ function Sandbox() {
         //Might delete this in the future.
         //backend_worker.postMessage({ func: 'validateModel', args: { model } });
         
+        createModel();
         
         return chain;
     };
 
-    const simulateTrainingFromPretrainedModel = () => {
-        setTrainingState('simulateTraining');
-        setStatusContent([
-            "Simulating Training from Pretrained Model (will not say this in end product)",
-            "Click 'Resume Training' to continue.",
-        ]);
-        backend_worker.postMessage({ func: 'validatePretrainedModel', args: { model } });
-    };
+
     // localized test div add
     //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
     //This is because NodeDrawer calls the AddObject function when a user selects a node.
@@ -458,19 +460,19 @@ function Sandbox() {
                     {trainingState === 'stopped' && (
                         <>
                             {/* <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button> */}
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model)}>Start Training</button>
+                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model, stageRef)}>Start Training</button>
                         </>
                     )}
                     {(trainingState === 'training' || trainingState === 'simulateTraining') && (
                         <>
-                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent)}>Pause Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent, stageRef)}>Pause Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                     {trainingState === 'paused' && (
                         <>
-                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState)}>Resume Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef)}>Stop Training</button>
+                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState, stageRef)}>Resume Training</button>
+                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                 </div>
@@ -534,7 +536,7 @@ function Sandbox() {
                         <img
                             src={isFullscreen ? fullscreenIn : fullscreenOut}
                             alt={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                            style={{ width: 32, height: 32 }}
+                            style={{ width: 32, height: 32, userSelect: `none` }}
                         />
                     </button>
                 </div>

@@ -23,6 +23,7 @@ import {
 //import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import {getWeightsAndMetrics} from '../../backend/backend.js';
 import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
@@ -35,11 +36,20 @@ import "./Stage.css";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState}, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
     const drag = useRef({});
+
+    const [size, setSize] = useState(0);
+    const [iter, setIter] = useState(0);
+    const [dir, setDir] = useState(true);
+    const [firstDone, setFirstDone] = useState(false);
+    const [end, setEnd] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [linesReady, setLinesReady] = useState(false);
+
         /*
     {   activeObjects object structure
         id: 1, // Unique identifier
@@ -57,21 +67,39 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
     const lineRefs = useRef([]);
-    const [thing, setThing] = useState("fluent");
-    const [test, setTest] = useState(0);
-    var lines = [];
-    var lineTexts = [];
 
+    // Could still use this function later
+    // It should be renamed first
     function LinkerChangeTest() {
-        console.log(`LINKER CHANGE!`);
-        lineRefs.current.forEach(line => {
-            if(line.path == `straight`) {
-                line.path = `fluent`;
-            } else {
-                line.path = `straight`;
-            }
-            //line.setOptions({ path: `straight` });
-        });
+        if(true) {
+            setUpdating(true);
+            setLinesReady(true);
+        } else {
+        //console.log(`LINKER CHANGE!`);
+        let i = 0;
+        lineRefs.current.forEach(group => {
+            //console.log(i++);
+            group.forEach(line => {
+
+                let ss = `right`;
+                let es = `left`;
+                let color = `coral`;
+
+                if(line.startSocket === `right`) {
+                    ss = `left`;
+                    es = `right`;
+                }
+    
+                if(line.color === `coral`) {
+                    color = `green`;
+                }
+    
+                let end = line.end;
+                let start = line.start;
+                line.setOptions({startPlug: `behind`, endPlug: `behind`});
+                line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
+            });
+        });}
     }
 
     // Creates LinkerLines for dense layers
@@ -79,13 +107,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         // Clear existing LinkerLines in lineRefs
         LinkerLine.removeAll();
         lineRefs.current = [];
-    
+
+        // get how many groups of lines are created
+        let lc = 0;
+
+        const weights = getWeightsAndMetrics();
+        console.log(weights);
+        
         // Check if the model is valid
         if (modelState === `valid`) {
             const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
     
             if (!dataBatcher) {
-                console.error("Data batcher not found!");
+                console.error("LinkerLines: Data batcher not found!");
                 return;
             }
     
@@ -94,6 +128,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             let firstDense = true;
     
             while (currentObject && currentObject.rightLink != null) {
+                // Create an array to store single group of lines
+                let popArray = [];
+
                 if (currentObject.objectType === 'neuron') {
                     if (firstDense) {
                         let currentLayerNode = currentObject;
@@ -105,15 +142,23 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             const newLine = new LinkerLine({
                                 start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
-                                dash: true,
-                                path: thing
+                                dash: {animation: {duration: 500, timing: 'linear'}},
+                                path: `straight`,
+                                startSocket: `right`,
+                                endSocket: `left`,
+                                startPlug: `behind`,
+                                endPlug: `behind`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
-                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                            newLine.hide(`none`);
     
-                            lineRefs.current.push(newLine);
+                            popArray.push(newLine);
                             currentLayerNode = currentLayerNode.bottomLink;
                         }
+
+                        // Store the group in the ref var
+                        lineRefs.current.push(popArray);
+                        lc += 1;
     
                         firstDense = false;
                     }
@@ -128,7 +173,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         nextDenseLayer = nextDenseLayer.rightLink;
                     }
     
-                    if (!noLayer) {
+                    if (!noLayer) { // If there is another dense layer
                         let currentLayerNode = currentObject;
                         let currentNextLayerTopNode = nextDenseLayer;
     
@@ -142,56 +187,116 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
                         let currentNextLayerNode = currentNextLayerTopNode;
     
+                        popArray = []; // Clear the popArray
                         while (currentLayerNode != null) {
                             while (currentNextLayerNode != null) {
                                 const newLine = new LinkerLine({
                                     start: handleRefs.current[currentLayerNode.id],
                                     end: handleRefs.current[currentNextLayerNode.id],
-                                    dash: true,
-                                    path: thing
+                                    dash: {animation: {duration: 500, timing: 'linear'}},
+                                    path: `fluent`,
+                                    startSocket: `right`,
+                                    endSocket: `left`,
+                                    startPlug: `behind`,
+                                    endPlug: `behind`
                                 });
                                 newLine.name = `line${lineRefs.current.length}`;
-                                newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                                newLine.hide(`none`);
     
-                                lineRefs.current.push(newLine);
+                                popArray.push(newLine);
+
                                 currentNextLayerNode = currentNextLayerNode.bottomLink;
                             }
     
                             currentLayerNode = currentLayerNode.bottomLink;
                             currentNextLayerNode = currentNextLayerTopNode;
                         }
-                    } else {
+
+                        // Store the group in ref var
+                        lineRefs.current.push(popArray);
+                        lc += 1;
+                    } else { // No more dense layers means that we need to create lines to the end node
                         let currentLayerNode = currentObject;
                         while (currentLayerNode.topLink != null) {
                             currentLayerNode = currentLayerNode.topLink;
                         }
     
+                        popArray = []; // Clear the pop array
                         while (currentLayerNode != null) {
                             const newLine = new LinkerLine({
                                 start: handleRefs.current[currentLayerNode.id],
                                 end: divRefs.current[nextDenseLayer.id],
-                                dash: true,
-                                path: thing
+                                dash: {animation: {duration: 500, timing: 'linear'}},
+                                path: `straight`,
+                                startSocket: `right`,
+                                endSocket: `left`,
+                                startPlug: `behind`,
+                                endPlug: `behind`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
-                            newLine.setOptions({ startSocket: 'right', endSocket: 'left' });
+                            newLine.hide(`none`);
     
-                            lineRefs.current.push(newLine);
+                            popArray.push(newLine);
+
                             currentLayerNode = currentLayerNode.bottomLink;
                         }
+
+                        // Store the group in ref var
+                        lineRefs.current.push(popArray);
+                        lc += 1;
                     }
                 }
     
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
+
+            // Set size of the array
+            setSize(lc);
+
+            // Reset iterator
+            setIter(0);
+
+            // Set lines as ready
+            setLinesReady(true);
+            setUpdating(true); // TEST - REMOVE ME; this should be called when we are training
         } else {
             console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
         }
     }
 
+    function RetractLinkerLines() {
+        setUpdating(false);
+        setFirstDone(false);
+        setFirstDone(false);
+        setEnd(false);
 
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.hide(`draw`);
+            });
+        });
+    }
 
+    function StopAnimLinkerLines() {
+        setUpdating(false);
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.setOptions({dash: `true`});
+            });
+        });
+    }
+
+    function StartAnimLinkerLines() {
+        setUpdating(false);
+
+        lineRefs.current.forEach(group => {
+            group.forEach(line => {
+                line.setOptions({dash: {animation: {duration: 500, timing: 'linear'}}});
+            });
+        });
+    }
 
     // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
@@ -200,16 +305,86 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
         linkerChangeTest: LinkerChangeTest,
+        startAnimLinkerLines: StartAnimLinkerLines,
+        stopAnimLinkerLines: StopAnimLinkerLines,
+        retractLinkerLines: RetractLinkerLines
     }));
 
-    // draggables do not know about state variables? so the need an external helper
-    function extAction(ref) {
-        console.log(`an element has called for external action: ${typeof ref}`);
-    }
-
+    // This is where the LinkerLines are updated
     useEffect(() => {
-        console.log("crap");
-    }, [lineRefs]);
+        const timerID = setInterval(() => {
+            if(updating && linesReady) { // We won't do anything unless the lines are ready and we are updating
+                let newIter = dir ? iter + 1 : iter - 1; // idk if we need this, but it's working
+                //console.log(`newIter: ${newIter}, iter: ${iter}, dir: ${dir}, firstDone: ${firstDone}, size: ${size}; from: ${timerID}`);
+                //console.log(`${(newIter == (size - 1))} ${(newIter == 0)}`);
+
+                if(!firstDone) { // If we are doing the first pass, we are drawing the lines
+                    console.log(`NOT DONE: Starting first lines`);
+                    lineRefs.current[iter].forEach((line) => {
+                        line.show(`draw`);
+                    });
+                } else { // If the first pass is done, then we are changing the properties
+                    // CRITICAL FIXME: The logic for reciprocating is still a little funky. I want it to linger on the ends for one extra iteration 
+                    console.error(`FIRST DONE: Manipulating lines`);
+                    
+                    lineRefs.current[iter].forEach((line) => {
+                        // TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+                        // This code is test code from LinkerChangeTest()
+                        // It will be replaced with actual stuff
+                        let ss = `right`;
+                        let es = `left`;
+                        let color = `coral`;
+
+                        if(line.startSocket === `right`) {
+                            ss = `left`;
+                            es = `right`;
+                        }
+
+                        if(line.color === `coral`) {
+                            color = `green`;
+                        }
+
+                        let end = line.end;
+                        let start = line.start;
+                        line.setOptions({startPlug: `behind`, endPlug: `behind`});
+                        line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
+                    });
+                }
+
+
+                // Check if we need to reverse direction
+                // bounce between size and 0
+                // This section could probably be simplified, but it is doing something right for the time being
+                if(!end) {
+                    setIter(newIter); // This seems to work I guess
+
+                    if(firstDone) {
+                        if ((newIter == (size - 1)) || (newIter == 0)) {
+                            //if(!firstDone) setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
+                            setDir(prevDir => { const newDir = !prevDir; return newDir });
+                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                        }
+                    } else {
+                        if(newIter == size) { // We need a special case for the first pass to make sure that the lines are drawn
+                            setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
+                            setDir(prevDir => { const newDir = !prevDir; return newDir });
+                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                            setIter(newIter - 1);
+                        }
+                    }
+                } else {
+                    // We just reached the end of the graph, so linger for one iteration
+                    console.log(`not iterating`);
+                    setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                }
+            }
+        }, 1000); // Update once a second
+
+        return () => {
+            //console.log(`killing timer`);
+            clearInterval(timerID);
+        };
+    }, [updating, linesReady, iter, dir, end, size]);
 
     useEffect(() => {
         //console.log("elements", elements);
@@ -230,7 +405,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("item", item);
                 // Get the type of the object from the elements array
                 const snapType = item?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = item?.objectType || `object${item.id}`;   
@@ -245,7 +419,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Define draggable behavior
                 draggable.onMove = function () {
                     // Delete the linkerlines
-                    //LinkerLine.removeAll();
+                    RetractLinkerLines();
+                    lineRefs.current = [];
+                    setLinesReady(false);
 
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
                     const snap = findClosestSnapPoint(currentObject, activeObjectsRef);
@@ -636,8 +812,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         } else {
                             delete handleRefs.current[item.id];
                         }
-                    },
-                    action: extAction
+                    }
                 })
             ))}
             <div id="recycle-bin" className="recycle-bin">

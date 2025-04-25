@@ -16,10 +16,21 @@
     border: 2px dashed #888;
     border-radius: 12px;
     pointer-events: none; /* Prevent mouse events */;
+    user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3vw; /* Scales with viewport width */
     z-index: var(--high);
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Animate LinkerLine color changes */
+use {
+    transition: stroke 0.1s ease-in, fill 0.1s ease-in;
+}
+
+/* Disable highlighting the nodes */
+img {
+    user-select: none;
 }

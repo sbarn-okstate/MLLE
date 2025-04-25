@@ -19,22 +19,15 @@
     --middle: 1000;
     --low: 100;
     --floor: 0;
-}
-
-.DELETEME {
-    width: 100px;
-    height: 100px;
-    background-color: palevioletred;
-    border-radius: 5px;
+    --button-color-on-hover: #4a90e2;
+    --button-ease: 0.2s ease;
+    --button-color-grey: #eee;
 }
 
 .graphText {
     text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.7);
     transition: color 0.1s linear;
 }
-
-
-
 
 .sandboxContainer {
     position: relative;
@@ -159,10 +152,11 @@
     font-size: 0.7em;
     transition: 0.3s ease;
     box-shadow: var(--box-shadow-default);
+    user-select: none;
 }
 
 .toggleButton:hover {
-    background: #4a90e2;
+    background: var(--button-color-on-hover)
 }
 
 .stageScrollWrapper {
@@ -210,7 +204,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: 0.3s ease;
 }
 .fullscreenButton:hover {
-    background: #4a90e2;
+    background: var(--button-color-on-hover);
 }

@@ -5,8 +5,10 @@
  * PURPOSE: FIXME
  * 
  * NOTES: FIXME->prepareModel and trainModel use different argument names for the dataset filename
+ *        
  * 
- * Functions:
+ * Functions: 
+ *  - NEED TO UPDATE THIS - JM (4/24/2025 @ 12:54 PM)
  *  - prepareModel({layers, dataset}, self): Prepares the model for training.
  *  - trainModel(fileName, problemType, chainOfObjects, self, batchSize = 64, epochs = 200): Trains the model using the provided dataset.
  *  - pauseTraining(): Pauses the training process.
@@ -25,42 +27,17 @@ import * as defaults from './defaults.js'
 import { datasetDefaults } from './dataset-defaults.js';
 import { data } from 'react-router';
 
+let isSimulating; //indicates whether code is currently simulating or not.
 let model = null;
 let sharedBuffer = null;
 let weightArray = null;
 let metricsArray = null; // Stores loss and accuracy
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
+let allWeights = []; //Created to store to json file
+let allMetrics = []; //Created to store to json file
 
-//TRAINING SIMULATION/SIMULATE
-//Model information is passed into here so we can check if it exists in the JSON folder.
-export async function validatePretrainedModel(model, self) {
-    //self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });     //Have to check if I need this.
-    try {
-        //Obtain JSON file
-        const response = await fetch('/json/sampleModel.json'); // Adjust the path if necessary
-        
-        //Deserializes JSON file as an object.
-        const jsonData = await response.json();
-        console.log("jsonData is:", jsonData[0]["trainingMetrics"].length);
-        //if model object matches object from json file
-        if (JSON.stringify(model) === JSON.stringify(jsonData[0]["chainOfObjects"])) {
-            self.postMessage("Model matches the one in sampleModel.json!");
-            //goes to backend.js 
-            //TRAINING SIMULATON TAKES PLACE HERE.
-            self.postMessage({ func: "simulateTrainingWithDelay", args: {jsonData} })
-            //Might not need this: return jsonData; //returns what is saved in the json file.
-        }
-        else{
-            self.postMessage("Model does not match the one in sampleModel.json!");
-            self.postMessage("Model is:", model);
-            self.postMessage("Model in sampleModel.json is:", jsonData[0]["chainOfObjects"]);
-        }
-    } catch (error) {
-        console.error("Error loading sampleModel.json:", error);
-    }
-}
-
+//called by createModel() in sandbox.jsx which is called by startTraining();
 export async function prepareModel({layers, dataset}, self) {
     await tf.ready();  // ensure TensorFlow.js is initialized
     model = tf.sequential();
@@ -114,15 +91,17 @@ export async function prepareModel({layers, dataset}, self) {
     self.postMessage({ func: "sharedBuffer", args: { sharedBuffer, layerSizes } });
 }
 
-export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 25) {
-    
-    //==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER STARTS HERE==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER STARTS HERE==================
-    //This chunk of code creates a "key" for a dictionary from the model that the user created. 
-    //Later down the code it also checks if the key it created already exists in pretrainedModelFinder.json located in MLLE/public/json/pretrainedModelFinder.json.
+let isPaused = false; // Flag to track pause state
 
-    //Example of modelFinderKey: synth500csv1lyr1dn1rel
-    let modelFinderKey = "";
-    let modelFinderValue;
+export function setStateOfSimulatedTraining(setState){
+    isPaused = setState; //false = not paused, true = paused, null = stopped.
+}
+
+//This function is used to train models from scratch and simulate training.
+//Firstly, the end-user's model's information is grabbed. 
+export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 100) {
+    let modelFinderKey = ""; //Example of modelFinderKey: synth500csv1lyr1dn1rel
+    let modelFinderValue; //Value to the key in the line above.
     let lengthOfCob = chainOfObjects.length;
     let dataset = chainOfObjects[0]?.dataset; // Use optional chaining to avoid errors if chainOfObjects[0] is undefined
     let numOfLayers = lengthOfCob - 1;
@@ -137,18 +116,18 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
     //     "\n-------------------------------"
     // );
 
-    //BUILDING OF KEY BEGINS HERE
-    //Grabs dataset name
+    //=======BUILDING THE KEY TO FIND PRETRAINED MODEL======
+    //Building of key: Grabs dataset name
     if (dataset === "synthetic_normal_binary_classification_500.csv") {
         modelFinderKey += "synth500csv";
     }
     //~~~~~~~~~~~~Add more datasets here if neeeded~~~~~~~~~~~~
 
-    //Grabs the number of dense layers.
+    //Building of key: Grabs the number of dense layers.
     //For example: 3lyr
     modelFinderKey += numOfLayers + "lyr";
     
-    //Grabs information from the layers.
+    //Building of key: Grabs information from the layers.
     //i = 1 to skip over the dataset since we already attached it to modelFinderKey.
     for (let i = 1; i < lengthOfCob; i++) {
         let type_of_layer = chainOfObjects[i]["type"];
@@ -170,120 +149,131 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
     
     console.log("modelFinderKey lastly is:", modelFinderKey);
 
-
+    // =============CROSS CHECKING END-USER'S MODEL W/OUR PRETRAINED MODELS============
     // Fetch pretrainedModelFinder.json which acts as our "dictionary" to check if the model the user created is one of our pretrained models.
     // Refer to README.md in MLLE/frontend/public/json/README.md for more information on how it is structured.
-    try { //Try to fetch from pretrainedModelFinder.json. Otherwise throw an error.
-
+    let finderData;
+    //Try to fetch from pretrainedModelFinder.json
+    try { 
         const response = await fetch('/json/pretrainedModelFinder.json'); // fetches pretrainedModelFinder.json
         if (!response.ok) {
             throw new Error(`Failed to fetch pretrainedModelFinder.json: ${response.statusText}`);
         }
-
-        const finderData = await response.json(); // Parse the pretrainedModelFinder.json and obtain its contents.
-        //console.log("pretrainedModelFinder.json data:", finderData);
-
-        // Find the value associated with modelFinderKey
-        modelFinderValue = finderData[modelFinderKey]; 
-        const pretrainedModelFilePath = modelFinderValue;
-
-        if (pretrainedModelFilePath) { //If the pretrained model exists (we use the filepath to check this).
-            //console.log(`Value for modelFinderKey (${modelFinderKey}):`, pretrainedModelFilePath);
-            const response = await fetch(pretrainedModelFilePath); 
-            //Deserializes JSON file as an object.
-            jsonData = await response.json();
-            self.postMessage({ func: "simulateTrainingWithDelay", args: { jsonData } });
-        //==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER ENDS HERE==================MODEL KEY CREATOR & PRETRAINED MODEL CHECKER ENDS HERE==================
-        } else {
-            //==============TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================
-            console.log(`modelFinderKey (${modelFinderKey}) not found in pretrainedModelFinder.json. Training from scratch now.`);
-            if (!model) {
-                self.postMessage('Model not prepared. Please prepare model before training.');
-                return;
-            }
-
-            self.postMessage('Preparing dataset...');
-            let csvDataset = await loadCSV(fileName);
-            let dataArray = await csvDataset.toArray();
-
-            await tf.ready();
-
-            tf.util.shuffle(dataArray);
-            const processedDataset = dataArray.map(({ xs, ys }) => {
-                return { xs: Object.values(xs), ys: Object.values(ys) };
-            });
-
-            // Separate xs and ys into two arrays
-            const xsArray = processedDataset.map(d => d.xs);
-            const ysArray = processedDataset.map(d => d.ys);
-
-            // Convert xs and ys to tensors
-            const xsTensor = tf.tensor2d(xsArray);
-            const ysTensor = tf.tensor2d(ysArray);
-
-            self.postMessage("Dataset processed.");
-
-            pauseResumeCallback = new PauseResumeCallback();
-
-            //Used to store training metrics.
-            //Will be turned into a .json later.
-            //The link below talks about serializing arrays
-            //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
-            let trainingMetrics = [];
-
-            await model.fit(xsTensor, ysTensor, {
-                epochs: epochs,
-                batchSize: batchSize,
-                callbacks: {
-                    onTrainingBegin: () => {
-                        self.postMessage('Training started...');
-                    },
-                    onEpochEnd: (epoch, logs) => {
-                        const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
-                        const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
-
-                        // Push the epoch data into the array
-                        trainingMetrics.push({
-                            epoch: epoch + 1,
-                            loss: parseFloat(loss),
-                            accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
-                            weight: weightArray,
-                        });
-
-                        //console.log(JSON.stringify(trainingMetrics));
-                        console.log("training metrics:", trainingMetrics)
-                        //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
-            
-                        // Save weights, epoch, loss, and accuracy to shared memory
-                        saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
-                    },
-                    onTrainingEnd: () => {
-                        //console.log("✅ Reached onTrainingEnd callback");
-                        self.postMessage("Training complete!");
-                    },
-                    onBatchEnd: async (batch, logs) => {
-                        const batchLoss = logs.loss.toFixed(4); // Batch loss
-                        const batchAccuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Batch accuracy
-                        //self.postMessage(`Batch ${batch + 1}: loss = ${batchLoss}, accuracy = ${batchAccuracy}`);
-                        await pauseResumeCallback.onBatchEnd(batch, logs);
-                    },
-                }
-            });
-            console.log("savePretrained in model.js is:", savePretrained);
-            if (savePretrained === true) {
-            // Call to capture training
-            //==========Obtain Training Metrics===========
-            self.postMessage({ func: "captureTraining", args: { fileName: "modelInfo.json", chainOfObjects, trainingMetrics} });
-            //==========Obtain Training Metrics===========    
-            }
-
-            console.log("🚀 model.fit completed without error");
-            //==============TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================TRAIN MODEL FROM SCRATCH STARTS HERE======================
-        }
+        finderData = await response.json(); // Obtbain the content from pretrainedModelFinder.json
     } catch (error) {
         console.error("Error fetching or processing pretrainedModelFinder.json:", error);
-        //return null;
+    } 
+    modelFinderValue = finderData[modelFinderKey]; // Find the value associated with modelFinderKey
+    const pretrainedModelFilePath = modelFinderValue; //Created for ease of readability.
+
+    //==============IF PRETRAINED MODEL EXISTS, READ FROM JSON==============
+    if (pretrainedModelFilePath) {
+        console.log(`SIMULATING TRAINING! pretrained model (${modelFinderKey}) FOUNDED in pretrainedModelFinder.json!`)
+        isSimulating = true;
+        const response = await fetch(pretrainedModelFilePath); //fetches the file path of the pretrained model.
+        jsonData = await response.json(); //Deserializes the pretrained model's contents.
+        prepareSimulateTrainingWithDelay(jsonData, modelFinderKey) //Prepare training.
     }
+    
+    //==============IF PRETRAINED MODEL DNE, TRAIN FROM SCRATCH==============
+    else {
+        isSimulating = false;
+        console.log(`TRAINING FROM SCRATCH! pretrained model (${modelFinderKey}) NOT FOUNDED in pretrainedModelFinder.json.`);
+        if (!model) {
+            self.postMessage('Model not prepared. Please prepare model before training.');
+            return;
+        }
+
+        self.postMessage('Preparing dataset...');
+        let csvDataset = await loadCSV(fileName);
+        let dataArray = await csvDataset.toArray();
+
+        await tf.ready();
+
+        tf.util.shuffle(dataArray);
+        const processedDataset = dataArray.map(({ xs, ys }) => {
+            return { xs: Object.values(xs), ys: Object.values(ys) };
+        });
+
+        // Separate xs and ys into two arrays
+        const xsArray = processedDataset.map(d => d.xs);
+        const ysArray = processedDataset.map(d => d.ys);
+
+        // Convert xs and ys to tensors
+        const xsTensor = tf.tensor2d(xsArray);
+        const ysTensor = tf.tensor2d(ysArray);
+
+        self.postMessage("Dataset processed.");
+
+        pauseResumeCallback = new PauseResumeCallback();
+
+        //Used to store training metrics.
+        //Will be turned into a .json later.
+        //The link below talks about serializing arrays
+        //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
+        let trainingMetrics = [];
+
+        await model.fit(xsTensor, ysTensor, {
+            epochs: epochs,
+            batchSize: batchSize,
+            callbacks: {
+                onTrainingBegin: () => {
+                    self.postMessage('Training started...');
+                },
+                onEpochEnd: (epoch, logs) => {
+                    const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
+                    const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
+
+                    // Push the epoch data into the array
+                    trainingMetrics.push({
+                        epoch: epoch + 1,
+                        loss: parseFloat(loss),
+                        accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
+                        //weight: weightArray, //This was previously added by justin. But removing it since it is not accurately showing the CURRENT weights. Shows the previous weights.
+                    });
+
+                    //console.log(JSON.stringify(trainingMetrics));
+                    //console.log("training metrics:", trainingMetrics)
+                    //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
+        
+                    // Save weights, epoch, loss, and accuracy to shared memory
+                    saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
+                    
+                },
+                onTrainingEnd: () => {
+                    //console.log("✅ Reached onTrainingEnd callback");
+                    self.postMessage("Training complete!");
+                },
+                onBatchEnd: async (batch, logs) => {
+                    const batchLoss = logs.loss.toFixed(4); // Batch loss
+                    const batchAccuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Batch accuracy
+                    //self.postMessage(`Batch ${batch + 1}: loss = ${batchLoss}, accuracy = ${batchAccuracy}`);
+                    await pauseResumeCallback.onBatchEnd(batch, logs);
+                },
+            }
+        });
+        console.log("savePretrained in model.js is:", savePretrained);
+        if (savePretrained === true) {
+            // Call to capture training
+            let modelInfo = [{ chainOfObjects, allMetrics, allWeights }];
+            console.log("modelInfo:", modelInfo);
+            //Serialize data to JSON
+            //const serializedData = JSON.stringify(modelInfo, null, 2); // Pretty-print JSON
+            const serializedData = JSON.stringify(modelInfo); // No pretty print
+            
+            //Used for downloading the serialized data as a .JSON.
+            const blob = new Blob([serializedData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            //Have to pass the file name and url to mainthread!
+            //https://stackoverflow.com/questions/36436075/is-it-possible-to-save-a-file-directly-from-a-web-worker
+            //https://www.w3schools.com/Html/html5_webworkers.asp#:~:text=Since%20web%20workers%20are%20in,The%20document%20object
+            self.postMessage({ func: "captureTraining", args: {fileName: (modelFinderKey+".json"), url} });
+        
+        }
+
+        console.log("🚀 model.fit completed without error");
+    }
+
 }
 
 function createBatches(xsArray, ysArray, batchSize) {
@@ -296,28 +286,35 @@ function createBatches(xsArray, ysArray, batchSize) {
     return batches;
 }
 
-export function pauseTraining(self) {
+export function pauseTraining() {
     if (pauseResumeCallback) {
         pauseResumeCallback.pause();
     }
-    if (self){
-        self.postMessage({ func: 'pauseSimulatedTraining' });
+    else{
+        //pauseSimulatedTraining();
+        setStateOfSimulatedTraining(true)
         console.log("Paused simulated training");
     }
 }
 
-export function resumeTraining(self) {
+export function resumeTraining() {
     if (pauseResumeCallback) {
         pauseResumeCallback.resume();
     }
-    if (self){
-        self.postMessage({ func: 'resumeSimulatedTraining' });
+    else{
+        //resumeSimulatedTraining();
+        setStateOfSimulatedTraining(false)
+        console.log("Resumed simulated training.")
     }
 }
 
 export function stopTraining() {
     if (pauseResumeCallback) {
         pauseResumeCallback.stop();
+    }
+    else {
+        setStateOfSimulatedTraining(null);
+        console.log("Stopped simulated training.")
     }
 }
 
@@ -341,24 +338,99 @@ function calculateBufferSize() {
     return totalParams * 4; // 4 bytes per float32
 }
 
-function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy) {
+//weightsFromPreTrained is null when training from scratch.
+function saveWeightsAndMetricsToSharedMemory(epoch, loss, accuracy, weightsFromPretrained) {
+    // console.log("model is:", model)
+    // console.log("epoch number:", epoch);
+    // console.log("loss:", loss);
+    // console.log("accuracy:", accuracy);
     // Save weights
+
+    //FIXME 4/24/2025 Justin Moua - simulated training puts epoch, loss, and accuracy into shared buffer. 
+    //BUT it does not do that for the weights.
     let offset = 0;
-    model.layers.forEach((layer) => {
-        layer.getWeights().forEach((tensor) => {
-            const data = tensor.dataSync();
-            weightArray.set(data, offset);
-            offset += data.length;
-        });
-    });
-    //console.log("weightArray is: ", weightArray);
-    // Save epoch, loss, and accuracy
+    if (isSimulating == false) {
+        model.layers.forEach((layer) => {
+            layer.getWeights().forEach((tensor) => {
+                const data = tensor.dataSync();
+                weightArray.set(data, offset);
+                offset += data.length;
+            });
+        });   
+    }
+    //pushes simulated weights into weight array shared buffer. 
+    else if (isSimulating == true) {
+        const data = weightsFromPretrained;
+        weightArray.set(data, offset)
+        offset += data.length;
+        //console.log("weightArray while simulating training is:", weightArray);
+    }
+
+    // Save epoch, loss, and accuracy into metricsArray which is in the sharedbuffer.
     metricsArray[0] = epoch; // Save epoch
     metricsArray[1] = parseFloat(loss); // Save loss
     metricsArray[2] = parseFloat(accuracy); // Save accuracy
 
+    //Currently, the code below is mainly used for saving pretrained models. Although, its use is not limited to it!
+    //Save snapshots of weights and metrics for current epoch.
+    let currentLayerWeights = Array.from(weightArray);
+    allWeights.push(currentLayerWeights) //of type array.
+    allMetrics.push({
+        epoch: epoch,
+        loss: parseFloat(loss),
+        accuracy: parseFloat(accuracy)
+    });
+
     // Notify the frontend that weights, loss, and accuracy have been updated
     self.postMessage({ func: "weightsAndMetricsUpdated"});
+}
+
+//Reads the pretrained model's information. Does not feed into shared buffer. Sam requested to do this though. Going to look into it 4/24/2025
+//Simulate training with delay and pause functionality
+async function prepareSimulateTrainingWithDelay(jsonData) {
+    const num_of_epochs = jsonData[0]["allMetrics"].length;
+
+    // Arrow functions to extract data for each variable
+    const getAllEpoch = (index) => jsonData[0]["allMetrics"][index]["epoch"]; //Grabs every epoch.
+    const getAllLoss = (index) => jsonData[0]["allMetrics"][index]["loss"]; //Grabs every loss
+    const getAllAccuracy = (index) => jsonData[0]["allMetrics"][index]["accuracy"]; //Grabs every accuracy
+    const getAllWeights = (index) => jsonData[0]["allWeights"][index]; //Grabs an array of weights
+
+    // Helper function to introduce a delay
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    //Goes through every epoch of the pretrained model.
+    for (let i = 0; i < num_of_epochs; i++) {
+        //If training has stopped
+        if (isPaused == null) {
+            //If we are on the 0th epoch, isPaused may have been previously set to null because a training had previously occured.
+            //So, we reset isPaused to 0. Though honestly this could be done outside of this for loop. Might change it to that later - JM 4/24/2025 11:41 AM.
+            if (i === 0) { //crucial to keeping code running! isPaused may be set to null when a user has stopped a previous training and tries to train again.
+                isPaused = false;
+            }
+            //Break for loop since isPaused == null indicates the user requested to stop the training.
+            else {
+                isSimulating = null;
+                break; 
+            }
+        }
+        while (isPaused) {
+            await delay(100); // Wait 100ms before checking again
+        }
+        
+        //When training is running/resumed, the code below is executed.
+        const currentEpoch = getAllEpoch(i); //Grabs the current epoch
+        const currentLoss = getAllLoss(i); //Grabs the current loss
+        const currentAccuracy = getAllAccuracy(i); //Grabs the current accuracy
+        const currentWeights = getAllWeights(i); //Grabs the current weights
+        saveWeightsAndMetricsToSharedMemory(currentEpoch, currentLoss, currentAccuracy, currentWeights); //Note that isSimulating will have been set to true before prepareSimulateTrainingWithDelay is called()!
+        //Updates the graph on the front-end side.
+        self.postMessage({ func: "simulateTrainingWithDelay", args: { currentEpoch, currentLoss, currentAccuracy, currentWeights } });
+
+        // Wait for 500ms before the next iteration to simulate training. 
+        // Can adjust number if needed.
+        await delay(500);
+    }
 }
 
 class PauseResumeCallback extends tf.Callback {
@@ -388,6 +460,25 @@ class PauseResumeCallback extends tf.Callback {
     stop() {
         this.isStopped = true;
     }
+}
+
+
+export function getRandomBatch(processedDataset, batchSize) {
+    if (!processedDataset || processedDataset.length === 0) {
+        throw new Error("Processed dataset is empty or undefined.");
+    }
+
+    // Shuffle the dataset indices
+    const shuffledIndices = tf.util.createShuffledIndices(processedDataset.length);
+
+    // Select the first `batchSize` indices
+    const batchIndices = shuffledIndices.slice(0, batchSize);
+
+    // Extract the batch data
+    const xsBatch = batchIndices.map(index => processedDataset[index].xs);
+    const ysBatch = batchIndices.map(index => processedDataset[index].ys);
+
+    return { xsBatch, ysBatch };
 }
 
 /* Justin Moua */

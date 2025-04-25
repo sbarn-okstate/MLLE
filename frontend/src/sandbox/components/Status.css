@@ -5,6 +5,7 @@
     border-radius: 8px;
     padding: 10px;
     box-shadow: var(--box-shadow-default);
+    user-select: none;
 }
 .statusHeader {
     border-bottom: 1px solid #ddd;
