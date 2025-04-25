@@ -307,23 +307,27 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         retractLinkerLines: RetractLinkerLines
     }));
 
+    // This is where the LinkerLines are updated
     useEffect(() => {
         const timerID = setInterval(() => {
-            if(updating && linesReady) {
-                let newIter = dir ? iter + 1 : iter - 1;
-                console.log(`newIter: ${newIter}, iter: ${iter}, dir: ${dir}, firstDone: ${firstDone}, size: ${size}; from: ${timerID}`);
+            if(updating && linesReady) { // We won't do anything unless the lines are ready and we are updating
+                let newIter = dir ? iter + 1 : iter - 1; // idk if we need this, but it's working
+                //console.log(`newIter: ${newIter}, iter: ${iter}, dir: ${dir}, firstDone: ${firstDone}, size: ${size}; from: ${timerID}`);
                 //console.log(`${(newIter == (size - 1))} ${(newIter == 0)}`);
 
-                if(!firstDone) {
+                if(!firstDone) { // If we are doing the first pass, we are drawing the lines
                     console.log(`NOT DONE: Starting first lines`);
                     lineRefs.current[iter].forEach((line) => {
                         line.show(`draw`);
                     });
-                } else {
+                } else { // If the first pass is done, then we are changing the properties
+                    // CRITICAL FIXME: The logic for reciprocating is still a little funky. I want it to linger on the ends for one extra iteration 
                     console.error(`FIRST DONE: Manipulating lines`);
                     
                     lineRefs.current[iter].forEach((line) => {
                         // TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+                        // This code is test code from LinkerChangeTest()
+                        // It will be replaced with actual stuff
                         let ss = `right`;
                         let es = `left`;
                         let color = `coral`;
@@ -347,8 +351,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 // Check if we need to reverse direction
                 // bounce between size and 0
+                // This section could probably be simplified, but it is doing something right for the time being
                 if(!end) {
-                    setIter(newIter); // This seems to work I guess: iter will have the correct value to use
+                    setIter(newIter); // This seems to work I guess
+
                     if(firstDone) {
                         if ((newIter == (size - 1)) || (newIter == 0)) {
                             //if(!firstDone) setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
@@ -356,7 +362,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
                         }
                     } else {
-                        if(newIter == size) {
+                        if(newIter == size) { // We need a special case for the first pass to make sure that the lines are drawn
                             setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
                             setDir(prevDir => { const newDir = !prevDir; return newDir });
                             setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
@@ -364,11 +370,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         }
                     }
                 } else {
+                    // We just reached the end of the graph, so linger for one iteration
                     console.log(`not iterating`);
                     setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
                 }
             }
-        }, 1000);
+        }, 1000); // Update once a second
 
         return () => {
             //console.log(`killing timer`);
