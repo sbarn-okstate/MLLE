@@ -57,7 +57,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                     case "weightsAndMetricsUpdated":
                         //getWeightsAndMetrics will is called everytime weights and other metrics are updated.
                         const { weights, epoch, loss, accuracy } = getWeightsAndMetrics();
-                        //console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy);
+                        console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy, "Weights:", weights);
                         if (updateMetricsCallback) {
                             //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
                             updateMetricsCallback(epoch, loss, accuracy, weights); // Pass epoch, loss, accuracy, and weights.
@@ -112,7 +112,6 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                     case "resumeSimulatedTraining":
                         resumeSimulatedTraining();
                         break;
-
                     default:
                         console.log('Unknown function call from backend worker:', func);
                 }

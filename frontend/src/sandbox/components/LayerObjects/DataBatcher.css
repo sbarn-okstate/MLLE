@@ -63,8 +63,21 @@
     margin-bottom: 8px;      /* Adds space below the graphic */
 }
 
-.dataBatcher-container.toolbox-preview {
-    position: relative !important; /* Ensure it stays in place */
-    height: 50px !important;
+.dataBatcher-container.toolbar-preview {
+    border: none;
+    height: 40px;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: var(--box-shadow-default);
+    border-radius: 5px;
+    background: rgb(146, 189, 250);
+}
+
+.dataBatcher-container.toolbar-preview .dataBatcher-title {
+    font-size: 1em;
+    margin: 0;
 }
 

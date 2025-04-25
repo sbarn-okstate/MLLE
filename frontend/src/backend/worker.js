@@ -37,6 +37,9 @@ self.onmessage = async (event) => {
         case "validatePretrainedModel":
             await validatePretrainedModel(args.model, self);
             break;
+        case "getRandomBatch":
+            await getRandomBatch(args.dataset, args.batchSize, self);
+            break;
         default:
             console.error(`Unknown function: ${func}`);
     }

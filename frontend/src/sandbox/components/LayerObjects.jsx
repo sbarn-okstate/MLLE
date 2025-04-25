@@ -31,6 +31,7 @@
   */
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import ReactDom from "react-dom";
 import "./LayerObjects.css";
 import "./LayerObjects/Datasets.css";
 import "./LayerObjects/Neuron.css";
@@ -117,7 +118,7 @@ export function renderLinkIndicators(linkStates, height = 100, width = 200) {
                             stroke={value ? "white" : "grey"}
                             strokeWidth="1"
                             strokeDasharray={value ? "0" : "4 4"}
-                            zIndex={0}
+                            z-index={0}
                         />
                     );
                 })}
@@ -168,15 +169,23 @@ export function useContainerDimensions(forwardedRef, defaultDims = { width: 400,
 }
 
 
-export function DataBatcher({ ref, handleRef, name, classNameOverride = "", displayText = "", linkStates = {} }) {
+export function DataBatcher({ ref, handleRef, name, classNameOverride = "dataBatcher-container", displayText = "", linkStates = {} }) {
     const isPreview = classNameOverride.includes("toolbar-preview");
     const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    if (isPreview) {
+        return (
+            <div ref={ref} id={name} className="dataBatcher-container toolbar-preview">
+                <div className="dataBatcher-title">Data Batcher</div>
+            </div>
+        );
+    }
 
     return (
         <div 
             ref={setRefs} 
             id={name} 
-            className={`dataBatcher-container${isPreview ? " toolbar-preview" : ""}`}
+            className={classNameOverride}
             >   
             <div ref={handleRef} className="dataBatcher">
                 <div className="dataBatcher-title">Data Batcher</div>
@@ -344,7 +353,6 @@ export function DatasetObject({ name, ref, handleRef, classNameOverride = "datas
 };
 
 
-//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
 export function DatasetNBC500Object({
     name,
     ref,
@@ -355,8 +363,14 @@ export function DatasetNBC500Object({
     imageSrc = synthetic1graph,
     linkStates = {}
 }) {
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    const openPopup = () => setIsPopupOpen(true);
+    const closePopup = () => setIsPopupOpen(false);
+
     return (
-        <div ref={ref} id={name} className={classNameOverride}>
+        <div ref={setRefs} id={name} className={classNameOverride}>
             <div
                 ref={handleRef}
                 className="dataset-nbc500-interactive"
@@ -374,14 +388,51 @@ export function DatasetNBC500Object({
                         ))}
                     </tbody>
                 </table>
-                <img
-                    src={imageSrc}
-                    alt="Synthetic Dataset Graph"
-                    className="dataset-nbc500-image"
-                />
+                <div className="dataset-nbc500-image-wrapper">
+                    <img
+                        src={imageSrc}
+                        alt="Synthetic Dataset Graph"
+                        className="dataset-nbc500-image"
+                    />
+                    <button
+                        className="dataset-nbc500-popup-button"
+                        onClick={openPopup}
+                        aria-label="View Larger Graph"
+                    >
+                        🔍
+                    </button>
+                </div>
             </div>
             {/* Render all link indicators */}
-            {renderLinkIndicators(linkStates, 400, 250)}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
+
+            {/* Popup for larger image */}
+            {isPopupOpen &&
+                ReactDOM.createPortal(
+                    <div
+                        className="dataset-nbc500-popup-overlay"
+                        onClick={closePopup}
+                    >
+                        <div
+                            className="dataset-nbc500-popup-content"
+                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
+                        >
+                            <img
+                                src={imageSrc}
+                                alt="Larger Synthetic Dataset Graph"
+                                className="dataset-nbc500-popup-image"
+                            />
+                            <button
+                                className="dataset-nbc500-popup-close"
+                                onClick={closePopup}
+                                aria-label="Close Popup"
+                            >
+                                ✖
+                            </button>
+                        </div>
+                    </div>,
+                    document.body // Render the popup at the root level of the DOM
+                )}
         </div>
     );
 }

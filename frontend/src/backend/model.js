@@ -31,6 +31,7 @@ let weightArray = null;
 let metricsArray = null; // Stores loss and accuracy
 let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
+let processedDataset = null; // Stores the dataset name
 
 //TRAINING SIMULATION/SIMULATE
 //Model information is passed into here so we can check if it exists in the JSON folder.
@@ -209,7 +210,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
             await tf.ready();
 
             tf.util.shuffle(dataArray);
-            const processedDataset = dataArray.map(({ xs, ys }) => {
+            processedDataset = dataArray.map(({ xs, ys }) => {
                 return { xs: Object.values(xs), ys: Object.values(ys) };
             });
 
@@ -251,7 +252,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
                         });
 
                         //console.log(JSON.stringify(trainingMetrics));
-                        console.log("training metrics:", trainingMetrics)
+                        //console.log("training metrics:", trainingMetrics)
                         //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
             
                         // Save weights, epoch, loss, and accuracy to shared memory
@@ -388,6 +389,25 @@ class PauseResumeCallback extends tf.Callback {
     stop() {
         this.isStopped = true;
     }
+}
+
+
+export function getRandomBatch(processedDataset, batchSize) {
+    if (!processedDataset || processedDataset.length === 0) {
+        throw new Error("Processed dataset is empty or undefined.");
+    }
+
+    // Shuffle the dataset indices
+    const shuffledIndices = tf.util.createShuffledIndices(processedDataset.length);
+
+    // Select the first `batchSize` indices
+    const batchIndices = shuffledIndices.slice(0, batchSize);
+
+    // Extract the batch data
+    const xsBatch = batchIndices.map(index => processedDataset[index].xs);
+    const ysBatch = batchIndices.map(index => processedDataset[index].ys);
+
+    return { xsBatch, ysBatch };
 }
 
 /* Justin Moua */
