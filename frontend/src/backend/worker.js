@@ -34,9 +34,6 @@ self.onmessage = async (event) => {
         case "stopTraining":
             await stopTraining(self);
             break;
-        case "getRandomBatch":
-            await getRandomBatch(args.dataset, args.batchSize, self);
-            break;
         default:
             console.error(`Unknown function: ${func}`);
     }
