@@ -344,14 +344,7 @@ function Sandbox() {
         return chain;
     };
 
-    const simulateTrainingFromPretrainedModel = () => {
-        setTrainingState('simulateTraining');
-        setStatusContent([
-            "Simulating Training from Pretrained Model (will not say this in end product)",
-            "Click 'Resume Training' to continue.",
-        ]);
-        backend_worker.postMessage({ func: 'validatePretrainedModel', args: { model } });
-    };
+
     // localized test div add
     //objectType and subType are passed in from the NodeDrawer component in NodeDrawer.jsx
     //This is because NodeDrawer calls the AddObject function when a user selects a node.
