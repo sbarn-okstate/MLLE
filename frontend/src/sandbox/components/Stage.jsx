@@ -23,6 +23,7 @@ import {
 //import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
+import * as backend from '../../backend/backend.js';
 import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
@@ -35,11 +36,20 @@ import "./Stage.css";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState}, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
     const drag = useRef({});
+
+    const [size, setSize] = useState(0);
+    const [iter, setIter] = useState(0);
+    const [dir, setDir] = useState(true);
+    const [firstDone, setFirstDone] = useState(false);
+    const [end, setEnd] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [linesReady, setLinesReady] = useState(false);
+
         /*
     {   activeObjects object structure
         id: 1, // Unique identifier
@@ -57,15 +67,16 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [activeObjectsState, setActiveObjectsState] = useState([]);
 
     const lineRefs = useRef([]);
-    const [iter, setIter] = useState(0);
-    const [updating, setUpdating] = useState(false);
-    const [linesReady, setLinesReady] = useState(false);
 
     function LinkerChangeTest() {
+        if(true) {
+            setUpdating(true);
+            setLinesReady(true);
+        } else {
         //console.log(`LINKER CHANGE!`);
         let i = 0;
         lineRefs.current.forEach(group => {
-            console.log(i++);
+            //console.log(i++);
             group.forEach(line => {
 
                 let ss = `right`;
@@ -91,9 +102,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     
                 let end = line.end;
                 let start = line.start;
+                line.setOptions({startPlug: `behind`, endPlug: `behind`});
                 line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, startPlug: sp, endPlug: ep, color: color});
             });
-        });
+        });}
     }
 
     // Creates LinkerLines for dense layers
@@ -101,6 +113,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         // Clear existing LinkerLines in lineRefs
         LinkerLine.removeAll();
         lineRefs.current = [];
+
+        // get how many groups of lines are created
+        let lc = 0;
     
         // Check if the model is valid
         if (modelState === `valid`) {
@@ -130,10 +145,12 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             const newLine = new LinkerLine({
                                 start: divRefs.current[prevObject.id],
                                 end: handleRefs.current[currentLayerNode.id],
-                                dash: {animation: true},
+                                dash: {animation: {duration: 500, timing: 'linear'}},
                                 path: `straight`,
                                 startSocket: `right`,
-                                endSocket: `left`
+                                endSocket: `left`,
+                                startPlug: `behind`,
+                                endPlug: `behind`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
                             newLine.hide(`none`);
@@ -144,6 +161,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                         // Store the group in the ref var
                         lineRefs.current.push(popArray);
+                        lc += 1;
     
                         firstDense = false;
                     }
@@ -178,15 +196,18 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 const newLine = new LinkerLine({
                                     start: handleRefs.current[currentLayerNode.id],
                                     end: handleRefs.current[currentNextLayerNode.id],
-                                    dash: {animation: true},
+                                    dash: {animation: {duration: 500, timing: 'linear'}},
                                     path: `fluent`,
                                     startSocket: `right`,
-                                    endSocket: `left`
+                                    endSocket: `left`,
+                                    startPlug: `behind`,
+                                    endPlug: `behind`
                                 });
                                 newLine.name = `line${lineRefs.current.length}`;
                                 newLine.hide(`none`);
     
                                 popArray.push(newLine);
+
                                 currentNextLayerNode = currentNextLayerNode.bottomLink;
                             }
     
@@ -196,6 +217,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                         // Store the group in ref var
                         lineRefs.current.push(popArray);
+                        lc += 1;
                     } else { // No more dense layers means that we need to create lines to the end node
                         let currentLayerNode = currentObject;
                         while (currentLayerNode.topLink != null) {
@@ -207,26 +229,33 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             const newLine = new LinkerLine({
                                 start: handleRefs.current[currentLayerNode.id],
                                 end: divRefs.current[nextDenseLayer.id],
-                                dash: {animation: true},
+                                dash: {animation: {duration: 500, timing: 'linear'}},
                                 path: `straight`,
                                 startSocket: `right`,
-                                endSocket: `left`
+                                endSocket: `left`,
+                                startPlug: `behind`,
+                                endPlug: `behind`
                             });
                             newLine.name = `line${lineRefs.current.length}`;
                             newLine.hide(`none`);
     
                             popArray.push(newLine);
+
                             currentLayerNode = currentLayerNode.bottomLink;
                         }
 
                         // Store the group in ref var
                         lineRefs.current.push(popArray);
+                        lc += 1;
                     }
                 }
     
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
+
+            // Set size of the array
+            setSize(lc);
 
             // Reset iterator
             setIter(0);
@@ -241,6 +270,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     function RetractLinkerLines() {
         setUpdating(false);
+        setFirstDone(false);
+        setFirstDone(false);
+        setEnd(false);
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
@@ -281,41 +313,82 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         retractLinkerLines: RetractLinkerLines
     }));
 
-    // draggables do not know about state variables? so the need an external helper
-    function extAction(ref) {
-        console.log(`an element has called for external action: ${typeof ref}`);
-    }
-    
-    const iterRef = useRef(iter);
-
-    useEffect(() => {
-        iterRef.current = iter;
-    }, [iter]);
-
-    // Ticker for updating LinkerLines
-    // Thickness of line: relative weight (log scale?)
-    // Color of line: weight increase/decrease
-    // Direction of dash: forward/back propagation
     useEffect(() => {
         const timerID = setInterval(() => {
-            if(linesReady && updating) {
-                if(iter < lineRefs.current.length) {
-                    lineRefs.current[iterRef.current].forEach(line => {
+            if(updating && linesReady) {
+                let newIter = dir ? iter + 1 : iter - 1;
+                console.log(`newIter: ${newIter}, iter: ${iter}, dir: ${dir}, firstDone: ${firstDone}, size: ${size}; from: ${timerID}`);
+                //console.log(`${(newIter == (size - 1))} ${(newIter == 0)}`);
+
+                if(!firstDone) {
+                    console.log(`NOT DONE: Starting first lines`);
+                    lineRefs.current[iter].forEach((line) => {
                         line.show(`draw`);
+                    });
+                } else {
+                    console.error(`FIRST DONE: Manipulating lines`);
+                    
+                    lineRefs.current[iter].forEach((line) => {
+                        // TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+                        let ss = `right`;
+                        let es = `left`;
+                        let sp = `behind`;
+                        let ep = `arrow1`;
+                        let color = `coral`;
+
+                        if(line.startSocket === `right`) {
+                            ss = `left`;
+                            es = `right`;
+                        }
+
+                        //console.log(line.endPlug);
+                        if(line.endPlug === `arrow1`) {
+                            sp = `arrow1`;
+                            ep = `behind`;
+                        }
+
+                        if(line.color === `coral`) {
+                            color = `green`;
+                        }
+
+                        let end = line.end;
+                        let start = line.start;
+                        line.setOptions({startPlug: `behind`, endPlug: `behind`});
+                        line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, startPlug: sp, endPlug: ep, color: color});
                     });
                 }
 
-                setIter(i => {
-                    console.log(`TICK: current iter: ${i}`);
-                    return i + 1;
-                });
-            } else {
-                // weight update stuff
+
+                // Check if we need to reverse direction
+                // bounce between size and 0
+                if(!end) {
+                    setIter(newIter); // This seems to work I guess: iter will have the correct value to use
+                    if(firstDone) {
+                        if ((newIter == (size - 1)) || (newIter == 0)) {
+                            //if(!firstDone) setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
+                            setDir(prevDir => { const newDir = !prevDir; return newDir });
+                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                        }
+                    } else {
+                        if(newIter == size) {
+                            setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
+                            setDir(prevDir => { const newDir = !prevDir; return newDir });
+                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                            setIter(newIter - 1);
+                        }
+                    }
+                } else {
+                    console.log(`not iterating`);
+                    setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                }
             }
         }, 1000);
-    
-        return () => clearInterval(timerID);
-    }, [linesReady, updating, lineRefs]);
+
+        return () => {
+            //console.log(`killing timer`);
+            clearInterval(timerID);
+        };
+    }, [updating, linesReady, iter, dir, end, size]);
 
     useEffect(() => {
         //console.log("elements", elements);
@@ -744,8 +817,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         } else {
                             delete handleRefs.current[item.id];
                         }
-                    },
-                    action: extAction
+                    }
                 })
             ))}
             <div id="recycle-bin" className="recycle-bin">
