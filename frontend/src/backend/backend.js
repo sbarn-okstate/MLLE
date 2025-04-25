@@ -121,7 +121,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
 }
 
 
-function getWeightsAndMetrics() {
+export function getWeightsAndMetrics() {
     let offset = 0;
 
     // Extract weights for each layer

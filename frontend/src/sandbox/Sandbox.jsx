@@ -69,7 +69,7 @@ function createBackend(updateMetricsCallback, updateWeightsCallback) {
     backend_worker = backend.getBackendWorker();
 }
 
-//called by startTraining() to create the model.
+//called by validateModel() to create the model.
 function createModel() {
     //FIXME: This is just a test
     const dataset = model[0].dataset;
@@ -80,9 +80,7 @@ function createModel() {
 
 function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects, stageRef) {
     if (modelState === 'valid') { //FIXME: check if model is valid
-        //testing and trying to grab information from chainOfObjects
-        createModel();
-        //FIXME: This is just a test
+        
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
@@ -340,6 +338,7 @@ function Sandbox() {
         //Might delete this in the future.
         //backend_worker.postMessage({ func: 'validateModel', args: { model } });
         
+        createModel();
         
         return chain;
     };

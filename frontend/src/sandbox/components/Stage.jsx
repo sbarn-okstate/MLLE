@@ -23,7 +23,7 @@ import {
 //import DataBatcher from './DataBatcher.jsx';
 import PlainDraggable from "plain-draggable";
 import LinkerLine from "linkerline";
-import * as backend from '../../backend/backend.js';
+import {getWeightsAndMetrics} from '../../backend/backend.js';
 import "./Stage.css";
 
 //Stage is a component that handles the rendering and interaction of elements on a stage.
@@ -110,7 +110,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         // get how many groups of lines are created
         let lc = 0;
-    
+
+        const weights = getWeightsAndMetrics();
+        console.log(weights);
+        
         // Check if the model is valid
         if (modelState === `valid`) {
             const dataBatcher = activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher");
@@ -402,7 +405,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 // Create a new PlainDraggable instance
                 const draggable = new PlainDraggable(div);
 
-                console.log("item", item);
                 // Get the type of the object from the elements array
                 const snapType = item?.snapType || "all"; // Default to "all" if type is not specified   
                 const objectType = item?.objectType || `object${item.id}`;   
