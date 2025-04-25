@@ -4,6 +4,7 @@ import { NeuronObject, OutputLayerObject, ActivationObject, DataBatcher } from "
 import "./Toolbar.css";
 import activationInternals from "../../assets/activation-internals.png";
 import neuronInternals from "../../assets/neuron-internals.png";
+import dataBatcherInfo from "../../assets/data-batcher.svg";
 
 const ToolbarObject = ({ type, subtype = null, N = 1, count = 0, createNodeFunction, InfoClick }) => {
     let CenterComponent = null;
@@ -60,13 +61,19 @@ const Overlay = ({ content, imageSrc, onClose }) => {
         <div className="overlay">
             <div className="overlayContent">
                 {imageSrc && (
-                        <img
-                            src={imageSrc}
-                            alt="Overlay Illustration"
-                            className="overlayImage"
-                        />
-                    )}
-                <p>{content}</p>
+                    <img
+                        src={imageSrc}
+                        alt="Overlay Illustration"
+                        className="overlayImage"
+                    />
+                )}
+                {Array.isArray(content) ? (
+                    content.map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                    ))
+                ) : (
+                    <p>{content}</p>
+                )}
                 <button onClick={onClose}>Close</button>
             </div>
         </div>,
@@ -96,7 +103,12 @@ const Toolbar = ({ createNodeFunction, elements }) => {
                     N={1}
                     count={getObjectCount(elements, "dataBatcher")}
                     createNodeFunction={createNodeFunction}
-                    InfoClick={() => showOverlay("Data Batcher: Processes and batches input data.")}
+                    InfoClick={() => 
+                        showOverlay([
+                            "The data batcher splits the training examples into groups called \"batches\".",
+                            "This allows the model to learn from multiple examples at once\
+                            which speeds up the training process."
+                        ], dataBatcherInfo)}
                 />
                 <div className="toolbarObjectDivider" />
                 <ToolbarObject
@@ -104,7 +116,13 @@ const Toolbar = ({ createNodeFunction, elements }) => {
                     N={12}
                     count={getObjectCount(elements, "neuron")}
                     createNodeFunction={createNodeFunction}
-                    InfoClick={() => showOverlay("Neuron: Processes inputs and applies weights and biases.", neuronInternals)}
+                    InfoClick={() => 
+                        showOverlay([
+                            "Neurons are the basic building blocks of neural networks.",
+                            "They are inspired by biological neurons and are used to process and transmit information.",
+                            "Each neuron takes inputs, mutiplies them by some value (called a weight), adds a bias (or offset), and then outputs the result. This is works like the simple linear function: y = mx + b",
+                            <><strong> Stack neurons vertically to form layers. Combine multiple layers to form a neural network.</strong></>
+                        ], neuronInternals)}
                 />
                 <div className="toolbarObjectDivider" />
                 <ToolbarObject
@@ -113,7 +131,13 @@ const Toolbar = ({ createNodeFunction, elements }) => {
                     N={3}
                     count={getObjectCount(elements, "activation")}
                     createNodeFunction={createNodeFunction}
-                    InfoClick={() => showOverlay("Activation: Applies a non-linear transformation to the input.", activationInternals)}
+                    InfoClick={() => 
+                        showOverlay([
+                            "Activation functions are critical in neural networks and are used to modify the output of neuron layers.",
+                            "They introduce non-linearity into the model, allowing it to learn complex patterns in the data.",
+                            "Without activation functions, the model would be a simple linear function, limiting its ability to learn.",
+                            <><strong> It is recommended to use activation functions between each neuron layer.</strong></>
+                        ], activationInternals)}
                 />
                 <div className="toolbarObjectDivider" />
                 <ToolbarObject
@@ -121,7 +145,13 @@ const Toolbar = ({ createNodeFunction, elements }) => {
                     N={1}
                     count={getObjectCount(elements, "output")}
                     createNodeFunction={createNodeFunction}
-                    InfoClick={() => showOverlay("Output Layer: Produces the final output of the model.")}
+                    InfoClick={() =>
+                        showOverlay([
+                            "The output layer is the final step in a neural network. While the internals of a neural network are just numbers being multiplied, added, and transformed, the output layer applies a function to convert these numbers into probabilities.",
+                            "These probabilities represent the model's confidence in its predictions. For example, in a classification task, the output layer might assign probabilities to different categories, such as 70% for 'cat' and 30% for 'dog.'",
+                            <><strong>It’s important to understand that AI is fundamentally about probabilities.</strong> The output layer doesn’t give definitive answers—it provides the likelihood of each possible outcome based on the patterns it has learned from the data. This is why AI predictions are not absolute truths but rather informed guesses based on probabilities.</>
+                        ])
+                    }
                 />
             </div>
 

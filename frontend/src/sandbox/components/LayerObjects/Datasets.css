@@ -5,7 +5,7 @@
     border: none;
     border-radius: 10px;
     padding: 20px;
-    width: 200px;
+    width: 250px;
     height: 300px;
     display: flex;
     justify-content: center;
@@ -21,7 +21,7 @@
     background: rgba(255,255,255,0.95);
     border-radius: 10px;
     box-shadow: var(--box-shadow-default);
-    padding: 10px 10px 10px 10px;
+    padding: 5px;
     pointer-events: all;
     display: flex;
     flex-direction: column;
@@ -32,7 +32,7 @@
 /* Dataset label */
 .dataset-nbc500-label {
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1em;
     color:#222;
     margin-bottom: 4px;
     text-align: center;
@@ -43,12 +43,13 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 8px;
-    font-size: 0.95em;
+    font-size: 0.7em;
 }
 .dataset-nbc500-table-key {
     font-weight: 600;
     text-align: right;
     padding-right: 8px;
+    vertical-align: top;
     color: #444;
 }
 .dataset-nbc500-table-value {
@@ -58,7 +59,7 @@
 
 /* Dataset image */
 .dataset-nbc500-image {
-    width: 90%;
+    width: 100%;
     height: auto;
     object-fit: contain;
     border-radius: 6px;
@@ -77,22 +78,22 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--button-color-grey);
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    border-radius: 5px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--box-shadow-default)
 }
 
 .dataset-nbc500-popup-button:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: var(--button-color-on-hover);
 }
 
 /* Popup overlay */
@@ -102,11 +103,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: var(--ceiling);
 }
 
 /* Popup content */
@@ -115,16 +116,14 @@
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--box-shadow-default);
     position: relative;
 }
 
 /* Larger image in the popup */
-.dataset-nbc500-popup-image {
-    max-width: 90%;
-    max-height: 80vh;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.dataset-nbc500-popup-icon {
+    object-fit: contain;
+    width: 150%;
 }
 
 /* Close button for the popup */
@@ -132,10 +131,10 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    background: var(--button-color-grey);
+    color: black;
     border: none;
-    border-radius: 50%;
+    border-radius: 5px;
     width: 24px;
     height: 24px;
     display: flex;
@@ -146,5 +145,5 @@
 }
 
 .dataset-nbc500-popup-close:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: var(--button-color-on-hover);
 }

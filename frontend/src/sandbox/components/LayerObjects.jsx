@@ -31,7 +31,7 @@
   */
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import ReactDom from "react-dom";
+import ReactDOM from "react-dom";
 import "./LayerObjects.css";
 import "./LayerObjects/Datasets.css";
 import "./LayerObjects/Neuron.css";
@@ -45,6 +45,7 @@ import closedLinkLR from "../../assets/closedLinkLR.svg";
 import closedLinkTB from "../../assets/closedLinkTB.svg";
 import synthetic1graph from "../../assets/synthetic1graph.png";
 import dataBatcherGraphic from "../../assets/data-batcher.svg";
+import enlargeIcon from "../../assets/fullscreen-out.svg";
 
 const openLinkLeft = openLinkLR;
 const openLinkRight = openLinkLR;
@@ -358,8 +359,12 @@ export function DatasetNBC500Object({
     ref,
     handleRef,
     classNameOverride = "dataset-container",
-    datasetLabel = "Synthetic NBC 500",
-    info = { Type: "Classification", Inputs: "Petal Length, Stem Height", Outputs: "Class" },
+    datasetLabel = "Flower Identification",
+    info = {
+        "Inputs": "Stem Height, Petal Length",
+        "Classes": "Blue, Red",
+        "Goal": "Predict the color of flowers based on their petal length and stem height",
+    },
     imageSrc = synthetic1graph,
     linkStates = {}
 }) {
@@ -368,7 +373,6 @@ export function DatasetNBC500Object({
 
     const openPopup = () => setIsPopupOpen(true);
     const closePopup = () => setIsPopupOpen(false);
-
     return (
         <div ref={setRefs} id={name} className={classNameOverride}>
             <div
@@ -399,7 +403,11 @@ export function DatasetNBC500Object({
                         onClick={openPopup}
                         aria-label="View Larger Graph"
                     >
-                        🔍
+                        <img
+                            src={enlargeIcon}
+                            alt="Enlarge Icon"
+                            className="dataset-nbc500-popup-icon"
+                        />
                     </button>
                 </div>
             </div>
