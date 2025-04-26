@@ -6,18 +6,15 @@
     border-radius: 5px;
 }
 
-
-/* Link indicators */
 .link-indicator {
     position: absolute;
-    pointer-events: none; /* Prevent mouse events */
+    pointer-events: none; 
     width: 50px;
     height: 50px;
     cursor: pointer;
     z-index: var(--low);
 }
 
-/* Positioning for each link */
 .top-link {
     top: -25px;
     left: 50%;

@@ -10,8 +10,8 @@
     position: fixed;
     right:20px;
     bottom: 8vh;
-    width: 15vh;      /* Scales with viewport width */
-    height: 15vh;     /* Keeps it square and responsive */
+    width: 15vh; 
+    height: 15vh;
     background: transparent;
     border: 2px dashed #888;
     border-radius: 12px;

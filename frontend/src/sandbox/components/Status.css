@@ -1,5 +1,9 @@
+/* Status.css
+  * AUTHOR(S): Samuel Barney
+  */
+
 .statusContainer {
-    width: 300px; /* Match the width of the Report */
+    width: 300px;
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 8px;

@@ -1,3 +1,7 @@
+/* Report.jsx
+  * AUTHOR(S): Samuel Barney
+  */
+
 import React, { useImperativeHandle, useState, forwardRef } from "react";
 import { LinePath } from "@visx/shape";
 import { scaleLinear } from "@visx/scale";

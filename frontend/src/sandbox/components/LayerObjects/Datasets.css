@@ -1,5 +1,4 @@
 
-/* Transparent container, like neuron-container */
 .dataset-container {
     background: transparent;
     border: none;
@@ -11,12 +10,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    pointer-events: none; /* Only allow events on interactive area */
+    pointer-events: none;
     z-index: var(--middle);
     user-select: none;
 }
 
-/* Interactive area inside dataset-container */
 .dataset-nbc500-interactive {
     background: rgba(255,255,255,0.95);
     border-radius: 10px;
@@ -29,7 +27,6 @@
     z-index: var(--middle);
 }
 
-/* Dataset label */
 .dataset-nbc500-label {
     font-weight: bold;
     font-size: 1em;
@@ -38,7 +35,6 @@
     text-align: center;
 }
 
-/* Info table */
 .dataset-nbc500-table {
     width: 100%;
     border-collapse: collapse;
@@ -57,7 +53,6 @@
     color: #222;
 }
 
-/* Dataset image */
 .dataset-nbc500-image {
     width: 100%;
     height: auto;
@@ -67,13 +62,11 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.07);
 }
 
-/* Wrapper for the image and button */
 .dataset-nbc500-image-wrapper {
     position: relative;
     display: inline-block;
 }
 
-/* Button to open the popup */
 .dataset-nbc500-popup-button {
     position: absolute;
     bottom: 5px;
@@ -96,9 +89,8 @@
     background: var(--button-color-on-hover);
 }
 
-/* Popup overlay */
 .dataset-nbc500-popup-overlay {
-    position: fixed; /* Fixed to the viewport */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -110,7 +102,6 @@
     z-index: var(--ceiling);
 }
 
-/* Popup content */
 .dataset-nbc500-popup-content {
     background: white;
     padding: 20px;
@@ -120,13 +111,11 @@
     position: relative;
 }
 
-/* Larger image in the popup */
 .dataset-nbc500-popup-icon {
     object-fit: contain;
     width: 150%;
 }
 
-/* Close button for the popup */
 .dataset-nbc500-popup-close {
     position: absolute;
     top: 10px;

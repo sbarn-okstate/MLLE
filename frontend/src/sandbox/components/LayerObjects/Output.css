@@ -76,7 +76,6 @@
     box-sizing: border-box;
 }
 
-/* Toolbar preview style */
 .output-container.toolbar-preview {
     border: none;
     min-height: 40px;

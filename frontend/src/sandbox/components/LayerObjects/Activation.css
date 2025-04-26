@@ -13,8 +13,8 @@
 }
 
 .activation-container.toolbar-preview {
-    position: relative !important; /* Ensure it stays in place */
-    transform: rotate(-90deg) !important; /* Rotate the container */
+    position: relative !important;
+    transform: rotate(-90deg) !important; 
 }
 
 .activation {

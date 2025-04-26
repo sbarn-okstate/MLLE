@@ -1,3 +1,7 @@
+/* Toolbar.jsx
+  * AUTHOR(S): Samuel Barney
+  */
+
 import React, {act, useState} from "react";
 import ReactDOM from "react-dom";
 import { NeuronObject, OutputLayerObject, ActivationObject, DataBatcher } from "./LayerObjects";
@@ -53,11 +57,12 @@ const ToolbarObject = ({ type, subtype = null, N = 1, count = 0, createNodeFunct
         </div>
     );
 };
+
 const getObjectCount = (elements, type) =>
     elements.filter(el => el.objectType === type).length;
 
 const Overlay = ({ content, imageSrc, onClose }) => {
-    return ReactDOM.createPortal(
+    return ReactDOM.createPortal(  // create portal allows rendering outside the parent component
         <div className="overlay">
             <div className="overlayContent">
                 {imageSrc && (
@@ -77,7 +82,7 @@ const Overlay = ({ content, imageSrc, onClose }) => {
                 <button onClick={onClose}>Close</button>
             </div>
         </div>,
-        document.body // Render the overlay outside the toolbar's parent container
+        document.body
     );
 };
 

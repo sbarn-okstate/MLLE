@@ -1,3 +1,7 @@
+/* Status.jsx
+  * AUTHOR(S): Samuel Barney
+  */
+
 import React from "react";
 import "./Status.css";
 
