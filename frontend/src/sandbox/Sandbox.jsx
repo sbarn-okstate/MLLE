@@ -78,14 +78,16 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, modelState, setStatusContent, chainOfObjects, stageRef) {
+function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, chainOfObjects, stageRef) {
     if (modelState === 'valid') { //FIXME: check if model is valid
-        
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
         backend_worker.postMessage({func: 'trainModel', args: {fileName, problemType, chainOfObjects, savePretrained}}); //Goes to worker.js
         setTrainingState('training');
+        setChangeStartTrainingBtnColor("defaultSandboxButton");
+        setChangeStopTrainingBtnColor("redSandboxButton");
+        setChangePauseTrainingBtnColor("orangeSandboxButton");
         setStatusContent([
             "Training started!",
             "Click 'Pause Training' to pause.",
@@ -102,27 +104,30 @@ function startTraining(setTrainingState, modelState, setStatusContent, chainOfOb
     }
 }
 
-function pauseTraining(setTrainingState, setStatusContent, stageRef) {
+function pauseTraining(setTrainingState, setChangeResumeTrainingBtnColor, setStatusContent, stageRef) {
     backend_worker.postMessage({func: 'pauseTraining'});
     setTrainingState('paused');
     setStatusContent([
         "Training paused.",
         "Click 'Resume Training' to continue.",
     ]);
-
+    setChangeResumeTrainingBtnColor("greenSandboxButton")
     stageRef.current.stopAnimLinkerLines();
 }
 
-function resumeTraining(setTrainingState, stageRef) {
+function resumeTraining(setTrainingState, setChangePauseTrainingBtnColor, stageRef) {
     backend_worker.postMessage({func: 'resumeTraining'});
     setTrainingState('training');
+    setChangePauseTrainingBtnColor("orangeSandboxButton")
 
     stageRef.current.startAnimLinkerLines();
 }
 
-function stopTraining(setTrainingState, setStatusContent, reportRef, stageRef) {
+function stopTraining(setTrainingState, setChangeValidateModelBtnColor, setChangeStartTrainingBtnColor, setStatusContent, reportRef, stageRef) {
     backend_worker.postMessage({func: 'stopTraining'});
     setTrainingState('stopped');
+    setChangeValidateModelBtnColor("greenSandboxButton");
+    setChangeStartTrainingBtnColor("redSandboxButton");
     setStatusContent([
         "Welcome to the Sandbox!",
         "Validate your model to start training.",
@@ -146,7 +151,11 @@ function Sandbox() {
         "Validate your model to start training.",
     ]);
     const [showStatusAndReport, setShowStatusAndReport] = useState(true); // State to toggle visibility
-
+    const [changeValidateModelBtnColor, setChangeValidateModelBtnColor] = useState("greenSandboxButton");
+    const [changeStartTrainingModelBtnColor, setChangeStartTrainingBtnColor] = useState("redSandboxButton");
+    const [changeStopTrainingModelBtnColor, setChangeStopTrainingBtnColor] = useState("redSandboxButton")
+    const [changePauseTrainingModelBtnColor, setChangePauseTrainingBtnColor] = useState("orangeSandboxButton")
+    const [changeResumeTrainingModelBtnColor, setChangeResumeTrainingBtnColor] = useState("greenSandboxButton")
     const toggleStatusAndReport = () => {
         setShowStatusAndReport((prev) => !prev); // Toggle the state
     };
@@ -330,6 +339,8 @@ function Sandbox() {
                 currentObject = currentObject.rightLink; // Move to the next object
             }
             chain.push(objectData);
+            setChangeValidateModelBtnColor("defaultSandboxButton"); // change Validate Model button to green.
+            setChangeStartTrainingBtnColor("greenSandboxButton"); //change Start Training button to green
         }
 
         model = chain;
@@ -445,7 +456,7 @@ function Sandbox() {
         <>
             {/* Fixed Top Bar */}
             <div className="topBar">
-                <Link to="/"><button className="sandboxButton">Go Back</button></Link>
+                <Link to="/"><button className="defaultSandboxButton">Go Back</button></Link>
                 <div style={{
                     width: "100%",
                     paddingRight: "20px",
@@ -453,26 +464,28 @@ function Sandbox() {
                     justifyContent: "flex-end",
                     gap: "10px"
                 }}>
-                    <button className="sandboxButton" onClick={() => savePretrainedSwitcher()}>(DevBtn) Save Pretrained</button>
-                    <button className="sandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button>
-                    <button className="sandboxButton" onClick={createLinkerLines}>Create LinkerLines</button>
-                    <button className="sandboxButton" onClick={() => validateModel(model)}>Validate Model</button>
+                    {/* =========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS========= */}
+                    {/* <button className="defaultSandboxButton" onClick={() => savePretrainedSwitcher()}>(DevBtn) Save Pretrained</button> */}
+                    {/* <button className="defaultSandboxButton" onClick={linkerChangeTest}>Mod LinkerLines</button> */}
+                    {/* <button className="defaultSandboxButton" onClick={createLinkerLines}>Create LinkerLines</button> */}
+                    {/* =========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS=========DEV BUTTONS========= */}
+
                     {trainingState === 'stopped' && (
                         <>
-                            {/* <button className="sandboxButton" onClick={() => simulateTrainingFromPretrainedModel(setTrainingState)}>Devbutton: Simulate Training w/pretrained model</button> */}
-                            <button className="sandboxButton" onClick={() => startTraining(setTrainingState, modelState, setStatusContent, model, stageRef)}>Start Training</button>
+                            <button className={changeValidateModelBtnColor} onClick={() => validateModel(model)}>Validate Model</button>
+                            <button className={changeStartTrainingModelBtnColor} onClick={() => startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, model, stageRef)}>Start Training</button>
                         </>
                     )}
                     {(trainingState === 'training' || trainingState === 'simulateTraining') && (
                         <>
-                            <button className="sandboxButton" onClick={() => pauseTraining(setTrainingState, setStatusContent, stageRef)}>Pause Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
+                            <button className={changePauseTrainingModelBtnColor} onClick={() => pauseTraining(setTrainingState, setChangeResumeTrainingBtnColor, setStatusContent, stageRef)}>Pause Training</button>
+                            <button className={changeStopTrainingModelBtnColor} onClick={() => stopTraining(setTrainingState, setChangeValidateModelBtnColor, setChangeStartTrainingBtnColor, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                     {trainingState === 'paused' && (
                         <>
-                            <button className="sandboxButton" onClick={() => resumeTraining(setTrainingState, stageRef)}>Resume Training</button>
-                            <button className="sandboxButton" onClick={() => stopTraining(setTrainingState, setStatusContent, reportRef, stageRef)}>Stop Training</button>
+                            <button className={changeResumeTrainingModelBtnColor} onClick={() => resumeTraining(setTrainingState, setChangePauseTrainingBtnColor, stageRef)}>Resume Training</button>
+                            <button className={changeStopTrainingModelBtnColor} onClick={() => stopTraining(setTrainingState, setChangeValidateModelBtnColor, setChangeStartTrainingBtnColor, setStatusContent, reportRef, stageRef)}>Stop Training</button>
                         </>
                     )}
                 </div>

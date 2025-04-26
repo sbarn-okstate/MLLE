@@ -16,7 +16,7 @@ function Welcome() {
     return(
         <>
             <body class="welcomeBody">
-            <h1 class="WelcomeTitle">Welcome to the MLLE!</h1>
+                <h1 class="WelcomeTitle">Welcome to the<br></br>Machine Learning Learning<br></br>Environment!</h1>
             <div>
                 <p>
                     <span>
@@ -26,7 +26,7 @@ function Welcome() {
                     </span>
                 </p>
             </div>
-            <p className="footertext">Work in progress. Content is content to change.</p>
+            <p className="footertext">Created in Spring of 2025 at Oklahoma State University<br></br> by Samuel Barney, Justin Moua, and Mark Taylor.</p>
             </body>
         </>
     )

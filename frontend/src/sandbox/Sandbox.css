@@ -1,6 +1,6 @@
 /* Sandbox.css
   *
-  * AUTHOR(S): Mark Taylor
+  * AUTHOR(S): Mark Taylor, Sam Barney, Justin
   *
   * PURPOSE: Stylesheet for the Sandbox page
   * 
@@ -42,7 +42,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    background: rgb(100,100,100);
+    background: rgb(0, 0, 0);
     z-index: var(--ceiling);
     display: flex;
     align-items: center;
@@ -51,7 +51,9 @@
     border-bottom: 1px solid #ddd;
 }
 
-.sandboxButton {
+/* ============SANDBOX BUTTONS STARTS HERE============SANDBOX BUTTONS STARTS HERE============ */
+/* DEFAULT SANDBOX BUTTONS */
+.defaultSandboxButton {
     height: 3em;
     width: 10em;
     border-radius: 100px;
@@ -63,17 +65,92 @@
     transition: all 0.2s ease-in;
 }
 
-.sandboxButton:hover {
+.defaultSandboxButton:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    transition: all 0.2s ease-in;
+}
+
+.defaultSandboxButton:active {
+    background-color: var(--activeColor);
+    color: black;
+    transition: all 0.1s ease-in;
+}
+
+/* GREEN BUTTON */
+.greenSandboxButton {
+    height: 3em;
+    width: 10em;
+    border-radius: 100px;
+    background-color: rgb(14, 255, 10);
+    border-color: grey;
+    color: rgb(0, 0, 0);
+    border-style: solid;
+    user-select: none;
+    transition: all 0.2s ease-in;
+}
+
+.greenSandboxButton:hover {
     background-color: rgb(56, 56, 56);
     color: white;
     transition: all 0.2s ease-in;
 }
 
-.sandboxButton:active {
+.greenSandboxButton:active {
     background-color: var(--activeColor);
     color: black;
     transition: all 0.1s ease-in;
 }
+/* RED BUTTON */
+.redSandboxButton {
+    height: 3em;
+    width: 10em;
+    border-radius: 100px;
+    background-color: rgb(255, 0, 0);
+    border-color: grey;
+    color: white;
+    border-style: solid;
+    user-select: none;
+    transition: all 0.2s ease-in;
+}
+
+.redSandboxButton:hover {
+    background-color: rgb(56, 56, 56);
+    color: white;
+    transition: all 0.2s ease-in;
+}
+
+.redSandboxButton:active {
+    background-color: var(--activeColor);
+    color: black;
+    transition: all 0.1s ease-in;
+}
+
+/* ORANGE BUTTON */
+.orangeSandboxButton {
+    height: 3em;
+    width: 10em;
+    border-radius: 100px;
+    background-color: rgb(255, 174, 0);
+    border-color: grey;
+    color: white;
+    border-style: solid;
+    user-select: none;
+    transition: all 0.2s ease-in;
+}
+
+.orangeSandboxButton:hover {
+    background-color: rgb(56, 56, 56);
+    color: white;
+    transition: all 0.2s ease-in;
+}
+
+.orangeSandboxButton:active {
+    background-color: var(--activeColor);
+    color: black;
+    transition: all 0.1s ease-in;
+}
+/* ============SANDBOX BUTTONS ENDS HERE============SANDBOX BUTTONS ENDS HERE============ */
 
 .drawerNode {
     position: relative;
