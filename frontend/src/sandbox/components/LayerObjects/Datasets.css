@@ -155,7 +155,7 @@
 }
 
 /* Dataset label */
-.dataset-label {
+.dataset-nbc500-label {
     font-weight: bold;
     font-size: 1em;
     color:#222;
@@ -164,7 +164,7 @@
 }
 
 /* Info table */
-.dataset-table {
+.dataset-nbc500-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 8px;
@@ -193,13 +193,13 @@
 }
 
 /* Wrapper for the image and button */
-.dataset-image-wrapper {
+.dataset-nbc500-image-wrapper {
     position: relative;
     display: inline-block;
 }
 
 /* Button to open the popup */
-.dataset-popup-button {
+.dataset-nbc500-popup-button {
     position: absolute;
     bottom: 5px;
     right: 5px;
@@ -217,7 +217,7 @@
     box-shadow: var(--box-shadow-default)
 }
 
-.dataset-popup-button:hover {
+.dataset-nbc500-popup-button:hover {
     background: rgba(0, 0, 0, 0.9);
 }
 
@@ -236,7 +236,7 @@
 }
 
 /* Popup content */
-.dataset-popup-content {
+.dataset-nbc500-popup-content {
     background: white;
     padding: 20px;
     border-radius: 10px;
@@ -246,7 +246,7 @@
 }
 
 /* Larger image in the popup */
-.dataset-popup-image {
+.dataset-nbc500-popup-image {
     max-width: 90%;
     max-height: 80vh;
     border-radius: 5px;
@@ -254,7 +254,7 @@
 }
 
 /* Close button for the popup */
-.dataset-popup-close {
+.dataset-nbc500-popup-close {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -271,7 +271,7 @@
     font-size: 14px;
 }
 
-.dataset-popup-close:hover {
+.dataset-nbc500-popup-close:hover {
     background: rgba(0, 0, 0, 0.9);
 }
 
