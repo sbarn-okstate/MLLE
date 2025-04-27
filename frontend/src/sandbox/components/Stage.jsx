@@ -37,6 +37,7 @@ import "./Stage.css";
 //      snapType
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
+    const delay = 1;
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
@@ -50,6 +51,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [updating, setUpdating] = useState(false);
     const [linesReady, setLinesReady] = useState(false);
     const [weights, setWeights] = useState({});
+    const [delayTick, setDelayTick] = useState(0);
+    const [workaround, setWorkaround] = useState(true);
 
         /*
     {   activeObjects object structure
@@ -309,40 +312,55 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         retractLinkerLines: RetractLinkerLines
     }));
 
+    // NEEDS TO FREEZE AFTER A FULL GO
+    // FREEZE ANIMATION AS WELL
     // This is where the LinkerLines are updated
     useEffect(() => {
         const timerID = setInterval(() => {
             if (updating && linesReady) {
                 let newIter = dir ? iter + 1 : iter - 1;
 
+                // Line manipulation
                 if (!firstDone) {
                     // First pass: Draw the lines
                     lineRefs.current[iter].forEach((line) => {
                         line.show(`draw`);
                     });
                 } else {
-                    // Subsequent passes: Manipulate the lines
-                    lineRefs.current[iter].forEach((line) => {
-                        let ss = `right`;
-                        let es = `left`;
-                        let color = `coral`;
+                    // Subsequent passes: Manipulate the lines (if needed)
+                    if(delayTick == 0) {
+                        if(workaround) {
+                            // skip
+                            setWorkaround(false);
+                        } else {
+                            // We only manipulate the lines if delayTick is not active
+                            lineRefs.current[iter].forEach((line) => {
+                                let ss = `right`;
+                                let es = `left`;
+                                let color = `coral`;
+        
+                                // Socket sets the side the lines link to
+                                if (line.startSocket === `right`) {
+                                    ss = `left`;
+                                    es = `right`;
+                                }
+        
+                                // Calculate a color from weight changes (pos/neg)
+                                if (line.color === `coral`) {
+                                    color = `green`;
+                                }
 
-                        if (line.startSocket === `right`) {
-                            ss = `left`;
-                            es = `right`;
+                                // TODO - determine line thickness from weight value
+        
+                                let end = line.end;
+                                let start = line.start;
+                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: color, dash: {animation: {duration: 500, timing: 'linear'}} });
+                            });
                         }
-
-                        if (line.color === `coral`) {
-                            color = `green`;
-                        }
-
-                        let end = line.end;
-                        let start = line.start;
-                        line.setOptions({ startPlug: `behind`, endPlug: `behind` });
-                        line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: color });
-                    });
+                    }
                 }
 
+                // Animation junk
                 // Check if we need to reverse direction
                 if (!end) {
                     setIter(newIter);
@@ -351,22 +369,45 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         if (newIter === size - 1 || newIter === 0) {
                             setDir((prevDir) => !prevDir);
                             setEnd(true); // Set end to true to start lingering
-                            setWeights(getWeightsAndMetrics());
-                            console.log(weights);
                         }
                     } else {
                         if (newIter === size) {
                             setFirstDone(true);
                             setDir((prevDir) => !prevDir);
-                            //setEnd(true); // Set end to true to start lingering
-                            console.error(`getting first weights`);
-                            setWeights(getWeightsAndMetrics());
-                            setIter(newIter - 1);
+                            setEnd(true); // Set end to true to start lingering
+                            setIter(newIter - 1); // This needs to be here so that we don't index out of bounds later
                         }
                     }
                 } else {
                     // Linger for one tick, then toggle end back to false
-                    setEnd(false);
+                    if (delayTick <= delay) {
+                        const newDelayTick = delayTick + 1;
+                        //console.log(`DELAYING FOR THIS TICK!`);
+
+                        if(delayTick === 0) {
+                            // FOR SAM: Weights and metrics are updated here
+                            // It may not be updated instant, so there is a console.log statement below that shows when the update should be done
+                            setWeights(getWeightsAndMetrics());
+                        }
+
+                        if(delayTick > 0) {
+                            // Set the animation for all lines to none
+                            //console.log(`STOPPING ANIMATION`);
+                            lineRefs.current.forEach(group => {
+                                group.forEach(line => {
+                                    line.setOptions({dash: true}); // Stop animating line
+                                });
+                            });
+
+                            console.log(weights); // HERE
+
+                        }
+
+                        setDelayTick(newDelayTick);
+                    } else {
+                        setEnd(false);
+                        setDelayTick(0);
+                    }
                 }
             }
         }, 1000); // Update once a second
@@ -374,7 +415,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         return () => {
             clearInterval(timerID);
         };
-    }, [updating, linesReady, iter, dir, end, size]);
+    }, [updating, linesReady, iter, dir, end, size, weights, delayTick, workaround]);
 
     useEffect(() => {
         //console.log("elements", elements);
