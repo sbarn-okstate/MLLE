@@ -10,24 +10,29 @@
 
 import { Link } from "react-router";
 import './Welcome.css'
-
+import WelcomeButtons from './WelcomeButtons.jsx'
 
 function Welcome() {
     return(
         <>
-            <body class="welcomeBody">
-            <h1 class="WelcomeTitle">Welcome to the MLLE!</h1>
+            <div className="welcomeBody">
+                <h1 className="WelcomeTitle">Welcome to the<br></br>Machine Learning Learning<br></br>Environment!</h1>
             <div>
+                <WelcomeButtons></WelcomeButtons>
+            </div>
+            {/* <div>
                 <p>
                     <span>
+                    <button className="useSandboxButton" >Test1</button>
                         <Link to="/sandbox">
-                            <button class="useSandboxButton" >Use Sandbox</button>
+                            <button className="useSandboxButton" >Get Started</button>
                         </Link>
                     </span>
+                    <button className="useSandboxButton" >Test</button>
                 </p>
+            </div> */}
+            <p className="footertext">Created in Spring of 2025 at Oklahoma State University<br></br> by Samuel Barney, Justin Moua, and Mark Taylor.</p>
             </div>
-            <p className="footertext">Work in progress. Content is content to change.</p>
-            </body>
         </>
     )
 
