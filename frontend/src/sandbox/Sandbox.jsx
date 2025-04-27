@@ -343,6 +343,9 @@ function Sandbox() {
                         "You can now start training your model.",
                     ]);
                     console.log("Model validated successfully!");
+                    setTrainingState("validated");
+                    setChangeValidateModelBtnColor("defaultSandboxButton"); // change Validate Model button to green.
+                    setChangeStartTrainingBtnColor("greenSandboxButton"); //change Start Training button to green
                 } else {
                     console.error("Output layer not found!");
                     setModelState('invalid');
@@ -356,8 +359,6 @@ function Sandbox() {
                 currentObject = currentObject.rightLink; // Move to the next object
             }
             chain.push(objectData);
-            setChangeValidateModelBtnColor("defaultSandboxButton"); // change Validate Model button to green.
-            setChangeStartTrainingBtnColor("greenSandboxButton"); //change Start Training button to green
         }
 
         model = chain;
@@ -504,7 +505,11 @@ function Sandbox() {
 
                     {trainingState === 'stopped' && (
                         <>
-                            <button className={changeValidateModelBtnColor} onClick={() => validateModel(model)}>Validate Model</button>
+                            <button className={changeValidateModelBtnColor} onClick={() => validateModel(setTrainingState, model)}>Validate Model</button>
+                        </>
+                    )}
+                    {trainingState === 'validated' && (
+                        <>
                             <button className={changeStartTrainingModelBtnColor} onClick={() => startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, model, stageRef)}>Start Training</button>
                         </>
                     )}
