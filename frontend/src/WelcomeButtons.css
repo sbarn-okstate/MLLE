@@ -81,3 +81,18 @@ button:hover {
     font-size: 1em; /* Adjust the font size */
     color: #333; /* Set the text color */
 }
+
+/* Fix LinkedIn or other icons */
+.authorCard img.linkedin {
+    border-radius: 0% !important;
+    width: 115px;
+    height: 25px;
+}
+
+/* Fix LinkedIn or other icons */
+.authorCard img.github {
+    border-radius: 50% !important;
+    width: 65px;
+    height: 65px;
+}
+  

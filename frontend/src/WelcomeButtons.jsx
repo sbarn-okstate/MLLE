@@ -39,7 +39,7 @@ const WelcomeButtons = () => {
       {/* Modal for "About This Project" */}
       {openProject && (
         <Overlay onClose={() => setOpenProject(false)}>
-        <h2>About This Project</h2>
+        <p>About This Project</p>
         <p>This project is designed to provide an interactive environment for learning neural networks in machine learning.</p>
         </Overlay>
       )}
@@ -47,27 +47,30 @@ const WelcomeButtons = () => {
       {/* Modal for "About The Authors" */}
       {openAuthors && (
         <Overlay onClose={() => setOpenAuthors(false)}>
-          <h2>About The Authors</h2>
+          <p>About the Authors</p>
           <p>This application was created by Mark Taylor, Justin Moua, and Samuel Barney in Spring 2025 at Oklahoma State University.</p>
         <div className="horizontalContainer">
             <div className="authorCard">
-            <img src={'./src/assets/JM.jpg'} alt="Samuel Barney" />
+            <img src={'./src/assets/dev_purposes/missing_textures2.jpg'} alt="Samuel Barney" />
             <p>Samuel Barney</p>
-            <p>HYPERLINK HERE</p>
+            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
+            <a href='https://github.com/sbarn-okstate' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
             </div>
             
 
             <div className="authorCard">
             <img src={'./src/assets/JM.jpg'} alt="Justin Moua" />
-            <p>Justin<br></br>Moua</p>
-            <p>HYPERLINK HERE</p>
+            <p>Justin Moua</p>
+            <a href='https://www.linkedin.com/in/justin-moua/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
+            <a href='https://github.com/JustinMoua' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
             </div>
             
 
             <div className="authorCard">
-            <img src={'./src/assets/JM.jpg'} alt="Mark Taylor" />
-            <p>Mark<br></br>Taylor</p>
-            <p>HYPERLINK HERE</p>
+            <img src={'./src/assets/dev_purposes/missing_textures2.jpg'} alt="Mark Taylor" />
+            <p>Mark Taylor</p>
+            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
+            <a href='https://github.com/MarkkusBoi' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
             </div>
             
         </div>
