@@ -56,7 +56,7 @@
 .defaultSandboxButton {
     height: 3em;
     width: 10em;
-    border-radius: 100px;
+    border-radius: 10px;;
     background-color: rgba(104, 104, 104, 0.375);
     border-color: grey;
     color: white;
@@ -81,10 +81,10 @@
 .greenSandboxButton {
     height: 3em;
     width: 10em;
-    border-radius: 100px;
-    background-color: rgb(14, 255, 10);
-    border-color: grey;
-    color: rgb(0, 0, 0);
+    border-radius: 10px;;
+    background-color: #47a54a;
+    border-color: black;
+    color: rgb(255, 255, 255);
     border-style: solid;
     user-select: none;
     transition: all 0.2s ease-in;
@@ -105,9 +105,9 @@
 .redSandboxButton {
     height: 3em;
     width: 10em;
-    border-radius: 100px;
-    background-color: rgb(255, 0, 0);
-    border-color: grey;
+border-radius: 10px;
+    background-color: rgb(230, 0, 0);
+    border-color: black;
     color: white;
     border-style: solid;
     user-select: none;
@@ -130,8 +130,8 @@
 .orangeSandboxButton {
     height: 3em;
     width: 10em;
-    border-radius: 100px;
-    background-color: rgb(255, 174, 0);
+    border-radius: 10px;;
+    background-color: rgb(224, 172, 58);
     border-color: grey;
     color: white;
     border-style: solid;

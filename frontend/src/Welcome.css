@@ -40,13 +40,13 @@
   font-size: 1em;
   cursor: pointer;
   color: rgb(0, 0, 0); /* Text color */
-  background-color: #ffa600; /* Default background color */
+  background-color: var(--button-color-grey); /* Default background color */
   border: 2px solid #000000;
   transition: background-color 0.3s ease; /* Smooth transition for background color */
 }
 
 button:hover {
-  background-color: #0056b3; /* Change background color on hover */
+  background-color: var(--button-color-on-hover); /* Change background color on hover */
 }
 
 .footertext {

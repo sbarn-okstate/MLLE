@@ -20,10 +20,12 @@ function Welcome() {
             <div>
                 <p>
                     <span>
+                    <button class="useSandboxButton" >Test1</button>
                         <Link to="/sandbox">
-                            <button class="useSandboxButton" >Use Sandbox</button>
+                            <button class="useSandboxButton" >Get Started</button>
                         </Link>
                     </span>
+                    <button class="useSandboxButton" >Test2</button>
                 </p>
             </div>
             <p className="footertext">Created in Spring of 2025 at Oklahoma State University<br></br> by Samuel Barney, Justin Moua, and Mark Taylor.</p>
