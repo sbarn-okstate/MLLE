@@ -19,6 +19,7 @@
   justify-content: center; /* Center elements vertically */
   align-items: center; /* Center elements horizontally */
   height: 100vh; /* Full viewport height */
+  width: 100vw;
   font-family: Arial, sans-serif; /* Optional: Set a font */
   text-align: center; /* Center text inside the body */
 }

@@ -83,7 +83,7 @@
     width: 10em;
     border-radius: 10px;;
     background-color: #47a54a;
-    border-color: black;
+    border-color: #47a54a;
     color: rgb(255, 255, 255);
     border-style: solid;
     user-select: none;
@@ -105,9 +105,9 @@
 .redSandboxButton {
     height: 3em;
     width: 10em;
-border-radius: 10px;
+    border-radius: 10px;
     background-color: rgb(230, 0, 0);
-    border-color: black;
+    border-color: rgb(230, 0, 0);
     color: white;
     border-style: solid;
     user-select: none;

@@ -456,7 +456,16 @@ function Sandbox() {
         <>
             {/* Fixed Top Bar */}
             <div className="topBar">
-                <Link to="/"><button className="defaultSandboxButton">Go Back</button></Link>
+                <div style={{
+                        width: "100%",
+                        paddingRight: "20px",
+                        display: "inline-flex",
+                        justifyContent: "flex-start",
+                        gap: "10px"
+                    }}>
+                    <Link to="/"><button className="defaultSandboxButton">Go Back</button></Link>
+                    <Link to="/"><button className="defaultSandboxButton">Need Help?</button></Link>
+                </div>
                 <div style={{
                     width: "100%",
                     paddingRight: "20px",
