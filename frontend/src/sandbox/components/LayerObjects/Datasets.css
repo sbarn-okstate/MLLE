@@ -136,3 +136,278 @@
 .dataset-nbc500-popup-close:hover {
     background: var(--button-color-on-hover);
 }
+
+
+
+/* -----------------------------------------------------------*/
+
+/* Interactive area inside dataset-container */
+.dataset-interactive {
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-default);
+    padding: 5px;
+    pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: var(--middle);
+}
+
+/* Dataset label */
+.dataset-label {
+    font-weight: bold;
+    font-size: 1em;
+    color:#222;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+/* Info table */
+.dataset-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 0.7em;
+}
+.dataset-table-key {
+    font-weight: 600;
+    text-align: right;
+    padding-right: 8px;
+    vertical-align: top;
+    color: #444;
+}
+.dataset-table-value {
+    text-align: left;
+    color: #222;
+}
+
+/* Dataset image */
+.dataset-nbc500-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    margin-top: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+/* Wrapper for the image and button */
+.dataset-image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Button to open the popup */
+.dataset-popup-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--button-color-grey);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: var(--box-shadow-default)
+}
+
+.dataset-popup-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Popup overlay */
+.dataset-nbc500-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--ceiling);
+}
+
+/* Popup content */
+.dataset-popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: var(--box-shadow-default);
+    position: relative;
+}
+
+/* Larger image in the popup */
+.dataset-popup-image {
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Close button for the popup */
+.dataset-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--button-color-grey);
+    color: black;
+    border: none;
+    border-radius: 5px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dataset-popup-close:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+
+
+/* -----------------------------------------------------------*/
+
+/* Interactive area inside dataset-container */
+.dataset-interactive {
+    background: rgba(255,255,255,0.95);
+    border-radius: 10px;
+    box-shadow: var(--box-shadow-default);
+    padding: 10px 10px 10px 10px;
+    pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: var(--middle);
+}
+
+/* Dataset label */
+.dataset-label {
+    font-weight: bold;
+    font-size: 1.1em;
+    color:#222;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+/* Info table */
+.dataset-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+.dataset-table-key {
+    font-weight: 600;
+    text-align: right;
+    padding-right: 8px;
+    color: #444;
+}
+.dataset-table-value {
+    text-align: left;
+    color: #222;
+}
+
+/* Dataset image */
+.dataset-image {
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    margin-top: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+/* Wrapper for the image and button */
+.dataset-image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Button to open the popup */
+.dataset-popup-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dataset-popup-button:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Popup overlay */
+.dataset-popup-overlay {
+    position: fixed; /* Fixed to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Popup content */
+.dataset-popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Larger image in the popup */
+.dataset-popup-image {
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Close button for the popup */
+.dataset-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dataset-popup-close:hover {
+    background: rgba(0, 0, 0, 0.9);
+}

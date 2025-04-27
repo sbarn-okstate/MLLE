@@ -45,5 +45,48 @@ export const datasetDefaults = {
         loss: "sparseCategoricalCrossentropy",
         lastLayerActivation: "softmax"
     },
-
-}
+    "iris.csv": {
+        inputShape: [2],
+        outputShape: [3],
+        loss: "sparseCategoricalCrossentropy",
+        lastLayerActivation: "softmax",
+        input_labels: {
+            0: "petal_length",
+            1: "petal_width",
+        },
+        output_labels: {
+            0: "Iris-setosa",
+            1: "Iris-versicolor",
+            2: "Iris-virginica"
+        },
+        output_category: "Iris Flower Species Identification"
+    },
+    "weather_prediction.csv": {
+        inputShape: [3],
+        outputShape: [3],
+        loss: "sparseCategoricalCrossentropy",
+        lastLayerActivation: "softmax",
+        input_labels: {
+            0: "Temperature",
+            1: "Humidity",
+            2: "Wind Speed"
+        },
+        output_labels: {
+            0: "Sunny",
+            1: "Rainy",
+            2: "Cloudy"
+        },
+        output_category: "Weather Prediction"
+    },
+    "health-triage-dataset.csv": {
+        inputShape: [3],
+        outputShape: [3],
+        loss: "sparseCategoricalCrossentropy",
+        lastLayerActivation: "softmax",
+        output_labels: {
+            0: "Healthy",
+            1: "Monitor",
+            2: "Critical"
+        }
+    },
+};

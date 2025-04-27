@@ -64,10 +64,6 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                                 - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
                     */}
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetNBC500Object/></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "heart.csv") }}><DatasetHeartPredictionObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "boston-housing-train.csv") }}><DatasetBostonHousingObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "mnist_train.csv") }}><DatasetMNISTObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "fashion-mnist_train.csv") }}><DatasetFashionMNISTObject classNameOverride={"drawerNode"} /></div>
                 </div>
                 <div className="nodeDrawerHandle" tabIndex="0" onClick={NodeHandleClick} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") NodeHandleClick(); }}>
                     <p className="nodeDrawerHandleText" style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>

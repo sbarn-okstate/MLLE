@@ -39,6 +39,8 @@ import "./LayerObjects/Activation.css";
 import "./LayerObjects/DataBatcher.css";
 import "./LayerObjects/Output.css";
 
+import { datasetDefaults }from "../../backend/dataset-defaults";
+
 import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
 import closedLinkLR from "../../assets/closedLinkLR.svg";
@@ -333,25 +335,105 @@ export function OutputLayerObject({
 //================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
 // synthetic_normal_binary_classification_500.csv
 // Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-template" }) {
-    return (
-        <div 
-            ref={ref} 
-            id={name} 
-            className={"dataset-container"}>
+export function DatasetObject({
+    name,
+    ref,
+    handleRef,
+    classNameOverride = "dataset-container",
+    fileName = "",
+    imageSrc = null,
+    linkStates = {}
+}) {
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [setRefs, dimensions] = useContainerDimensions(ref);
 
-            {/* Draggable handle in the center */}
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
+    // Fetch dataset information from datasets_defaults
+    const datasetInfo = datasetsDefaults[fileName] || {};
+    const {
+        label: datasetLabel = "Unknown Dataset",
+        inputs = "Unknown Inputs",
+        outputs = "Unknown Outputs",
+        description = "No description available.",
+        graph = imageSrc, // Use the provided imageSrc as a fallback
+    } = datasetInfo;
+
+    const openPopup = () => setIsPopupOpen(true);
+    const closePopup = () => setIsPopupOpen(false);
+
+    return (
+        <div ref={ref} id={name} className={classNameOverride}>
+            <div
+                ref={handleRef}
+                className="dataset-interactive"
+                tabIndex={0}
+                role="group"
+            >
+                <div className="dataset-label">{datasetLabel}</div>
+                <table className="dataset-table">
+                    <tbody>
+                        <tr>
+                            <td className="dataset-table-key">Inputs:</td>
+                            <td className="dataset-table-value">{inputs}</td>
+                        </tr>
+                        <tr>
+                            <td className="dataset-table-key">Outputs:</td>
+                            <td className="dataset-table-value">{outputs}</td>
+                        </tr>
+                        <tr>
+                            <td className="dataset-table-key">Description:</td>
+                            <td className="dataset-table-value">{description}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="dataset-image-wrapper">
+                    <img
+                        src={graph}
+                        alt={`${datasetLabel} Graph`}
+                        className="dataset-image"
+                    />
+                    <button
+                        className="dataset-popup-button"
+                        onClick={openPopup}
+                        aria-label="View Larger Graph"
+                    >
+                        🔍
+                    </button>
+                </div>
             </div>
-            <img
-                src={synthetic1graph}
-                alt="Synthetic Dataset Graph"
-                className="dataset-nbc500-image"
-            />
+            {/* Render all link indicators */}
+            {renderLinkIndicators(linkStates, dimensions.height, dimensions.width)}
+
+            {/* Popup for larger image */}
+            {isPopupOpen &&
+                ReactDOM.createPortal(
+                    <div
+                        className="dataset-popup-overlay"
+                        onClick={closePopup}
+                    >
+                        <div
+                            className="dataset-popup-content"
+                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
+                        >
+                            <img
+                                src={graph}
+                                alt={`Larger ${datasetLabel} Graph`}
+                                className="dataset-popup-image"
+                            />
+                            <button
+                                className="dataset-popup-close"
+                                onClick={closePopup}
+                                aria-label="Close Popup"
+                            >
+                                ✖
+                            </button>
+                        </div>
+                    </div>,
+                    document.body // Render the popup at the root level of the DOM
+                )}
         </div>
     );
-};
+}
+
 
 
 export function DatasetNBC500Object({
