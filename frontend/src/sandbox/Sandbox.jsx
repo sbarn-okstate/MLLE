@@ -46,11 +46,26 @@ import Report from './components/Report.jsx';
 import Toolbar from './components/Toolbar.jsx';
 import fullscreenOut from '../assets/fullscreen-out.svg';
 import fullscreenIn from '../assets/fullscreen-in.svg';
+import ReactDOM from "react-dom";
 
 
 let backend_worker = null;
 let model = null;
 let savePretrained = false;
+
+const OverlayRoot = document.getElementById("overlay-root");
+
+const Overlay = ({ children, onClose }) => { //Refer to https://stackoverflow.com/questions/61749580/how-to-create-an-overlay-with-react
+  return ReactDOM.createPortal(
+    <div className="overlay" onClick={onClose}>
+      <div className="overlayContent" onClick={(e) => e.stopPropagation()}>
+        {children}
+        <button className="closeButton" onClick={onClose}>Close</button>
+      </div>
+    </div>,
+    OverlayRoot
+  );
+};
 
 console.log("savePretrained default:", savePretrained);
 function savePretrainedSwitcher() {
@@ -156,6 +171,8 @@ function Sandbox() {
     const [changeStopTrainingModelBtnColor, setChangeStopTrainingBtnColor] = useState("redSandboxButton")
     const [changePauseTrainingModelBtnColor, setChangePauseTrainingBtnColor] = useState("orangeSandboxButton")
     const [changeResumeTrainingModelBtnColor, setChangeResumeTrainingBtnColor] = useState("greenSandboxButton")
+    const [openHelp, setOpenHelp] = React.useState(false);
+
     const toggleStatusAndReport = () => {
         setShowStatusAndReport((prev) => !prev); // Toggle the state
     };
@@ -464,7 +481,13 @@ function Sandbox() {
                         gap: "10px"
                     }}>
                     <Link to="/"><button className="defaultSandboxButton">Go Back</button></Link>
-                    <Link to="/"><button className="defaultSandboxButton">Need Help?</button></Link>
+                    <button className="defaultSandboxButton" onClick={() => setOpenHelp(true)}>Need Help?</button>
+                    {openHelp && (
+                        <Overlay onClose={() => setOpenHelp(false)}>
+                        <h2>About This Project</h2>
+                        <p>AHH I NEED HELP!!! IF YOU CLOSE THIS DIV I WILL NO LONGER EXIST. NOOOOOOOOOOOOO DON'T CLICK IT!!! </p>
+                        </Overlay>
+                    )}
                 </div>
                 <div style={{
                     width: "100%",

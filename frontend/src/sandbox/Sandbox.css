@@ -42,7 +42,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    background: rgb(0, 0, 0);
+    background: rgb(4, 68, 142) ;
     z-index: var(--ceiling);
     display: flex;
     align-items: center;
@@ -57,9 +57,9 @@
     height: 3em;
     width: 10em;
     border-radius: 10px;;
-    background-color: rgba(104, 104, 104, 0.375);
+    background-color: rgb(235, 235, 235);
     border-color: grey;
-    color: white;
+    color: rgb(0, 0, 0);
     border-style: solid;
     user-select: none;
     transition: all 0.2s ease-in;
@@ -83,7 +83,7 @@
     width: 10em;
     border-radius: 10px;;
     background-color: #47a54a;
-    border-color: #47a54a;
+    border-color: #006603;
     color: rgb(255, 255, 255);
     border-style: solid;
     user-select: none;
@@ -107,7 +107,7 @@
     width: 10em;
     border-radius: 10px;
     background-color: rgb(230, 0, 0);
-    border-color: rgb(230, 0, 0);
+    border-color: rgb(152, 0, 0);
     color: white;
     border-style: solid;
     user-select: none;

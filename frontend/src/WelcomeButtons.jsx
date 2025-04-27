@@ -23,14 +23,19 @@ const WelcomeButtons = () => {
 
   return (
     <>
-      <span>
-        <button className="useSandboxButton" onClick={() => setOpenProject(true)}>About This Project</button>
-        <Link to="/sandbox">
-            <button className="useSandboxButton">Get Started</button>
-        </Link>
-      </span>
-      <button className="useSandboxButton" onClick={()=>setOpenAuthors(true)}>About The Authors</button>
-
+        <div style={{
+          width: "100%",
+          paddingRight: "20px",
+          display: "inline-flex",
+          justifyContent: "flex-start",
+          gap: "10px"
+      }}>
+          <button className="useSandboxButton" onClick={() => setOpenProject(true)}>About This Project</button>
+          <Link to="/sandbox">
+              <button className="useSandboxButton">Get Started</button>
+          </Link>
+        <button className="useSandboxButton" onClick={()=>setOpenAuthors(true)}>About The Authors</button>
+      </div>
       {/* Modal for "About This Project" */}
       {openProject && (
         <Overlay onClose={() => setOpenProject(false)}>
