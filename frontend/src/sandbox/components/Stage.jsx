@@ -11,11 +11,7 @@
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DataBatcher,
-    DatasetNBC500Object,
-    DatasetHeartPredictionObject,
-    DatasetBostonHousingObject,
-    DatasetMNISTObject,
-    DatasetFashionMNISTObject,
+    DatasetObject,
     ActivationObject,
     NeuronObject,
     OutputLayerObject,
@@ -745,15 +741,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     case ".csv":
                         switch (datasetFileName) {
                             case "synthetic_normal_binary_classification_500.csv":
-                                return <DatasetNBC500Object key={key} {...restProps} linkStates={linkStates}/>;
-                            case "heart.csv":
-                                return <DatasetHeartPredictionObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "boston-housing-train.csv":
-                                return <DatasetBostonHousingObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "mnist_train.csv":
-                                return <DatasetMNISTObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "fashion-mnist_train.csv":
-                                return <DatasetFashionMNISTObject key={key} {...restProps} linkStates={linkStates} />;
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "iris_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "weather_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "health_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            default:
+                                return <DatasetObject key={key} {...restProps} linkStates={linkStates} />;
                         }
                 }
             case "activation":

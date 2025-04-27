@@ -47,9 +47,8 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
     // Determine the color of the accuracy percentage based on its value
     const getAccuracyColor = () => {
         if (accuracy <= 50) return "red"; // 0% - 50%
-        if (accuracy <= 60) return "orange"; // 51% - 60%
-        if (accuracy <= 70) return "yellow"; // 61% - 70%
-        if (accuracy <= 80) return "lightgreen"; // 71% - 80%
+        if (accuracy <= 65) return "orange"; // 51% - 65%
+        if (accuracy <= 80) return "lightgreen"; // 66% - 80%
         if (accuracy <= 90) return "green"; // 81% - 90%
         if (accuracy <= 95) return "darkgreen"; // 91% - 95%
         return "blue"; // 96% - 100%

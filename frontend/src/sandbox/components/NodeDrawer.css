@@ -20,7 +20,7 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding-bottom: 20px;
+    padding: 20px;
     position: relative;
     width: var(--nodeDrawerWidth);
     height: 100%;
