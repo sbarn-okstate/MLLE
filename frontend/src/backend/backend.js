@@ -66,7 +66,7 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                     case "weightsAndMetricsUpdated":
                         //getWeightsAndMetrics will is called everytime weights and other metrics are updated.
                         const { weights, epoch, loss, accuracy } = getWeightsAndMetrics();
-                        console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy, "Weights:", weights);
+                        //console.log("Epoch:", epoch, "Loss:", loss, "Accuracy:", accuracy, "Weights:", weights);
                         if (updateMetricsCallback) {
                             //console.log("Updating metrics callback with:", { epoch, loss, accuracy });
                             updateMetricsCallback(epoch, loss, accuracy); // Pass epoch, loss, accuracy, and weights.
