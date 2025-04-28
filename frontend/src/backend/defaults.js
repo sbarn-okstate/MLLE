@@ -42,3 +42,5 @@ export const OUTPUT = {
     units: 1,
     activation: 'sigmoid'
 };
+
+export const TRAINING_TROTTLE_MS = 100; // ms

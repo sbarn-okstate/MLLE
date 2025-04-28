@@ -213,32 +213,38 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
         //into jsons! https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON
         let trainingMetrics = [];
 
+        let epochStartTime = null;
         await model.fit(xsTensor, ysTensor, {
             epochs: epochs,
             batchSize: batchSize,
             callbacks: {
                 onTrainingBegin: () => {
                     self.postMessage('Training started...');
+                    epochStartTime = performance.now(); // Record the start time of the training
                 },
-                onEpochEnd: (epoch, logs) => {
+                onEpochEnd: async (epoch, logs) => {
                     const loss = logs.loss.toFixed(4); // Format loss to 4 decimal places
                     const accuracy = logs.acc ? logs.acc.toFixed(4) : 'N/A'; // Format accuracy if available
+
+                    //Throttle the training to 100ms per epoch
+                    const epochEndTime = performance.now();
+                    const elapsedTime = epochEndTime - epochStartTime;
+                    const delayTime = Math.max(0, defaults.TRAINING_TROTTLE_MS - elapsedTime);
+                    if (delayTime > 0) {
+                        await new Promise((resolve) => setTimeout(resolve, delayTime));
+                    }
 
                     // Push the epoch data into the array
                     trainingMetrics.push({
                         epoch: epoch + 1,
                         loss: parseFloat(loss),
                         accuracy: accuracy === 'N/A' ? null : parseFloat(accuracy),
-                        //weight: weightArray, //This was previously added by justin. But removing it since it is not accurately showing the CURRENT weights. Shows the previous weights.
                     });
-
-                    //console.log(JSON.stringify(trainingMetrics));
-                    //console.log("training metrics:", trainingMetrics)
-                    //self.postMessage(`Epoch ${epoch + 1}: loss = ${loss}, accuracy = ${accuracy}`);
         
                     // Save weights, epoch, loss, and accuracy to shared memory
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
                     
+                    epochStartTime = performance.now(); // Reset the start time for the next epoch
                 },
                 onTrainingEnd: () => {
                     //console.log("✅ Reached onTrainingEnd callback");

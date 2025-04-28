@@ -1,8 +1,12 @@
+/* Toolbar.css
+  * AUTHOR(S): Samuel Barney
+  */
+
 .toolbarOverlay {
     z-index: 1100;
     display: flex;
     gap: 16px;
-    background: rgb(255, 255, 255);
+    background: var(--toolbar-color);
     padding: 5px;
     padding-left: 15px;
     padding-right: 15px;
@@ -12,7 +16,6 @@
 
 .toolNode {
     position: relative;
-    background-color: rgb(0,0,0);
     display: inline-block;
     padding: 2px;
     border-radius: 5px;
@@ -23,7 +26,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0px; /* Optional: add some breathing room */
 }
 
 .toolbarObjectCenter {
@@ -32,10 +34,9 @@
     position: relative;
     justify-content: center;
     padding: 0px;
-    width: 120px; /* Adjust as needed */
-    height: 100px; /* Adjust as needed */
+    width: 120px;
+    height: 100px;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0);
 }
 
 .toolbarObjectInfo {
@@ -46,7 +47,7 @@
     height: 22px;
     border-radius: 4px;
     border: none;
-    background: var(--button-color-grey);
+    background: var(--button-color);
     color: #333;
     font-weight: bold;
     cursor: pointer;
@@ -60,15 +61,15 @@
 }
 
 .toolbarObjectInfo:hover {
-    background-color: var(--button-color-on-hover);
+    background-color: var(--button-highlight-color);
 }
 
 .toolbarObjectCounter {
     position: absolute;
     bottom: 4px;
     right: 0px;
-    background: rgba(0,0,0,0.7);
-    color: #fff;
+    background: var(--dark-background-color);
+    color: var(--white-text-color);
     font-size: 0.9em;
     border-radius: 4px;
     padding: 2px 6px;
@@ -79,56 +80,54 @@
 
 .toolbarObjectDivider {
     width: 1px;
-    height: 150px; /* or match your object height */
-    background: #ccc;
+    height: 150px;
+    background: var(--background-color);
     margin: 0px 0px;
     align-self: center;
 }
-/* Overlay container */
+
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: var(--ceiling); /* Ensure it appears above everything */
+    z-index: var(--ceiling);
 }
 
-/* Overlay content */
 .overlayContent {
-    background: white;
+    background: var(--toolbar-color);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    max-width: 400px; /* Constrain the width of the overlay */
-    max-height: 80%; /* Constrain the height of the overlay */
+    box-shadow: var(--box-shadow-default);
+    max-width: 400px;
+    max-height: 80%;
     width: 90%;
-    overflow: auto; /* Add scrollbars if content overflows */
+    overflow: auto;
     position: relative;
 }
 
 .overlayContent p {
     margin-bottom: 20px;
-    font-size: 1.2em;
-    color: #333;
+    font-size: 0.9em;
+    color: var(--dark-text-color);
 }
 
-/* Overlay image */
 .overlayImage {
-    max-width: 100%; /* Ensure the image does not exceed the overlay's width */
-    max-height: 200px; /* Constrain the height of the image */
+    max-width: 100%;
+    max-height: 200px;
     border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    object-fit: contain; /* Ensure the image scales proportionally */
+    box-shadow: var(--box-shadow-default);
+    object-fit: contain;
 }
 .overlayContent button {
-    background: #aaaaaa;
-    color: white;
+    background: var(--button-color);
+    color: var(--dark-text-color);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -138,6 +137,6 @@
 }
 
 .overlayContent button:hover {
-    background: var(--button-color-on-hover);
+    background: var(--button-highlight-color);
     
 }

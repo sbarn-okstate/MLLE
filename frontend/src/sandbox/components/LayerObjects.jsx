@@ -31,7 +31,7 @@
   */
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import ReactDom from "react-dom";
+import ReactDOM from "react-dom";
 import "./LayerObjects.css";
 import "./LayerObjects/Datasets.css";
 import "./LayerObjects/Neuron.css";
@@ -39,12 +39,14 @@ import "./LayerObjects/Activation.css";
 import "./LayerObjects/DataBatcher.css";
 import "./LayerObjects/Output.css";
 
+import { datasetDefaults }from "../../backend/dataset-defaults";
+
 import openLinkLR from "../../assets/openLinkLR.svg";
 import openLinkTB from "../../assets/openLinkTB.svg";
 import closedLinkLR from "../../assets/closedLinkLR.svg";
 import closedLinkTB from "../../assets/closedLinkTB.svg";
-import synthetic1graph from "../../assets/synthetic1graph.png";
 import dataBatcherGraphic from "../../assets/data-batcher.svg";
+import enlargeIcon from "../../assets/fullscreen-out.svg";
 
 const openLinkLeft = openLinkLR;
 const openLinkRight = openLinkLR;
@@ -329,42 +331,30 @@ export function OutputLayerObject({
 }
 
 
-//================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================DATASET OBJECTS START HERE======================
-// synthetic_normal_binary_classification_500.csv
-// Dataset Object
-export function DatasetObject({ name, ref, handleRef, classNameOverride = "dataset-template" }) {
-    return (
-        <div 
-            ref={ref} 
-            id={name} 
-            className={"dataset-container"}>
-
-            {/* Draggable handle in the center */}
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <img
-                src={synthetic1graph}
-                alt="Synthetic Dataset Graph"
-                className="dataset-nbc500-image"
-            />
-        </div>
-    );
-};
-
-
-export function DatasetNBC500Object({
+export function DatasetObject({
     name,
     ref,
     handleRef,
     classNameOverride = "dataset-container",
-    datasetLabel = "Synthetic NBC 500",
-    info = { Type: "Classification", Inputs: "Petal Length, Stem Height", Outputs: "Class" },
-    imageSrc = synthetic1graph,
+    fileName = "",
+    imageSrc = null,
     linkStates = {}
 }) {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [setRefs, dimensions] = useContainerDimensions(ref);
+
+    // Fetch dataset information from datasets_defaults
+    const datasetInfo = datasetDefaults[fileName] || {};
+    const {
+        datasetLabel = "Unknown Dataset",
+        inputs = "Unknown Inputs",
+        outputs = "Unknown Outputs",
+        description = "No description available.",
+        graph = imageSrc, // Use the provided imageSrc as a fallback
+    } = datasetInfo;
+
+    const inputsText = Array.isArray(inputs) ? inputs.join(", ") : inputs;
+    const outputsText = Array.isArray(outputs) ? outputs.join(", ") : outputs;
 
     const openPopup = () => setIsPopupOpen(true);
     const closePopup = () => setIsPopupOpen(false);
@@ -373,33 +363,43 @@ export function DatasetNBC500Object({
         <div ref={setRefs} id={name} className={classNameOverride}>
             <div
                 ref={handleRef}
-                className="dataset-nbc500-interactive"
+                className="dataset-interactive"
                 tabIndex={0}
                 role="group"
             >
-                <div className="dataset-nbc500-label">{datasetLabel}</div>
-                <table className="dataset-nbc500-table">
+                <div className="dataset-label">{datasetLabel}</div>
+                <table className="dataset-table">
                     <tbody>
-                        {Object.entries(info).map(([key, value]) => (
-                            <tr key={key}>
-                                <td className="dataset-nbc500-table-key">{key}</td>
-                                <td className="dataset-nbc500-table-value">{value}</td>
-                            </tr>
-                        ))}
+                        <tr>
+                            <td className="dataset-table-key">Inputs:</td>
+                            <td className="dataset-table-value">{inputsText}</td>
+                        </tr>
+                        <tr>
+                            <td className="dataset-table-key">Classes:</td>
+                            <td className="dataset-table-value">{outputsText}</td>
+                        </tr>
+                        <tr>
+                            <td className="dataset-table-key">Goal:</td>
+                            <td className="dataset-table-value">{description}</td>
+                        </tr>
                     </tbody>
                 </table>
-                <div className="dataset-nbc500-image-wrapper">
+                <div className="dataset-image-wrapper">
                     <img
-                        src={imageSrc}
-                        alt="Synthetic Dataset Graph"
-                        className="dataset-nbc500-image"
+                        src={graph}
+                        alt={`${datasetLabel} Graph`}
+                        className="dataset-image"
                     />
                     <button
-                        className="dataset-nbc500-popup-button"
+                        className="dataset-popup-button"
                         onClick={openPopup}
                         aria-label="View Larger Graph"
                     >
-                        🔍
+                        <img
+                            src={enlargeIcon}
+                            alt="Enlarge Icon"
+                            className="dataset-popup-icon"
+                        />
                     </button>
                 </div>
             </div>
@@ -410,20 +410,20 @@ export function DatasetNBC500Object({
             {isPopupOpen &&
                 ReactDOM.createPortal(
                     <div
-                        className="dataset-nbc500-popup-overlay"
+                        className="dataset-popup-overlay"
                         onClick={closePopup}
                     >
                         <div
-                            className="dataset-nbc500-popup-content"
+                            className="dataset-popup-content"
                             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
                         >
                             <img
-                                src={imageSrc}
-                                alt="Larger Synthetic Dataset Graph"
-                                className="dataset-nbc500-popup-image"
+                                src={graph}
+                                alt={`Larger ${datasetLabel} Graph`}
+                                className="dataset-popup-image"
                             />
                             <button
-                                className="dataset-nbc500-popup-close"
+                                className="dataset-popup-close"
                                 onClick={closePopup}
                                 aria-label="Close Popup"
                             >
@@ -436,74 +436,3 @@ export function DatasetNBC500Object({
         </div>
     );
 }
-
-//dataset object that corresponds with synthetic_normal_binary_classification_500.csv
-export function DatasetHeartPredictionObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Heart Prediction Dataset<br/><br/>heart.csv
-                
-            </p>
-
-        </div>
-    );
-};
-
-export function DatasetBostonHousingObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Boston Housing Dataset<br/><br/>boston-housing-train.csv
-                
-            </p>
-
-        </div>
-    );
-};
-
-export function DatasetMNISTObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> MNIST Dataset<br/><br/>mnist_train.csv
-                
-            </p>
-
-        </div>
-    );
-};
-
-
-export function DatasetFashionMNISTObject({ name, ref, handleRef, classNameOverride = "draggable" }) {
-    return (
-        <div ref={ref} id={name} className={classNameOverride}
-                    style={{
-                backgroundColor: "rgb(255, 88, 88)", // Optional: Add a background color
-            }}>
-            <div ref={handleRef} className="nodeHandle">
-                <p className="nodeDragText">Dataset</p>
-            </div>
-            <p className={"nodeText"} style={{ maxWidth: "150px", whiteSpace: "normal", wordWrap: "break-word" }}> Fashion MNIST Dataset<br/><br/>fashion-mnist_train.csv
-                
-            </p>
-
-        </div>
-    );
-};
-//================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================DATASET OBJECTS ENDS HERE======================

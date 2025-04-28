@@ -14,11 +14,7 @@
 
 import { useState } from "react";
 import {
-    DatasetNBC500Object,
-    DatasetHeartPredictionObject,
-    DatasetBostonHousingObject,
-    DatasetMNISTObject,
-    DatasetFashionMNISTObject,
+    DatasetObject,
  } from './LayerObjects.jsx';
  import './NodeDrawer.css';
 
@@ -45,29 +41,14 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
     return(
         <>
             <div className={drawerCollapse}>
+                <div className="nodeDrawerInstructionBar">
+                    Click to spawn a dataset
+                </div>
                 <div className="nodeDrawer">
-                    {/* Instruction Bar */}
-                    <div className="nodeDrawerInstructionBar">
-                        Click to spawn a dataset
-                    </div>
-
-
-                    {/*=====Dataset draggables=====*/}
-                    {/*
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset") }}><DatasetObject classNameOverride={"drawerNode"} /></div>
-                    */}
-                    {/*
-                        createNodeFunction takes in three possible parameters. They are:
-                            - objectType, subType, and datasetFileName.
-                                - objectType: The type of object to create. (dataset, dense, activation, convolution, output)
-                                - subType: The subtype of the object to create. (e.g. relu, sigmoid, tanh, softmax, 3x3, 5x5, 7x7)  
-                                - datasetFileName: The name of the file to use. (e.g. synthetic_normal_binary_classification_500.csv)
-                    */}
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetNBC500Object/></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "heart.csv") }}><DatasetHeartPredictionObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "boston-housing-train.csv") }}><DatasetBostonHousingObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "mnist_train.csv") }}><DatasetMNISTObject classNameOverride={"drawerNode"} /></div>
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "fashion-mnist_train.csv") }}><DatasetFashionMNISTObject classNameOverride={"drawerNode"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetObject fileName={"synthetic_normal_binary_classification_500.csv"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "iris_dataset.csv") }}><DatasetObject fileName={"iris_dataset.csv"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "weather_dataset.csv") }}><DatasetObject fileName={"weather_dataset.csv"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "health_dataset.csv") }}><DatasetObject fileName={"health_dataset.csv"} /></div>
                 </div>
                 <div className="nodeDrawerHandle" tabIndex="0" onClick={NodeHandleClick} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") NodeHandleClick(); }}>
                     <p className="nodeDrawerHandleText" style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>

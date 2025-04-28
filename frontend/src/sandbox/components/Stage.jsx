@@ -11,11 +11,7 @@
 import React, { useImperativeHandle, forwardRef, useRef, useEffect, useState} from "react";
 import {
     DataBatcher,
-    DatasetNBC500Object,
-    DatasetHeartPredictionObject,
-    DatasetBostonHousingObject,
-    DatasetMNISTObject,
-    DatasetFashionMNISTObject,
+    DatasetObject,
     ActivationObject,
     NeuronObject,
     OutputLayerObject,
@@ -37,6 +33,7 @@ import "./Stage.css";
 //      snapType
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
+    const delay = 1;
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
@@ -49,6 +46,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [end, setEnd] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [linesReady, setLinesReady] = useState(false);
+    const [weights, setWeights] = useState({});
+    const [delayTick, setDelayTick] = useState(0);
+    const [workaround, setWorkaround] = useState(true);
 
         /*
     {   activeObjects object structure
@@ -110,9 +110,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         // get how many groups of lines are created
         let lc = 0;
-
-        const weights = getWeightsAndMetrics();
-        console.log(weights);
         
         // Check if the model is valid
         if (modelState === `valid`) {
@@ -270,6 +267,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setFirstDone(false);
         setFirstDone(false);
         setEnd(false);
+        setIter(0);
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
@@ -310,81 +308,110 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         retractLinkerLines: RetractLinkerLines
     }));
 
+    // NEEDS TO FREEZE AFTER A FULL GO
+    // FREEZE ANIMATION AS WELL
     // This is where the LinkerLines are updated
     useEffect(() => {
         const timerID = setInterval(() => {
-            if(updating && linesReady) { // We won't do anything unless the lines are ready and we are updating
-                let newIter = dir ? iter + 1 : iter - 1; // idk if we need this, but it's working
-                //console.log(`newIter: ${newIter}, iter: ${iter}, dir: ${dir}, firstDone: ${firstDone}, size: ${size}; from: ${timerID}`);
-                //console.log(`${(newIter == (size - 1))} ${(newIter == 0)}`);
+            if (updating && linesReady) {
+                let newIter = dir ? iter + 1 : iter - 1;
 
-                if(!firstDone) { // If we are doing the first pass, we are drawing the lines
-                    console.log(`NOT DONE: Starting first lines`);
+                // Line manipulation
+                if (!firstDone) {
+                    // First pass: Draw the lines
                     lineRefs.current[iter].forEach((line) => {
                         line.show(`draw`);
                     });
-                } else { // If the first pass is done, then we are changing the properties
-                    // CRITICAL FIXME: The logic for reciprocating is still a little funky. I want it to linger on the ends for one extra iteration 
-                    console.error(`FIRST DONE: Manipulating lines`);
-                    
-                    lineRefs.current[iter].forEach((line) => {
-                        // TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
-                        // This code is test code from LinkerChangeTest()
-                        // It will be replaced with actual stuff
-                        let ss = `right`;
-                        let es = `left`;
-                        let color = `coral`;
+                } else {
+                    // Subsequent passes: Manipulate the lines (if needed)
+                    if(delayTick == 0) {
+                        if(workaround) {
+                            // skip
+                            setWorkaround(false);
+                        } else {
+                            // We only manipulate the lines if delayTick is not active
+                            lineRefs.current[iter].forEach((line) => {
+                                let ss = `right`;
+                                let es = `left`;
+                                let color = `coral`;
+        
+                                // Socket sets the side the lines link to
+                                if (line.startSocket === `right`) {
+                                    ss = `left`;
+                                    es = `right`;
+                                }
+        
+                                // Calculate a color from weight changes (pos/neg)
+                                if (line.color === `coral`) {
+                                    color = `green`;
+                                }
 
-                        if(line.startSocket === `right`) {
-                            ss = `left`;
-                            es = `right`;
+                                // TODO - determine line thickness from weight value
+        
+                                let end = line.end;
+                                let start = line.start;
+                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: color, dash: {animation: {duration: 500, timing: 'linear'}} });
+                            });
                         }
-
-                        if(line.color === `coral`) {
-                            color = `green`;
-                        }
-
-                        let end = line.end;
-                        let start = line.start;
-                        line.setOptions({startPlug: `behind`, endPlug: `behind`});
-                        line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
-                    });
+                    }
                 }
 
-
+                // Animation junk
                 // Check if we need to reverse direction
-                // bounce between size and 0
-                // This section could probably be simplified, but it is doing something right for the time being
-                if(!end) {
-                    setIter(newIter); // This seems to work I guess
+                if (!end) {
+                    setIter(newIter);
 
-                    if(firstDone) {
-                        if ((newIter == (size - 1)) || (newIter == 0)) {
-                            //if(!firstDone) setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
-                            setDir(prevDir => { const newDir = !prevDir; return newDir });
-                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                    if (firstDone) {
+                        if (newIter === size - 1 || newIter === 0) {
+                            setDir((prevDir) => !prevDir);
+                            setEnd(true); // Set end to true to start lingering
                         }
                     } else {
-                        if(newIter == size) { // We need a special case for the first pass to make sure that the lines are drawn
-                            setFirstDone(prevFirstDone => { const newFirstDone = !prevFirstDone; return newFirstDone });
-                            setDir(prevDir => { const newDir = !prevDir; return newDir });
-                            setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
-                            setIter(newIter - 1);
+                        if (newIter === size) {
+                            setFirstDone(true);
+                            setDir((prevDir) => !prevDir);
+                            setEnd(true); // Set end to true to start lingering
+                            setIter(newIter - 1); // This needs to be here so that we don't index out of bounds later
                         }
                     }
                 } else {
-                    // We just reached the end of the graph, so linger for one iteration
-                    console.log(`not iterating`);
-                    setEnd(prevEnd => { const newEnd = !prevEnd; return newEnd });
+                    // Linger for one tick, then toggle end back to false
+                    if (delayTick <= delay) {
+                        const newDelayTick = delayTick + 1;
+                        //console.log(`DELAYING FOR THIS TICK!`);
+
+                        if(delayTick === 0) {
+                            // FOR SAM: Weights and metrics are updated here
+                            // It may not be updated instant, so there is a console.log statement below that shows when the update should be done
+                            setWeights(getWeightsAndMetrics());
+                        }
+
+                        if(delayTick > 0) {
+                            // Set the animation for all lines to none
+                            //console.log(`STOPPING ANIMATION`);
+                            lineRefs.current.forEach(group => {
+                                group.forEach(line => {
+                                    line.setOptions({dash: true}); // Stop animating line
+                                });
+                            });
+
+                            console.log(weights); // HERE
+
+                        }
+
+                        setDelayTick(newDelayTick);
+                    } else {
+                        setEnd(false);
+                        setDelayTick(0);
+                    }
                 }
             }
         }, 1000); // Update once a second
 
         return () => {
-            //console.log(`killing timer`);
             clearInterval(timerID);
         };
-    }, [updating, linesReady, iter, dir, end, size]);
+    }, [updating, linesReady, iter, dir, end, size, weights, delayTick, workaround]);
 
     useEffect(() => {
         //console.log("elements", elements);
@@ -745,15 +772,15 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     case ".csv":
                         switch (datasetFileName) {
                             case "synthetic_normal_binary_classification_500.csv":
-                                return <DatasetNBC500Object key={key} {...restProps} linkStates={linkStates}/>;
-                            case "heart.csv":
-                                return <DatasetHeartPredictionObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "boston-housing-train.csv":
-                                return <DatasetBostonHousingObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "mnist_train.csv":
-                                return <DatasetMNISTObject key={key} {...restProps} linkStates={linkStates} />;
-                            case "fashion-mnist_train.csv":
-                                return <DatasetFashionMNISTObject key={key} {...restProps} linkStates={linkStates} />;
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "iris_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "weather_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            case "health_dataset.csv":
+                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
+                            default:
+                                return <DatasetObject key={key} {...restProps} linkStates={linkStates} />;
                         }
                 }
             case "activation":

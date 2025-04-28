@@ -1,27 +1,25 @@
 
-/* Transparent container, like neuron-container */
 .dataset-container {
     background: transparent;
     border: none;
     border-radius: 10px;
     padding: 20px;
-    width: 200px;
+    width: 250px;
     height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    pointer-events: none; /* Only allow events on interactive area */
+    pointer-events: none;
     z-index: var(--middle);
     user-select: none;
 }
 
-/* Interactive area inside dataset-container */
-.dataset-nbc500-interactive {
-    background: rgba(255,255,255,0.95);
+.dataset-interactive {
+    background: var(--toolbar-color);
     border-radius: 10px;
     box-shadow: var(--box-shadow-default);
-    padding: 10px 10px 10px 10px;
+    padding: 5px;
     pointer-events: all;
     display: flex;
     flex-direction: column;
@@ -29,113 +27,103 @@
     z-index: var(--middle);
 }
 
-/* Dataset label */
-.dataset-nbc500-label {
+.dataset-label {
     font-weight: bold;
-    font-size: 1.1em;
-    color:#222;
+    font-size: 1em;
+    color:vaR(--dark-text-color);
     margin-bottom: 4px;
     text-align: center;
 }
 
-/* Info table */
-.dataset-nbc500-table {
+.dataset-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 8px;
-    font-size: 0.95em;
+    font-size: 0.7em;
 }
-.dataset-nbc500-table-key {
+.dataset-table-key {
     font-weight: 600;
     text-align: right;
     padding-right: 8px;
-    color: #444;
+    vertical-align: top;
+    color: var(--dark-text-color);
 }
-.dataset-nbc500-table-value {
+.dataset-table-value {
     text-align: left;
-    color: #222;
+    color: var(--dark-text-color);
 }
 
-/* Dataset image */
-.dataset-nbc500-image {
-    width: 90%;
+.dataset-image {
+    width: 100%;
     height: auto;
     object-fit: contain;
     border-radius: 6px;
     margin-top: 4px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    box-shadow: var(--box-shadow-default);
 }
 
-/* Wrapper for the image and button */
-.dataset-nbc500-image-wrapper {
+.dataset-image-wrapper {
     position: relative;
     display: inline-block;
 }
 
-/* Button to open the popup */
-.dataset-nbc500-popup-button {
+.dataset-popup-button {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    background: var(--button-color);
+    color: var(--dark-text-color);
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    border-radius: 5px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--box-shadow-default)
 }
 
-.dataset-nbc500-popup-button:hover {
-    background: rgba(0, 0, 0, 0.9);
+.dataset-popup-button:hover {
+    background: var(--button-highlight-color);
 }
 
-/* Popup overlay */
-.dataset-nbc500-popup-overlay {
-    position: fixed; /* Fixed to the viewport */
+.dataset-popup-overlay {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: var(--ceiling);
 }
 
-/* Popup content */
-.dataset-nbc500-popup-content {
-    background: white;
+.dataset-popup-content {
+    background: var(--toolbar-color);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--box-shadow-default);
     position: relative;
 }
 
-/* Larger image in the popup */
-.dataset-nbc500-popup-image {
-    max-width: 90%;
-    max-height: 80vh;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.dataset-popup-icon {
+    object-fit: contain;
+    width: 150%;
 }
 
-/* Close button for the popup */
-.dataset-nbc500-popup-close {
+.dataset-popup-close {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
+    background: var(--button-color);
+    color: var(--dark-text-color);
     border: none;
-    border-radius: 50%;
+    border-radius: 5px;
     width: 24px;
     height: 24px;
     display: flex;
@@ -145,6 +133,8 @@
     font-size: 14px;
 }
 
-.dataset-nbc500-popup-close:hover {
-    background: rgba(0, 0, 0, 0.9);
+.dataset-popup-close:hover {
+    background: var(--button-highlight-color);
 }
+
+

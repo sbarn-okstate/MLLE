@@ -13,37 +13,53 @@
  * 
  */
 
+import irisGraph from "../assets/iris_dataset.png";
+import weatherGraph from "../assets/weather_dataset.png";
+import healthGraph from "../assets/health_dataset.png";
+import synthetic1Graph from "../assets/synthetic1graph.png";
 
 export const datasetDefaults = {
     "synthetic_normal_binary_classification_500.csv": {
         inputShape: [2],
         outputShape: [1],
         loss: "binaryCrossentropy",
-        lastLayerActivation: "sigmoid"
+        lastLayerActivation: "sigmoid",
+        inputs: ["Feature 1", "Feature 2"],
+        outputs: ["Class 0", "Class 1"],
+        datasetLabel: "Synthetic Normal Binary Classification",
+        description: "Predict the class of synthetic data based on two features.",
+        graph: synthetic1Graph
     },
-    "heart.csv": {
-        inputShape: [13],
-        outputShape: [1],
-        loss: "binaryCrossentropy",
-        lastLayerActivation: "sigmoid"
-    },
-    "boston-housing-train.csv": {
-        inputShape: [12],
-        outputShape: [1],
-        loss: "meanSquaredError",
-        lastLayerActivation: "linear"
-    },
-    "mnist_train.csv": {
-        inputShape: [784],
-        outputShape: [10],
+    "iris_dataset.csv": {
+        inputShape: [2],
+        outputShape: [3],
         loss: "sparseCategoricalCrossentropy",
-        lastLayerActivation: "softmax"
+        lastLayerActivation: "softmax",
+        inputs: ["Petal Length","Petal Width"],
+        outputs: ["Iris-setosa","Iris-versicolor","Iris-virginica"],
+        datasetLabel: "Iris Flower Species Identification",
+        description: "Predict the species of iris flower based on petal length and width.",
+        graph: irisGraph
     },
-    "fashion-mnist_train.csv": {
-        inputShape: [784],
-        outputShape: [10],
+    "weather_dataset.csv": {
+        inputShape: [3],
+        outputShape: [3],
         loss: "sparseCategoricalCrossentropy",
-        lastLayerActivation: "softmax"
+        lastLayerActivation: "softmax",
+        inputs: ["Temperature", "Humidity", "Wind Speed"],
+        outputs: ["Sunny","Rainy","Cloudy"],
+        datasetLabel: "Weather Prediction",
+        graph: weatherGraph,
     },
-
-}
+    "health_dataset.csv": {
+        inputShape: [3],
+        outputShape: [3],
+        loss: "sparseCategoricalCrossentropy",
+        lastLayerActivation: "softmax",
+        inputs: ["Heart Rate", "Blood Pressure", "Age"],
+        outputs: ["Healthy", "Monitor", "Critical"],
+        datasetLabel: "Health Triage",
+        description: "Predict the health status based on heart rate, blood pressure, and age.",
+        graph: healthGraph,
+    },
+};
