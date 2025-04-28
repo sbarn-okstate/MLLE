@@ -40,15 +40,17 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const drag = useRef({});
 
     const [size, setSize] = useState(0);
-    const [iter, setIter] = useState(0);
+    const iter = useRef(0);
     const [dir, setDir] = useState(true);
-    const [firstDone, setFirstDone] = useState(false);
-    const [end, setEnd] = useState(false);
-    const [updating, setUpdating] = useState(false);
+    const isFirstDone = useRef(false);
+    const end = useRef(false);
+    const isUpdating = useRef(false);
     const [linesReady, setLinesReady] = useState(false);
     const [weights, setWeights] = useState({});
     const [delayTick, setDelayTick] = useState(0);
     const [workaround, setWorkaround] = useState(true);
+    const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
+    const [outputInfo, setOutputInfo] = useState("test");
 
         /*
     {   activeObjects object structure
@@ -72,7 +74,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     // It should be renamed first
     function LinkerChangeTest() {
         if(true) {
-            setUpdating(true);
+            isUpdating.current = true;
             setLinesReady(true);
         } else {
         //console.log(`LINKER CHANGE!`);
@@ -104,6 +106,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     // Creates LinkerLines for dense layers
     function CreateLinkerLines() {
+        console.log("LinkerLines: Creating LinkerLines...");
         // Clear existing LinkerLines in lineRefs
         LinkerLine.removeAll();
         lineRefs.current = [];
@@ -252,22 +255,21 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             setSize(lc);
 
             // Reset iterator
-            setIter(0);
+            iter.current = 0;
 
             // Set lines as ready
             setLinesReady(true);
-            setUpdating(true); // TEST - REMOVE ME; this should be called when we are training
+            isUpdating.current = true; // TEST - REMOVE ME; this should be called when we are training
         } else {
             console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
         }
     }
 
     function RetractLinkerLines() {
-        setUpdating(false);
-        setFirstDone(false);
-        setFirstDone(false);
-        setEnd(false);
-        setIter(0);
+        isUpdating.current = false;
+        isFirstDone.current = false;
+        end.current = false;
+        iter.current = 0;
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
@@ -277,7 +279,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     function StopAnimLinkerLines() {
-        setUpdating(false);
+        isUpdating.current = false;
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
@@ -287,7 +289,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     function StartAnimLinkerLines() {
-        setUpdating(false);
+        isUpdating.current = false;
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
@@ -313,24 +315,25 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     // This is where the LinkerLines are updated
     useEffect(() => {
         const timerID = setInterval(() => {
-            if (updating && linesReady) {
-                let newIter = dir ? iter + 1 : iter - 1;
-
+            if (isUpdating.current && linesReady) {
+                let newIter = dir ? iter.current + 1 : iter.current - 1;
+                
                 // Line manipulation
-                if (!firstDone) {
+                if (!isFirstDone.current) {
                     // First pass: Draw the lines
-                    lineRefs.current[iter].forEach((line) => {
+                    lineRefs.current[iter.current].forEach((line) => {
                         line.show(`draw`);
                     });
                 } else {
                     // Subsequent passes: Manipulate the lines (if needed)
                     if(delayTick == 0) {
+                        
                         if(workaround) {
                             // skip
                             setWorkaround(false);
                         } else {
                             // We only manipulate the lines if delayTick is not active
-                            lineRefs.current[iter].forEach((line) => {
+                            lineRefs.current[iter.current].forEach((line) => {
                                 let ss = `right`;
                                 let es = `left`;
                                 let color = `coral`;
@@ -358,20 +361,20 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 // Animation junk
                 // Check if we need to reverse direction
-                if (!end) {
-                    setIter(newIter);
+                if (!end.current) {
+                    iter.current = newIter;
 
-                    if (firstDone) {
+                    if (isFirstDone.current) {
                         if (newIter === size - 1 || newIter === 0) {
                             setDir((prevDir) => !prevDir);
-                            setEnd(true); // Set end to true to start lingering
+                            end.current = true; // Set end to true to start lingering
                         }
                     } else {
                         if (newIter === size) {
-                            setFirstDone(true);
+                            isFirstDone.current = true;
                             setDir((prevDir) => !prevDir);
-                            setEnd(true); // Set end to true to start lingering
-                            setIter(newIter - 1); // This needs to be here so that we don't index out of bounds later
+                            end.current = true; // Set end to true to start lingering
+                            iter.current = newIter - 1 // This needs to be here so that we don't index out of bounds later
                         }
                     }
                 } else {
@@ -396,12 +399,20 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             });
 
                             console.log(weights); // HERE
-
-                        }
+                            
+                            if (dir) {
+                                setDataBatcherInfo(performance.now());
+                                setOutputInfo("");
+                            } else {
+                                setOutputInfo(performance.now());
+                                setDataBatcherInfo("");
+                            }
+                            
+                        }   
 
                         setDelayTick(newDelayTick);
                     } else {
-                        setEnd(false);
+                        end.current = false;
                         setDelayTick(0);
                     }
                 }
@@ -411,7 +422,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         return () => {
             clearInterval(timerID);
         };
-    }, [updating, linesReady, iter, dir, end, size, weights, delayTick, workaround]);
+    }, [linesReady, iter, dir, end, size, weights, delayTick, workaround]);
 
     useEffect(() => {
         //console.log("elements", elements);
@@ -766,7 +777,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
         switch (objectType) {
             case "dataBatcher":
-                return <DataBatcher key={key} {...restProps} displayText="" linkStates={linkStates}/>;
+                return <DataBatcher key={key} {...restProps} displayText={dataBatcherInfo} linkStates={linkStates}/>;
             case "dataset":
                 switch (subType) {
                     case ".csv":
@@ -786,7 +797,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "activation":
                 return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
             case "output":
-                return <OutputLayerObject key={key} {...restProps} linkStates={linkStates}/>;
+                return <OutputLayerObject key={key} {...restProps} explanation={outputInfo} linkStates={linkStates}/>;
             case "neuron":
                 return <NeuronObject key={key} {...restProps} linkStates={linkStates} />;
             default:

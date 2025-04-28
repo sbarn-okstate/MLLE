@@ -196,6 +196,7 @@ export function DataBatcher({ ref, handleRef, name, classNameOverride = "dataBat
                         <div className="dataBatcher-display">
                             {displayText}
                         </div>
+                        {/*}
                         <div className="dataBatcher-graphic">
                                 <img
                                     src={dataBatcherGraphic}
@@ -203,6 +204,7 @@ export function DataBatcher({ ref, handleRef, name, classNameOverride = "dataBat
                                     style={{ width: "160px", height: "auto", display: "block", margin: "0 auto" }}
                                 />
                             </div>
+                            */}
                     </>
                 )}
             </div>
