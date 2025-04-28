@@ -1,11 +1,10 @@
 
 .dataset-container {
-    background: transparent;
+    background:transparent;
     border: none;
     border-radius: 10px;
-    padding: 20px;
     width: 250px;
-    height: 300px;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;

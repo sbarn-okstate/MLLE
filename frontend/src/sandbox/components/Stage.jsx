@@ -779,21 +779,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "dataBatcher":
                 return <DataBatcher key={key} {...restProps} displayText={dataBatcherInfo} linkStates={linkStates}/>;
             case "dataset":
-                switch (subType) {
-                    case ".csv":
-                        switch (datasetFileName) {
-                            case "synthetic_normal_binary_classification_500.csv":
-                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
-                            case "iris_dataset.csv":
-                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
-                            case "weather_dataset.csv":
-                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
-                            case "health_dataset.csv":
-                                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
-                            default:
-                                return <DatasetObject key={key} {...restProps} linkStates={linkStates} />;
-                        }
-                }
+                return <DatasetObject key={key} {...restProps} fileName={datasetFileName} linkStates={linkStates} />;
             case "activation":
                 return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
             case "output":

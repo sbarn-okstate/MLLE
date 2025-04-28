@@ -45,10 +45,11 @@ export default function NodeDrawer({drawerOpen, setDrawerOpen, createNodeFunctio
                     Click to spawn a dataset
                 </div>
                 <div className="nodeDrawer">
-                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "synthetic_normal_binary_classification_500.csv") }}><DatasetObject fileName={"synthetic_normal_binary_classification_500.csv"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "moons_dataset.csv") }}><DatasetObject fileName={"moons_dataset.csv"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "iris_dataset.csv") }}><DatasetObject fileName={"iris_dataset.csv"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "weather_dataset.csv") }}><DatasetObject fileName={"weather_dataset.csv"} /></div>
                     <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "health_dataset.csv") }}><DatasetObject fileName={"health_dataset.csv"} /></div>
+                    <div style={{ zIndex: 89001 }} onClick={() => { createNodeFunction("dataset", ".csv", "spiral_dataset.csv") }}><DatasetObject fileName={"spiral_dataset.csv"} /></div>
                 </div>
                 <div className="nodeDrawerHandle" tabIndex="0" onClick={NodeHandleClick} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") NodeHandleClick(); }}>
                     <p className="nodeDrawerHandleText" style={{color: "white", textAlign: "center", userSelect: "none"}}>{handleText}</p>

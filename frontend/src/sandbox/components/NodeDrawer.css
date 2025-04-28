@@ -5,6 +5,7 @@
     bottom: 0;
     left: 0px;
     transition: all 0.2s ease-in;
+    pointer-events: none;
 }
 
 .drawerDivCollapsed {
@@ -13,13 +14,13 @@
     bottom: 0;
     left: var(--nodeDrawerCollapsePos);
     transition: all 0.2s ease-in;
+    pointer-events: none;
 }
 
 .nodeDrawer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
     padding: 20px;
     position: relative;
     width: var(--nodeDrawerWidth);
@@ -35,7 +36,7 @@
     top: 40%;
     left: 100%;
     width: 30px;
-    height: 100px;
+    height: 110px;
     padding: 10px;
     display: flex;
     justify-content: center;
@@ -44,6 +45,7 @@
     clip-path: xywh(0px 0px 100% 100% round 0px 5px 5px 0px);
     z-index: 89001;
     transition: all 0.2s ease-in;
+    pointer-events: all ;
 }
 
 .nodeDrawerHandle:hover {
