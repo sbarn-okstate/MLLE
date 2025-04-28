@@ -53,8 +53,7 @@ const WelcomeButtons = () => {
             <div className="authorCard">
             <img src={'./src/assets/dev_purposes/missing_textures2.jpg'} alt="Samuel Barney" />
             <p>Samuel Barney</p>
-            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
-            <a href='https://github.com/sbarn-okstate' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
+            <a href='https://www.linkedin.com/in/samuel-barney/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
             </div>
             
 
