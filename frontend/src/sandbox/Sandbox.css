@@ -25,7 +25,7 @@
     --background-color: #ececec;
     --topbar-color: #a3a3a3;
     --toolbar-color: #ffffff;
-    --button-color: #e0e0e0;
+    --button-color: #f1f1f1;
     --button-highlight-color: #b4cdff;
     
     /* Object Colors */
@@ -242,7 +242,7 @@
     position: relative;
     z-index: 10000; /* Ensure it stays above other elements */
     padding: 10px 20px;
-    background-color: #ffffff;
+    background-color: transparent;
     width: 180px;
     color: rgb(0, 0, 0);
     border: none;
