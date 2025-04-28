@@ -16,7 +16,7 @@
 }
 
 .dataset-interactive {
-    background: rgba(255,255,255,0.95);
+    background: var(--toolbar-color);
     border-radius: 10px;
     box-shadow: var(--box-shadow-default);
     padding: 5px;
@@ -30,7 +30,7 @@
 .dataset-label {
     font-weight: bold;
     font-size: 1em;
-    color:#222;
+    color:vaR(--dark-text-color);
     margin-bottom: 4px;
     text-align: center;
 }
@@ -46,11 +46,11 @@
     text-align: right;
     padding-right: 8px;
     vertical-align: top;
-    color: #444;
+    color: var(--dark-text-color);
 }
 .dataset-table-value {
     text-align: left;
-    color: #222;
+    color: var(--dark-text-color);
 }
 
 .dataset-image {
@@ -59,7 +59,7 @@
     object-fit: contain;
     border-radius: 6px;
     margin-top: 4px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    box-shadow: var(--box-shadow-default);
 }
 
 .dataset-image-wrapper {
@@ -71,8 +71,8 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: var(--button-color-grey);
-    color: white;
+    background: var(--button-color);
+    color: var(--dark-text-color);
     border: none;
     border-radius: 5px;
     width: 32px;
@@ -86,7 +86,7 @@
 }
 
 .dataset-popup-button:hover {
-    background: var(--button-color-on-hover);
+    background: var(--button-highlight-color);
 }
 
 .dataset-popup-overlay {
@@ -103,7 +103,7 @@
 }
 
 .dataset-popup-content {
-    background: white;
+    background: var(--toolbar-color);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
@@ -120,8 +120,8 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background: var(--button-color-grey);
-    color: black;
+    background: var(--button-color);
+    color: var(--dark-text-color);
     border: none;
     border-radius: 5px;
     width: 24px;
@@ -134,7 +134,7 @@
 }
 
 .dataset-popup-close:hover {
-    background: var(--button-color-on-hover);
+    background: var(--button-highlight-color);
 }
 
 

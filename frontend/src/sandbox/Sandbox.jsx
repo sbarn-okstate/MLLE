@@ -93,7 +93,7 @@ function createModel() {
     backend_worker.postMessage({func: 'prepareModel', args: {layers, dataset}});
 }
 
-function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, chainOfObjects, stageRef) {
+function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, chainOfObjects, reportRef, stageRef) {
     if (modelState === 'valid') { //FIXME: check if model is valid
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
@@ -117,6 +117,8 @@ function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChan
             "Please validate your model before starting training.",
         ]);
     }
+    reportRef.current.clearGraphData(); // Clear the graph data
+    reportRef.current.updateAccuracy(0); // Reset the accuracy to 0
 }
 
 function pauseTraining(setTrainingState, setChangeResumeTrainingBtnColor, setStatusContent, stageRef) {
@@ -147,8 +149,6 @@ function stopTraining(setTrainingState, setChangeValidateModelBtnColor, setChang
         "Welcome to the Sandbox!",
         "Validate your model to start training.",
     ]);
-    reportRef.current.clearGraphData(); // Clear the graph data
-
     stageRef.current.stopAnimLinkerLines();
     stageRef.current.retractLinkerLines();
 }
@@ -510,7 +510,7 @@ function Sandbox() {
                     )}
                     {trainingState === 'validated' && (
                         <>
-                            <button className={changeStartTrainingModelBtnColor} onClick={() => startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, model, stageRef)}>Start Training</button>
+                            <button className={changeStartTrainingModelBtnColor} onClick={() => startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, model, reportRef, stageRef)}>Start Training</button>
                         </>
                     )}
                     {(trainingState === 'training' || trainingState === 'simulateTraining') && (

@@ -17,7 +17,7 @@
 .neuron {
     width: 50px;
     height: 50px;
-    background-color: #4CAF50;
+    background-color: var(--neuron-color);
     border-radius: 5px;
     display: flex;
     pointer-events: all;
@@ -25,7 +25,8 @@
     align-items: center;
     text-align: center;
     font-size: 12px;
-    color: white;
+    font-weight: bold;
+    color: var(--white-text-color);
     cursor: grab;
     box-shadow: var(--box-shadow-default);
     z-index: var(--middle);

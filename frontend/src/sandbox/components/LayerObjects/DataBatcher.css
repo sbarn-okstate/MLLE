@@ -14,7 +14,7 @@
 }
 
 .dataBatcher {
-    background: rgb(146, 189, 250);
+    background: var(--dataBatcher-color);
     border-radius: 10px;
     width: 170px;
     height: 200px;
@@ -30,7 +30,7 @@
 
 .dataBatcher-title {
     font-weight: bold;
-    color: #ffffff;
+    color: var(--white-text-color);
     margin-top: 8px;
     margin-bottom: 4px;
     font-size: 1em;
@@ -39,7 +39,7 @@
 
 
 .dataBatcher-display {
-    background: rgb(255, 255, 255);
+    background: var(--toolbar-color);
     width: 100%;
     min-height: 40px;
     flex: 1 1 auto; 
@@ -51,8 +51,7 @@
     overflow: hidden;
     border-radius: 5px;
     padding: 3px;
-    color: #333;
-    
+    color: var(--dark-text-color);
 }
 
 .dataBatcher-graphic {
@@ -73,7 +72,7 @@
     padding: 0;
     box-shadow: var(--box-shadow-default);
     border-radius: 5px;
-    background: rgb(146, 189, 250);
+    background: var(--dataBatcher-color);
 }
 
 .dataBatcher-container.toolbar-preview .dataBatcher-title {

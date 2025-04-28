@@ -18,8 +18,8 @@
 }
 
 .activation {
-    background: rgb(74, 145, 226) ;
-    color: #fff;
+    background: var(--activation-color);
+    color: var(--white-text-color);
     width: var(--activation-width);
     height: 120px;
     border-radius: 5px;
@@ -39,7 +39,7 @@
 }
 
 .activation.toolbar-preview {
-    background: rgba(74, 144, 226, 1) !important;
+    background: var(--activation-color) !important;
     position: relative !important;
 }
 

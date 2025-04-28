@@ -40,7 +40,6 @@
 }
 
 .nodeHandle {
-    background-color: black;
     /*position: fixed;*/
     display: flex;
     align-items: center;

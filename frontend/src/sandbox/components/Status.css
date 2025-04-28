@@ -4,15 +4,14 @@
 
 .statusContainer {
     width: 300px;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
+    background-color: var(--toolbar-color);
     border-radius: 8px;
     padding: 10px;
     box-shadow: var(--box-shadow-default);
     user-select: none;
 }
 .statusHeader {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--background-color);
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
@@ -20,20 +19,14 @@
 .statusHeader h3 {
     margin: 0;
     font-size: 16px;
-    color: #333;
+    color: var(--dark-text-color);
 }
 
 .statusContent {
     font-size: 14px;
-    color: #555;
+    color: var(--dark-text-color);
 }
 
 .statusItem {
     margin: 5px 0;
-}
-
-.statusPlaceholder {
-    color: #999;
-    font-style: italic;
-    text-align: center;
 }

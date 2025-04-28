@@ -118,7 +118,7 @@ const Toolbar = ({ createNodeFunction, elements }) => {
                 <div className="toolbarObjectDivider" />
                 <ToolbarObject
                     type="neuron"
-                    N={12}
+                    N={15}
                     count={getObjectCount(elements, "neuron")}
                     createNodeFunction={createNodeFunction}
                     InfoClick={() => 

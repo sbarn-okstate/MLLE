@@ -1,9 +1,9 @@
 .stage {
-    background-color: rgb(214, 214, 214);
+    background-color: var(--background-color);
     position: absolute;
     overflow: hidden;
-    width:150%;
-    height: 200%;
+    width:300%;
+    height: 300%;
 }
 
 .recycle-bin {
@@ -13,7 +13,7 @@
     width: 15vh; 
     height: 15vh;
     background: transparent;
-    border: 2px dashed #888;
+    border: 2px dashed var(--grey-text-color);
     border-radius: 12px;
     pointer-events: none; /* Prevent mouse events */;
     user-select: none;
@@ -22,7 +22,7 @@
     justify-content: center;
     font-size: 3vw; /* Scales with viewport width */
     z-index: var(--high);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: var(--box-shadow-default);
 }
 
 /* Animate LinkerLine color changes */
