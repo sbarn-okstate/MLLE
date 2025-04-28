@@ -10,7 +10,7 @@
 
 :root {
     --nodeDrawerWidth: 250px;
-    --nodeDrawerCollapsePos: -250px;
+    --nodeDrawerCollapsePos: -290px;
     --activeColor: rgb(181, 189, 169);
     --box-shadow-default: 0 1.5px 6px 0 rgba(60, 60, 60, 0.12), 0 1.5px 6px 0 rgba(60, 60, 60, 0.12);
     /* z-index standards */
@@ -273,6 +273,7 @@
     min-width: 200px;
     height: calc(100vh - 90px); /* fill only below the topBar */
     overflow: visible;
+    pointer-events: none; /* Disable pointer events */
 }
 
 .topCenterContainer {

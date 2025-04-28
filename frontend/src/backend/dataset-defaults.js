@@ -16,20 +16,10 @@
 import irisGraph from "../assets/iris_dataset.png";
 import weatherGraph from "../assets/weather_dataset.png";
 import healthGraph from "../assets/health_dataset.png";
-import synthetic1Graph from "../assets/synthetic1graph.png";
+import moonsGraph from "../assets/moons_dataset.png";
+import spiralGraph from "../assets/spiral_dataset.png";
 
 export const datasetDefaults = {
-    "synthetic_normal_binary_classification_500.csv": {
-        inputShape: [2],
-        outputShape: [1],
-        loss: "binaryCrossentropy",
-        lastLayerActivation: "sigmoid",
-        inputs: ["Feature 1", "Feature 2"],
-        outputs: ["Class 0", "Class 1"],
-        datasetLabel: "Synthetic Normal Binary Classification",
-        description: "Predict the class of synthetic data based on two features.",
-        graph: synthetic1Graph
-    },
     "iris_dataset.csv": {
         inputShape: [2],
         outputShape: [3],
@@ -61,5 +51,27 @@ export const datasetDefaults = {
         datasetLabel: "Health Triage",
         description: "Predict the health status based on heart rate, blood pressure, and age.",
         graph: healthGraph,
+    },
+    "moons_dataset.csv": {
+        inputShape: [2],
+        outputShape: [1],
+        loss: "binaryCrossentropy",
+        lastLayerActivation: "sigmoid",
+        inputs: ["Feature 1", "Feature 2"],
+        outputs: ["Class 0", "Class 1"],
+        datasetLabel: "Moons Dataset",
+        description: "Predict the class of moons dataset based on two features.",
+        graph: moonsGraph,
+    },
+    "spiral_dataset.csv": {
+        inputShape: [2],
+        outputShape: [1],
+        loss: "binaryCrossentropy",
+        lastLayerActivation: "sigmoid",
+        inputs: ["Feature 1", "Feature 2"],
+        outputs: ["Class 0", "Class 1"],
+        datasetLabel: "Spiral Dataset",
+        description: "Predict the class of spiral dataset based on two features.",
+        graph: spiralGraph,
     },
 };
