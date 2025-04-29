@@ -34,7 +34,7 @@ import "./Stage.css";
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
     const delay = 1;
-    const lineThicknessIntensity = 1.2;
+    const lineThicknessIntensity = 3;
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
@@ -343,7 +343,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 // set the color
                 console.error(`comparing ${tmp[fIndex][0]} and ${tmp[fIndex][1]}`);
-                if (tmp[fIndex][0] > tmp[fIndex][1]) {
+                if (dir){
+                    tmp[fIndex][2] = `coral`;
+                } else if (tmp[fIndex][0] > tmp[fIndex][1]) {
                     tmp[fIndex][2] = `green`;
                 } else if(tmp[fIndex][0] < tmp[fIndex][1]) {
                     tmp[fIndex][2] = `red`;
@@ -446,7 +448,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             //console.log(`STOPPING ANIMATION`);
                             lineRefs.current.forEach(group => {
                                 group.forEach(line => {
-                                    line.setOptions({dash: true}); // Stop animating line
+                                    line.setOptions({dash: true, color: "coral"}); // Stop animating line
                                 });
                             });
 
