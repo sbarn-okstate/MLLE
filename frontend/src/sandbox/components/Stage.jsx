@@ -34,6 +34,7 @@ import "./Stage.css";
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
     const delay = 1;
+    const lineThicknessIntensity = 1.2;
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
@@ -51,7 +52,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [workaround, setWorkaround] = useState(true);
     const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
     const [outputInfo, setOutputInfo] = useState("test");
-    // Will be array of arrays. index 0: current, index 1: prev, index 2: color (based on current and prev comparison)
+    // Will be array of arrays. index 0: current, index 1: prev, index 2: color (based on current and prev comparison), index 3: size
     const [lineWeights, setLineWeights] = useState([]);
 
         /*
@@ -161,7 +162,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            buildingLineWeights.push([0,0,`coral`]);
+                            buildingLineWeights.push([0,0,`coral`, 4]);
                             newLine.name = `line${count}`;
                             newLine.iId = count;
                             count += 1;
@@ -215,7 +216,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                     startPlug: `behind`,
                                     endPlug: `behind`
                                 });
-                                buildingLineWeights.push([0,0,`coral`]);
+                                buildingLineWeights.push([0,0,`coral`, 4]);
                                 newLine.name = `line${count}`;
                                 newLine.iId = count;
                                 count += 1;
@@ -251,7 +252,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            buildingLineWeights.push([0,0,`coral`]);
+                            buildingLineWeights.push([0,0,`coral`, 4]);
                             newLine.name = `line${count}`;
                             newLine.iId = count;
                             count += 1;
@@ -347,6 +348,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 } else if(tmp[fIndex][0] < tmp[fIndex][1]) {
                     tmp[fIndex][2] = `red`;
                 }
+                
+                // Update line weight
+                tmp[fIndex][3] = (4 + (tmp[fIndex][0]) * lineThicknessIntensity); 
 
                 fIndex += 1;
             });
@@ -392,35 +396,16 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             lineRefs.current[iter.current].forEach((line) => {
                                 let ss = `right`;
                                 let es = `left`;
-                                // let color = `coral`;
         
                                 // Socket sets the side the lines link to
                                 if (line.startSocket === `right`) {
                                     ss = `left`;
                                     es = `right`;
                                 }
-
-                                // // Calculate a color from weight changes (pos/neg)
-                                // if (line.color === `coral`) {
-                                //     color = `green`;
-                                // }
-
-                                // if(lineWeights[line.iId][0] > lineWeights[line.iId][1]) {
-                                //     color = `blue`;
-                                // }
-                                // else if(lineWeights[line.iId][0] < lineWeights[line.iId][1]) {
-                                //     color = `red`;
-                                // } else {
-                                //     console.log(`same`);
-                                //     color = `pink`;
-                                // }
-                                //console.log(`line: ${line.iId}`);
-
-                                // TODO - determine line thickness from weight value
         
                                 let end = line.end;
                                 let start = line.start;
-                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: lineWeights[line.iId][2], dash: {animation: {duration: 500, timing: 'linear'}} });
+                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: lineWeights[line.iId][2], size: lineWeights[line.iId][3], dash: {animation: {duration: 500, timing: 'linear'}} });
                             });
                         }
                     }
