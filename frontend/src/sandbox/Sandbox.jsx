@@ -558,12 +558,12 @@ function Sandbox() {
                         </>
                     )}
                     {/* Toggle Button (can also be fixed if you want) */}
-                    <button
+                    {/*<button
                         className="toggleButton"
                         onClick={toggleStatusAndReport}
                     >
                         {showStatusAndReport ? "Hide Status & Report" : "Show Status & Report"}
-                    </button>
+                    </button>*/}
                 </div>
     
                 
