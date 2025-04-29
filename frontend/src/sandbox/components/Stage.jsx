@@ -50,8 +50,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [weights, setWeights] = useState({});
     const [delayTick, setDelayTick] = useState(0);
     const [workaround, setWorkaround] = useState(true);
-    const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
-    const [outputInfo, setOutputInfo] = useState("test");
+    const [dataBatcherInfo, setDataBatcherInfo] = useState("");
+    const [outputInfo, setOutputInfo] = useState([0, 0, ""]);
     // Will be array of arrays. index 0: current, index 1: prev, index 2: color (based on current and prev comparison), index 3: size
     const [lineWeights, setLineWeights] = useState([]);
 
@@ -452,15 +452,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 });
                             });
 
-                            console.log(weights.weights); // HERE
                             updateLineWeights();
-                            
+
                             if (dir) {
-                                setDataBatcherInfo(performance.now());
-                                setOutputInfo("");
+                                setDataBatcherInfo("Backpropagation complete. Beginning training on the next batch of 32 data points."); 
+                                setOutputInfo([0,0,"Batch training in progress..."]);
                             } else {
-                                setOutputInfo(performance.now());
-                                setDataBatcherInfo("");
+                                setOutputInfo([weights.accuracy, weights.loss, "Batch training complete. Beginning backpropgation to improve the model's weights and biases."]);
+                                setDataBatcherInfo("Backpropagation in progress...");
                             }
                             
                         }   
@@ -838,7 +837,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "activation":
                 return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
             case "output":
-                return <OutputLayerObject key={key} {...restProps} explanation={outputInfo} linkStates={linkStates}/>;
+                return <OutputLayerObject key={key} {...restProps} batchAccuracy={outputInfo[0] * 100} batchLoss={outputInfo[1]} explanation={outputInfo[2]} linkStates={linkStates}/>;
             case "neuron":
                 return <NeuronObject key={key} {...restProps} linkStates={linkStates} />;
             default:

@@ -271,18 +271,11 @@ export function OutputLayerObject({
     ref,
     handleRef,
     classNameOverride = "output-container",
-    predictions = [7, 2, 1, 9], //example values
-    confidences = [0.92, 0.85, 0.60, 0.99],
-    targets = [9, 2, 1, 7],
-    losses = [0.35, 0.12, 0.22, 0.40],
-    step = "forward",
-    explanation = "",
+    batchAccuracy = 0, // Pass batch accuracy as a percentage
+    batchLoss = 0, // Pass batch loss as a number
+    explanation = "", // Explanation for the batch
     linkStates = {},
 }) {
-    // Calculate batch accuracy
-    const correctCount = predictions.reduce((acc, pred, i) => acc + (pred === targets[i] ? 1 : 0), 0);
-    const accuracy = ((correctCount / predictions.length) * 100).toFixed(1);
-
     const isPreview = classNameOverride.includes("toolbar-preview");
     const [setRefs, dimensions] = useContainerDimensions(ref);
 
@@ -298,32 +291,12 @@ export function OutputLayerObject({
         <div ref={setRefs} id={name} className={classNameOverride}>
             <div ref={handleRef} className="output">
                 <div className="output-title">Output Layer</div>
-                <div className="output-batch-table">
-                    <div className="output-batch-header">
-                        <span>Sample</span>
-                        <span>Prediction</span>
-                        <span>Confidence</span>
-                        <span>Target</span>
-                        <span>Loss</span>
-                    </div>
-                    {predictions.map((pred, i) => (
-                        <div
-                            key={i}
-                            className="output-batch-row"
-                        >
-                            <span>{i + 1}</span>
-                            <span>{pred}</span>
-                            <span>{(confidences[i] * 100).toFixed(1)}%</span>
-                            <span>{targets[i]}</span>
-                            <span>{losses[i].toFixed(3)}</span>
-                        </div>
-                    ))}
-                </div>
-                <div className="output-batch-summary">
-                    Batch predictions: <b>{correctCount} out of {predictions.length}</b> correct ({accuracy}%)
+                <div className="output-summary">
+                    <p><b>Batch Accuracy:</b> {batchAccuracy.toFixed(1)}%</p>
+                    <p><b>Batch Loss:</b> {batchLoss.toFixed(3)}</p>
                 </div>
                 <div className="output-explanation">
-                    {explanation}
+                    <p>{explanation}</p>
                 </div>
             </div>
             {/* Render all link indicators */}

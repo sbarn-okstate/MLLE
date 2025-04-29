@@ -436,13 +436,13 @@ function Sandbox() {
     };
 
     function RemoveObject(id) {
-        console.log(list);
-        console.log("Removing object with ID:", id);
+        //console.log(list);
+        //console.log("Removing object with ID:", id);
         setList(prevList => {
             const updatedList = prevList.filter(item => item.id !== id);
             return updatedList;
         });
-        console.log("Updated list after removal:", list); // Debugging log
+        //console.log("Updated list after removal:", list); // Debugging log
     }
 
 
