@@ -458,7 +458,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 setDataBatcherInfo("Backpropagation complete. Beginning training on the next batch of 32 data points."); 
                                 setOutputInfo([0,0,"Batch training in progress..."]);
                             } else {
-                                setOutputInfo([weights.accuracy, weights.loss, "Batch training complete. Beginning backpropgation to improve the model's weights and biases."]);
+                                setOutputInfo([weights.accuracy, weights.loss, "Batch training complete. Beginning backpropagation to improve the model's weights and biases."]);
                                 setDataBatcherInfo("Backpropagation in progress...");
                             }
                             
