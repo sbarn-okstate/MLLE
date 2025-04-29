@@ -110,6 +110,13 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         // Clear existing LinkerLines in lineRefs
         LinkerLine.removeAll();
         lineRefs.current = [];
+        // Reset all effect stuff
+        iter.current = 0;
+        end.current = false;
+        isFirstDone.current = false;
+        setDelayTick(0);
+        setWorkaround(true);
+        setDir(true);
 
         // get how many groups of lines are created
         let lc = 0;
