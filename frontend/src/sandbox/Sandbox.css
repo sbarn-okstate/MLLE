@@ -309,3 +309,43 @@
 .fullscreenButton:hover {
     background: var(--button-highlight-color);
 }
+
+.help {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--ceiling);
+}
+
+.helpContent {
+    background: var(--toolbar-color);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: var(--box-shadow-default);
+    max-width: 80vw; /* Limit width to 80% of the screen */
+    max-height: 80vh; /* Limit height to 80% of the screen */
+    overflow: hidden; /* Prevent scrolling */
+    position: relative;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    align-items: center;
+    justify-content: space-between; /* Ensure space for the close button */
+}
+
+.helpImage {
+    max-width: 90%; /* Allow the image to take up the full width of the container */
+    max-height: 70%; /* Constrain the image to the height of the container */
+    border-radius: 5px;
+    box-shadow: var(--box-shadow-default);
+    object-fit: contain; /* Ensure the image scales proportionally without cropping */
+    margin-bottom: 20px; /* Add spacing below the image */
+    flex-shrink: 1; /* Allow the image to shrink if necessary */
+}
+
