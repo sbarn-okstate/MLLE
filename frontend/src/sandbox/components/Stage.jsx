@@ -51,6 +51,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [workaround, setWorkaround] = useState(true);
     const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
     const [outputInfo, setOutputInfo] = useState("test");
+    // Will be array of arrays. index 0: current, index 1: prev, index 2: color (based on current and prev comparison)
+    const [lineWeights, setLineWeights] = useState([]);
 
         /*
     {   activeObjects object structure
@@ -133,6 +135,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             let prevObject = dataBatcher;
             let currentObject = dataBatcher.rightLink;
             let firstDense = true;
+            let buildingLineWeights = [];
+            let count = 0;
     
             while (currentObject && currentObject.rightLink != null) {
                 // Create an array to store single group of lines
@@ -156,7 +160,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            newLine.name = `line${lineRefs.current.length}`;
+                            buildingLineWeights.push([0,0,`coral`]);
+                            newLine.name = `line${count}`;
+                            newLine.iId = count;
+                            count += 1;
                             newLine.hide(`none`);
     
                             popArray.push(newLine);
@@ -207,7 +214,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                     startPlug: `behind`,
                                     endPlug: `behind`
                                 });
-                                newLine.name = `line${lineRefs.current.length}`;
+                                buildingLineWeights.push([0,0,`coral`]);
+                                newLine.name = `line${count}`;
+                                newLine.iId = count;
+                                count += 1;
                                 newLine.hide(`none`);
     
                                 popArray.push(newLine);
@@ -240,7 +250,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            newLine.name = `line${lineRefs.current.length}`;
+                            buildingLineWeights.push([0,0,`coral`]);
+                            newLine.name = `line${count}`;
+                            newLine.iId = count;
+                            count += 1;
                             newLine.hide(`none`);
     
                             popArray.push(newLine);
@@ -257,6 +270,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
+
+            console.log(`LinkerLines: Created ${count} lines`);
+
+            setLineWeights(buildingLineWeights);
 
             // Set size of the array
             setSize(lc);
@@ -305,6 +322,50 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         });
     }
 
+    function updateLineWeights() {
+        // index of group
+        let gIndex = 0;
+        // index of line
+        let lIndex = 0;
+        // index of current line
+        let clIndex = 0;
+        // make copy of lineWeights
+        let tmp = lineWeights;
+
+        lineRefs.current.forEach(group => {
+            // increment through lines
+            group.forEach(line => {
+                // Set the prev to current
+                tmp[lIndex][1] = tmp[lIndex][0];
+
+                // Set the current to actual current
+                console.log(`CRAP: gIndex: ${gIndex}, size at gIndex: ${group.length}, clIndex: ${clIndex}, total: ${group.length - 1 + clIndex}`);
+                tmp[lIndex][0] = weights.weights[gIndex + 1][group.length - 1 + clIndex];
+
+                // set the color
+                console.log(`comparing ${tmp[lIndex][0]} and ${tmp[lIndex][1]}`);
+                if (tmp[lIndex][0] > tmp[lIndex][1]) {
+                    tmp[lIndex][2] = `green`;
+                } else if(tmp[lIndex][0] < tmp[lIndex][1]) {
+                    tmp[lIndex][2] = `red`;
+                } else {
+                    tmp[lIndex][2] = `coral`;
+                }
+
+                // increment index
+                clIndex += 1;
+                lIndex += 1;
+            });
+
+
+            // increment index
+            gIndex += 1;
+            clIndex = 0; // reset local line index
+        });
+
+        setLineWeights(tmp);
+    }
+
     // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
@@ -343,24 +404,35 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             lineRefs.current[iter.current].forEach((line) => {
                                 let ss = `right`;
                                 let es = `left`;
-                                let color = `coral`;
+                                // let color = `coral`;
         
                                 // Socket sets the side the lines link to
                                 if (line.startSocket === `right`) {
                                     ss = `left`;
                                     es = `right`;
                                 }
-        
-                                // Calculate a color from weight changes (pos/neg)
-                                if (line.color === `coral`) {
-                                    color = `green`;
-                                }
+
+                                // // Calculate a color from weight changes (pos/neg)
+                                // if (line.color === `coral`) {
+                                //     color = `green`;
+                                // }
+
+                                // if(lineWeights[line.iId][0] > lineWeights[line.iId][1]) {
+                                //     color = `blue`;
+                                // }
+                                // else if(lineWeights[line.iId][0] < lineWeights[line.iId][1]) {
+                                //     color = `red`;
+                                // } else {
+                                //     console.log(`same`);
+                                //     color = `pink`;
+                                // }
+                                //console.log(`line: ${line.iId}`);
 
                                 // TODO - determine line thickness from weight value
         
                                 let end = line.end;
                                 let start = line.start;
-                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: color, dash: {animation: {duration: 500, timing: 'linear'}} });
+                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: lineWeights[line.iId][2], dash: {animation: {duration: 500, timing: 'linear'}} });
                             });
                         }
                     }
@@ -405,7 +477,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 });
                             });
 
-                            console.log(weights); // HERE
+                            console.log(weights.weights[1][0]); // HERE
+                            updateLineWeights();
                             
                             if (dir) {
                                 setDataBatcherInfo(performance.now());
