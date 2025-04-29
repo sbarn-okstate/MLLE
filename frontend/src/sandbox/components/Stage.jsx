@@ -34,6 +34,7 @@ import "./Stage.css";
 //  }
 const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
     const delay = 1;
+    const lineThicknessIntensity = 3;
     const stageRef = useRef(null);
     const divRefs = useRef({});
     const handleRefs = useRef({});
@@ -49,8 +50,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [weights, setWeights] = useState({});
     const [delayTick, setDelayTick] = useState(0);
     const [workaround, setWorkaround] = useState(true);
-    const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
-    const [outputInfo, setOutputInfo] = useState("test");
+    const [dataBatcherInfo, setDataBatcherInfo] = useState("");
+    const [outputInfo, setOutputInfo] = useState([0, 0, ""]);
+    // Will be array of arrays. index 0: current, index 1: prev, index 2: color (based on current and prev comparison), index 3: size
+    const [lineWeights, setLineWeights] = useState([]);
 
         /*
     {   activeObjects object structure
@@ -110,6 +113,14 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         // Clear existing LinkerLines in lineRefs
         LinkerLine.removeAll();
         lineRefs.current = [];
+        // Reset all effect stuff
+        iter.current = 0;
+        end.current = false;
+        isFirstDone.current = false;
+        setDelayTick(0);
+        setWorkaround(true);
+        setDir(true);
+        setWeights([]);
 
         // get how many groups of lines are created
         let lc = 0;
@@ -126,6 +137,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             let prevObject = dataBatcher;
             let currentObject = dataBatcher.rightLink;
             let firstDense = true;
+            let buildingLineWeights = [];
+            let count = 0;
     
             while (currentObject && currentObject.rightLink != null) {
                 // Create an array to store single group of lines
@@ -149,7 +162,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            newLine.name = `line${lineRefs.current.length}`;
+                            buildingLineWeights.push([0,0,`coral`, 4]);
+                            newLine.name = `line${count}`;
+                            newLine.iId = count;
+                            count += 1;
                             newLine.hide(`none`);
     
                             popArray.push(newLine);
@@ -200,7 +216,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                     startPlug: `behind`,
                                     endPlug: `behind`
                                 });
-                                newLine.name = `line${lineRefs.current.length}`;
+                                buildingLineWeights.push([0,0,`coral`, 4]);
+                                newLine.name = `line${count}`;
+                                newLine.iId = count;
+                                count += 1;
                                 newLine.hide(`none`);
     
                                 popArray.push(newLine);
@@ -233,7 +252,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 startPlug: `behind`,
                                 endPlug: `behind`
                             });
-                            newLine.name = `line${lineRefs.current.length}`;
+                            buildingLineWeights.push([0,0,`coral`, 4]);
+                            newLine.name = `line${count}`;
+                            newLine.iId = count;
+                            count += 1;
                             newLine.hide(`none`);
     
                             popArray.push(newLine);
@@ -250,6 +272,10 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                 prevObject = currentObject;
                 currentObject = currentObject.rightLink;
             }
+
+            console.log(`LinkerLines: Created ${count} lines`);
+
+            setLineWeights(buildingLineWeights);
 
             // Set size of the array
             setSize(lc);
@@ -298,6 +324,42 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         });
     }
 
+    function updateLineWeights() {
+        // make copy of lineWeights
+        let tmp = lineWeights;
+        let fIndex = 0;
+
+        lineRefs.current.forEach((group, gIndex) => {
+            let rIndex = (lineRefs.current.size - 1) - gIndex;
+            // increment through lines
+            group.forEach((line, lIndex) => {
+                // Set the prev to current
+                tmp[fIndex][1] = tmp[fIndex][0];
+
+                // Set the current to actual current
+                //console.log(`STUFF: gIndex: ${index}, size at gIndex: ${group.length}, clIndex: ${clIndex}, total: ${group.length + 1 + clIndex}`);
+                console.log(fIndex);
+                tmp[fIndex][0] = weights.weights[gIndex + 1][lIndex];
+
+                // set the color
+                console.error(`comparing ${tmp[fIndex][0]} and ${tmp[fIndex][1]}`);
+                if (dir){
+                    tmp[fIndex][2] = `coral`;
+                } else if (tmp[fIndex][0] > tmp[fIndex][1]) {
+                    tmp[fIndex][2] = `green`;
+                } else if(tmp[fIndex][0] < tmp[fIndex][1]) {
+                    tmp[fIndex][2] = `red`;
+                }
+                
+                // Update line weight
+                tmp[fIndex][3] = (4 + (tmp[fIndex][0]) * lineThicknessIntensity); 
+
+                fIndex += 1;
+            });
+        });
+        setLineWeights(tmp);
+    }
+
     // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
@@ -336,7 +398,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             lineRefs.current[iter.current].forEach((line) => {
                                 let ss = `right`;
                                 let es = `left`;
-                                let color = `coral`;
         
                                 // Socket sets the side the lines link to
                                 if (line.startSocket === `right`) {
@@ -344,16 +405,9 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                     es = `right`;
                                 }
         
-                                // Calculate a color from weight changes (pos/neg)
-                                if (line.color === `coral`) {
-                                    color = `green`;
-                                }
-
-                                // TODO - determine line thickness from weight value
-        
                                 let end = line.end;
                                 let start = line.start;
-                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: color, dash: {animation: {duration: 500, timing: 'linear'}} });
+                                line.setOptions({ start: end, end: start, startSocket: ss, endSocket: es, color: lineWeights[line.iId][2], size: lineWeights[line.iId][3], dash: {animation: {duration: 500, timing: 'linear'}} });
                             });
                         }
                     }
@@ -394,18 +448,18 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                             //console.log(`STOPPING ANIMATION`);
                             lineRefs.current.forEach(group => {
                                 group.forEach(line => {
-                                    line.setOptions({dash: true}); // Stop animating line
+                                    line.setOptions({dash: true, color: "coral"}); // Stop animating line
                                 });
                             });
 
-                            console.log(weights); // HERE
-                            
+                            updateLineWeights();
+
                             if (dir) {
-                                setDataBatcherInfo(performance.now());
-                                setOutputInfo("");
+                                setDataBatcherInfo("Backpropagation complete. Beginning training on the next batch of 32 data points."); 
+                                setOutputInfo([0,0,"Batch training in progress..."]);
                             } else {
-                                setOutputInfo(performance.now());
-                                setDataBatcherInfo("");
+                                setOutputInfo([weights.accuracy, weights.loss, "Batch training complete. Beginning backpropgation to improve the model's weights and biases."]);
+                                setDataBatcherInfo("Backpropagation in progress...");
                             }
                             
                         }   
@@ -783,7 +837,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
             case "activation":
                 return <ActivationObject key={key} {...restProps} linkStates={linkStates}/>;
             case "output":
-                return <OutputLayerObject key={key} {...restProps} explanation={outputInfo} linkStates={linkStates}/>;
+                return <OutputLayerObject key={key} {...restProps} batchAccuracy={outputInfo[0] * 100} batchLoss={outputInfo[1]} explanation={outputInfo[2]} linkStates={linkStates}/>;
             case "neuron":
                 return <NeuronObject key={key} {...restProps} linkStates={linkStates} />;
             default:

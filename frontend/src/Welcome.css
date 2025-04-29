@@ -9,30 +9,37 @@
 
 .welcomeBody {
   margin: 0;
-  background-color: rgb(0, 0, 0);
-  background-image: url('./assets/network_animation.gif');
-  background-repeat: repeat-n;
-  background-size: 400px auto; /* <-- make it smaller */
-  background-position: center;
+  background-image: url('./assets/welcome_background.png'); /* Background image */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-color: var(--background-color); /* Fill extra space with white */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
   font-family: Arial, sans-serif;
   text-align: center;
 }
 
-  
-
 .WelcomeTitle {
   font-size: 3em; /* Adjust the font size */
-  color: var(--white-text-color); /* Text color */
+  color: var(--dark-text-color); /* Text color */
   text-align: center; /* Center the text */
-  margin-top: 20px; /* Add spacing at the top */
+  margin-top: 40px; /* Add spacing at the top */
   font-weight: bold; /* Make the text bold */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.539); /* Optional: Add a subtle shadow */
+  margin: 100px;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1em; /* Add spacing between buttons and footer */
+  margin-bottom: 5em; /* Add spacing at the bottom */
 }
 
 .useSandboxButton {
@@ -52,7 +59,7 @@ button:hover {
 }
 
 .footertext {
-  color: var(--white-text-color);
+  color: var(--dark-text-color);
   font-size: small;
   text-align: center;
 }

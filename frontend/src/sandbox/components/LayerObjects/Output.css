@@ -2,8 +2,6 @@
     background: transparent;
     border: none;
     border-radius: 10px;
-    width: 260px;
-    min-height: 160px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -20,6 +18,7 @@
     background: var(--output-color);
     border-radius: 10px;
     box-shadow: var(--box-shadow-default);
+    width: 200px;
     padding: 6px;
     z-index: var(--middle);
 }
@@ -28,51 +27,36 @@
     font-weight: bold;
     color: var(--white-text-color);
     font-size: 1em;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
     text-align: center;
     width: 100%;
 }
 
-.output-batch-table {
-    width: 100%;
-}
-
-.output-batch-header,
-.output-batch-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7em;
-    padding: 2px 0;
-}
-
-.output-batch-header {
-    font-weight: bold;
-    color: var(--dark-text-color);
-}
-
-.output-batch-row span {
-    width: 20%;
-    text-align: center;
-}
-
-.output-batch-row {
-    color: var(--dark-text-color);
-}
-
-.output-batch-summary {
-    margin: 4px;
-    font-size: 0.7em;
+.output-summary {
+    margin: 2px;
+    font-size: 0.9em;
     color: var(--dark-text-color);
 }
 
 .output-explanation {
-    font-size: 0.9em;
-    color: #666;
     background: var(--toolbar-color);
-    border-radius: 5px;
     width: 100%;
-    min-height: 40px;
+    height: 80px;
+    align-items: top;
+    justify-content: center;
+    font-size: 0.9em;
+    text-align: left;
+    overflow: hidden;
+    border-radius: 5px;
+    padding: 4px;
+    margin: 0;
     box-sizing: border-box;
+    color: var(--dark-text-color);
+    line-height: 1.2; /* Adjust line height for better readability */
+}
+
+.output-explanation p {
+    margin: 0; /* Remove default margins from the paragraph */
 }
 
 .output-container.toolbar-preview {
