@@ -46,6 +46,7 @@ import Report from './components/Report.jsx';
 import Toolbar from './components/Toolbar.jsx';
 import fullscreenOut from '../assets/fullscreen-out.svg';
 import fullscreenIn from '../assets/fullscreen-in.svg';
+import helpImage from '../assets/help.png';
 import ReactDOM from "react-dom";
 
 
@@ -55,17 +56,22 @@ let savePretrained = false;
 
 const OverlayRoot = document.getElementById("overlay-root");
 
-const Overlay = ({ children, onClose }) => { //Refer to https://stackoverflow.com/questions/61749580/how-to-create-an-overlay-with-react
-  return ReactDOM.createPortal(
-    <div className="overlay" onClick={onClose}>
-      <div className="overlayContent" onClick={(e) => e.stopPropagation()}>
-        {children}
-        <button className="closeButton" onClick={onClose}>Close</button>
-      </div>
-    </div>,
-    OverlayRoot
-  );
-};
+const Overlay = ({ children, onClose }) => {
+    return ReactDOM.createPortal(
+      <div className="help" onClick={onClose}>
+        <div className="helpContent" onClick={(e) => e.stopPropagation()}>
+          <img 
+            src={helpImage} 
+            alt="Help" 
+            className="helpImage" 
+          />
+          {children}
+          <button className="closeButton" onClick={onClose}>Close</button>
+        </div>
+      </div>,
+      OverlayRoot
+    );
+  };
 
 console.log("savePretrained default:", savePretrained);
 function savePretrainedSwitcher() {
@@ -484,9 +490,7 @@ function Sandbox() {
                     <Link to="/"><button className="defaultSandboxButton">Go Back</button></Link>
                     <button className="defaultSandboxButton" onClick={() => setOpenHelp(true)}>Need Help?</button>
                     {openHelp && (
-                        <Overlay onClose={() => setOpenHelp(false)}>
-                        <h2>About This Project</h2>
-                        <p>AHH I NEED HELP!!! IF YOU CLOSE THIS DIV I WILL NO LONGER EXIST. NOOOOOOOOOOOOO DON'T CLICK IT!!! </p>
+                        <Overlay onClose={() => setOpenHelp(false)} imageSrc={helpImage}>
                         </Overlay>
                     )}
                 </div>
