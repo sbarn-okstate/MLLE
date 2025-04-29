@@ -96,16 +96,6 @@ export function createBackendWorker(updateMetricsCallback, updateWeightsCallback
                         URL.revokeObjectURL(url);
                         console.log("Now it should save");
                         break;
-                    case "simulateTrainingWithDelay":
-                        let currentEpoch = args.currentEpoch;
-                        let currentLoss = args.currentLoss
-                        let currentAccuracy = args.currentAccuracy
-                        let currentWeights = args.currentWeights
-
-                        if (updateMetricsCallback) {
-                            updateMetricsCallback(currentEpoch, currentLoss, currentAccuracy, currentWeights); // Pass epoch, loss, accuracy, and weights
-                        }
-                        break;
                     default:
                         console.log('Unknown function call from backend worker:', func);
                 }

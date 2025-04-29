@@ -1,4 +1,14 @@
 {
-    "synth500csv1lyr1dn1rel": "/json/synth500csv1lyr1dn1rel.json",
-    "synth500csv2lyr4dn1rel3dn1rel": "/json/synth500csv2lyr4dn1rel3dn1rel.json"
+    "healthcsv2lyr5dn1rel3dn1rel": "/json/healthcsv2lyr5dn1rel3dn1rel.json",
+    "iriscsv1lyr1dn1rel": "/json/iriscsv1lyr1dn1rel.json",
+    "iriscsv1lyr3dn1rel": "/json/iriscsv1lyr3dn1rel.json",
+    "iriscsv2lyr5dn1rel3dn1rel": "/json/iriscsv2lyr5dn1rel3dn1rel.json",
+    "moonscsv1lyr1dn1rel":"/json/moonscsv1lyr1dn1rel.json",
+    "moonscsv1lyr3dn1rel":"/json/moonscsv1lyr3dn1rel.json",
+    "moonscsv2lyr5dn1rel3dn1rel":"/json/moonscsv2lyr5dn1rel3dn1rel.json",
+    "pretrainedModelFinder":"/json/pretrainedModelFinder.json",
+    "spiralcsv3lyr7dn1rel5dn1rel3dn1rel":"/json/spiralcsv3lyr7dn1rel5dn1rel3dn1rel.json",
+    "weathercsv1lyr1dn1rel":"/json/weathercsv1lyr1dn1rel.json",
+    "weathercsv1lyr3dn1rel":"/json/weathercsv1lyr3dn1rel.json",
+    "weathercsv2lyr5dn1rel3dn1rel":"/json/weathercsv2lyr5dn1rel3dn1rel.json"
 }

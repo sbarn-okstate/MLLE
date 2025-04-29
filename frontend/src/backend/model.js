@@ -118,8 +118,18 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
 
     //=======BUILDING THE KEY TO FIND PRETRAINED MODEL======
     //Building of key: Grabs dataset name
-    if (dataset === "synthetic_normal_binary_classification_500.csv") {
-        modelFinderKey += "synth500csv";
+    if (dataset === "health_dataset.csv") {
+        modelFinderKey += "healthcsv";
+    } else if (dataset === "iris_dataset.csv") {
+        modelFinderKey += "iriscsv";
+    } else if (dataset === "moons_dataset.csv") {
+        modelFinderKey += "moonscsv";
+    } else if (dataset === "spiral_dataset.csv") {
+        modelFinderKey += "spiralcsv";
+    } else if (dataset === "weather_dataset.csv") {
+        modelFinderKey += "weathercsv";
+    } else {
+        modelFinderKey += "unknowncsv";
     }
     //~~~~~~~~~~~~Add more datasets here if neeeded~~~~~~~~~~~~
 
@@ -430,12 +440,10 @@ async function prepareSimulateTrainingWithDelay(jsonData) {
         const currentAccuracy = getAllAccuracy(i); //Grabs the current accuracy
         const currentWeights = getAllWeights(i); //Grabs the current weights
         saveWeightsAndMetricsToSharedMemory(currentEpoch, currentLoss, currentAccuracy, currentWeights); //Note that isSimulating will have been set to true before prepareSimulateTrainingWithDelay is called()!
-        //Updates the graph on the front-end side.
-        self.postMessage({ func: "simulateTrainingWithDelay", args: { currentEpoch, currentLoss, currentAccuracy, currentWeights } });
 
-        // Wait for 500ms before the next iteration to simulate training. 
+        // Wait for 300ms before the next iteration to simulate training. 
         // Can adjust number if needed.
-        await delay(500);
+        await delay(300);
     }
 }
 
