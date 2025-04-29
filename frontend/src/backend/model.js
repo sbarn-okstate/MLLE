@@ -99,7 +99,7 @@ export function setStateOfSimulatedTraining(setState){
 
 //This function is used to train models from scratch and simulate training.
 //Firstly, the end-user's model's information is grabbed. 
-export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 100) {
+export async function trainModel(fileName, problemType, chainOfObjects, savePretrained, self, batchSize = 64, epochs = 500) {
     let modelFinderKey = ""; //Example of modelFinderKey: synth500csv1lyr1dn1rel
     let modelFinderValue; //Value to the key in the line above.
     let lengthOfCob = chainOfObjects.length;
