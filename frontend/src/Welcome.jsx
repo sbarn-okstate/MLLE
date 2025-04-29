@@ -17,8 +17,15 @@ function Welcome() {
         <>
             <div className="welcomeBody">
                 <h1 className="WelcomeTitle">Welcome to the<br></br>Machine Learning Learning<br></br>Environment!</h1>
-            <div>
-                <WelcomeButtons></WelcomeButtons>
+
+                <div className="contentContainer">
+                    <div>
+                        <WelcomeButtons></WelcomeButtons>
+                    </div>
+                    <div>
+                        <p className="footertext">Created in Spring of 2025 at Oklahoma State University<br></br> by Samuel Barney, Justin Moua, and Mark Taylor.</p>
+                    </div>
+                </div>
             </div>
             {/* <div>
                 <p>
@@ -31,8 +38,7 @@ function Welcome() {
                     <button className="useSandboxButton" >Test</button>
                 </p>
             </div> */}
-            <p className="footertext">Created in Spring of 2025 at Oklahoma State University<br></br> by Samuel Barney, Justin Moua, and Mark Taylor.</p>
-            </div>
+            
         </>
     )
 

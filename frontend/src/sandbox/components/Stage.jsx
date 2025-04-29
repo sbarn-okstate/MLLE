@@ -49,8 +49,8 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     const [weights, setWeights] = useState({});
     const [delayTick, setDelayTick] = useState(0);
     const [workaround, setWorkaround] = useState(true);
-    const [dataBatcherInfo, setDataBatcherInfo] = useState("test");
-    const [outputInfo, setOutputInfo] = useState("test");
+    const [dataBatcherInfo, setDataBatcherInfo] = useState("");
+    const [outputInfo, setOutputInfo] = useState("");
 
         /*
     {   activeObjects object structure
