@@ -119,6 +119,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setDelayTick(0);
         setWorkaround(true);
         setDir(true);
+        setWeights([]);
 
         // get how many groups of lines are created
         let lc = 0;
@@ -323,46 +324,33 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     function updateLineWeights() {
-        // index of group
-        let gIndex = 0;
-        // index of line
-        let lIndex = 0;
-        // index of current line
-        let clIndex = 0;
         // make copy of lineWeights
         let tmp = lineWeights;
+        let fIndex = 0;
 
-        lineRefs.current.forEach(group => {
+        lineRefs.current.forEach((group, gIndex) => {
+            let rIndex = (lineRefs.current.size - 1) - gIndex;
             // increment through lines
-            group.forEach(line => {
+            group.forEach((line, lIndex) => {
                 // Set the prev to current
-                tmp[lIndex][1] = tmp[lIndex][0];
+                tmp[fIndex][1] = tmp[fIndex][0];
 
                 // Set the current to actual current
-                console.log(`CRAP: gIndex: ${gIndex}, size at gIndex: ${group.length}, clIndex: ${clIndex}, total: ${group.length - 1 + clIndex}`);
-                tmp[lIndex][0] = weights.weights[gIndex + 1][group.length - 1 + clIndex];
+                //console.log(`STUFF: gIndex: ${index}, size at gIndex: ${group.length}, clIndex: ${clIndex}, total: ${group.length + 1 + clIndex}`);
+                console.log(fIndex);
+                tmp[fIndex][0] = weights.weights[gIndex + 1][lIndex];
 
                 // set the color
-                console.log(`comparing ${tmp[lIndex][0]} and ${tmp[lIndex][1]}`);
-                if (tmp[lIndex][0] > tmp[lIndex][1]) {
-                    tmp[lIndex][2] = `green`;
-                } else if(tmp[lIndex][0] < tmp[lIndex][1]) {
-                    tmp[lIndex][2] = `red`;
-                } else {
-                    tmp[lIndex][2] = `coral`;
+                console.error(`comparing ${tmp[fIndex][0]} and ${tmp[fIndex][1]}`);
+                if (tmp[fIndex][0] > tmp[fIndex][1]) {
+                    tmp[fIndex][2] = `green`;
+                } else if(tmp[fIndex][0] < tmp[fIndex][1]) {
+                    tmp[fIndex][2] = `red`;
                 }
 
-                // increment index
-                clIndex += 1;
-                lIndex += 1;
+                fIndex += 1;
             });
-
-
-            // increment index
-            gIndex += 1;
-            clIndex = 0; // reset local line index
         });
-
         setLineWeights(tmp);
     }
 
@@ -477,7 +465,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                                 });
                             });
 
-                            console.log(weights.weights[1][0]); // HERE
+                            console.log(weights.weights); // HERE
                             updateLineWeights();
                             
                             if (dir) {
