@@ -73,40 +73,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
     const lineRefs = useRef([]);
 
-    // Could still use this function later
-    // It should be renamed first
-    function LinkerChangeTest() {
-        if(true) {
-            isUpdating.current = true;
-            setLinesReady(true);
-        } else {
-        //console.log(`LINKER CHANGE!`);
-        let i = 0;
-        lineRefs.current.forEach(group => {
-            //console.log(i++);
-            group.forEach(line => {
-
-                let ss = `right`;
-                let es = `left`;
-                let color = `coral`;
-
-                if(line.startSocket === `right`) {
-                    ss = `left`;
-                    es = `right`;
-                }
-    
-                if(line.color === `coral`) {
-                    color = `green`;
-                }
-    
-                let end = line.end;
-                let start = line.start;
-                line.setOptions({startPlug: `behind`, endPlug: `behind`});
-                line.setOptions({start: end, end: start, startSocket: ss, endSocket: es, color: color});
-            });
-        });}
-    }
-
     // Creates LinkerLines for dense layers
     function CreateLinkerLines() {
         console.log("LinkerLines: Creating LinkerLines...");
@@ -366,7 +332,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         getDataBatcher: () => activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher"),
         getActiveObjects: () => activeObjectsRef.current,
         createLinkerLines: CreateLinkerLines,
-        linkerChangeTest: LinkerChangeTest,
         startAnimLinkerLines: StartAnimLinkerLines,
         stopAnimLinkerLines: StopAnimLinkerLines,
         retractLinkerLines: RetractLinkerLines
