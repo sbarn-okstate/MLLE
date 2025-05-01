@@ -281,7 +281,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     function StartAnimLinkerLines() {
-        isUpdating.current = false;
+        isUpdating.current = true;
 
         lineRefs.current.forEach(group => {
             group.forEach(line => {
