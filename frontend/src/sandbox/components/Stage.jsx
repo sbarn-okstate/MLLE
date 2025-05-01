@@ -251,7 +251,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
             // Set lines as ready
             setLinesReady(true);
-            isUpdating.current = true; // TEST - REMOVE ME; this should be called when we are training
+            isUpdating.current = true; // Called when training is started, so we are updating
         } else {
             console.log("LinkerLines: LinkerLines cannot be created as the model is not validated!");
         }
@@ -281,6 +281,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
     }
 
     function StartAnimLinkerLines() {
+        LinkerLine.positionAll(); // Make sure everything is right
         isUpdating.current = true;
 
         lineRefs.current.forEach(group => {
@@ -534,8 +535,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                         findClosestSnapPoint(currentObject, activeObjectsRef, 5, true);
                         //console.log("Snapped:", currentObject, "to", snap.otherObject);
                     }
-
-                    LinkerLine.positionAll(); // Logistically, this shouldn't be needed, so TEST!
                 };
                 // Set initial position
                 draggable.top = location.y;
