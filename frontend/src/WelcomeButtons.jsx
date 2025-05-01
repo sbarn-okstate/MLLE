@@ -51,25 +51,25 @@ const WelcomeButtons = () => {
           <p>This application was created by Mark Taylor, Justin Moua, and Samuel Barney in Spring 2025 at Oklahoma State University.</p>
         <div className="horizontalContainer">
             <div className="authorCard">
-            <img src={'./src/assets/dev_purposes/missing_textures2.jpg'} alt="Samuel Barney" />
+            <img src={'/missing_textures2.png'} alt="Samuel Barney" />
             <p>Samuel Barney</p>
-            <a href='https://www.linkedin.com/in/samuel-barney/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
+            <a href='https://www.linkedin.com/in/samuel-barney/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
             </div>
             
 
             <div className="authorCard">
-            <img src={'./src/assets/JM.jpg'} alt="Justin Moua" />
+            <img src={'/JM.png'} alt="Justin Moua" />
             <p>Justin Moua</p>
-            <a href='https://www.linkedin.com/in/justin-moua/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
-            <a href='https://github.com/JustinMoua' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
+            <a href='https://www.linkedin.com/in/justin-moua/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
+            <a href='https://github.com/JustinMoua' target="_blank"><img className="github" src="/github.png"></img></a>
             </div>
             
 
             <div className="authorCard">
-            <img src={'./src/assets/dev_purposes/missing_textures2.jpg'} alt="Mark Taylor" />
+            <img src={'/missing_textures2.png'} alt="Mark Taylor" />
             <p>Mark Taylor</p>
-            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="./src/assets/linkedin.png"></img></a>
-            <a href='https://github.com/MarkkusBoi' target="_blank"><img className="github" src="./src/assets/github.png"></img></a>
+            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
+            <a href='https://github.com/MarkkusBoi' target="_blank"><img className="github" src="/github.png"></img></a>
             </div>
             
         </div>
