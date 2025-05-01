@@ -8,6 +8,21 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: absolute;
+    pointer-events: none;
+    z-index: var(--middle);
+    user-select: none;
+}
+
+.dataset-container-node-drawer {
+    background:transparent;
+    border: none;
+    border-radius: 10px;
+    width: 250px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
     pointer-events: none;
     z-index: var(--middle);
