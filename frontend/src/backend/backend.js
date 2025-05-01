@@ -1,6 +1,6 @@
 /* backend.js
  *
- * AUTHOR(S): Samuel Barney
+ * AUTHOR(S): Samuel Barney, Justin Moua
  *
  * PURPOSE:This is the interface for the backend worker that is used
  * in the main thread to recieve messages from the worker thread.
@@ -23,7 +23,7 @@
 let backend_worker = null;
 let sharedBuffer;
 let weightArray;
-let metricsArray; // Stores loss and accuracy
+let metricsArray;
 let layerSizes;
 let data;
 let modelInfo;

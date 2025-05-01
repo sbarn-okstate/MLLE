@@ -360,7 +360,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         setLineWeights(tmp);
     }
 
-    // 2. Expose dataBatcher and activeObjects via the ref
     useImperativeHandle(ref, () => ({
         getStageElement: () => stageRef.current,
         getDataBatcher: () => activeObjectsRef.current.find(obj => obj.objectType === "dataBatcher"),
@@ -755,7 +754,6 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
                     updateLinks(pair.currentObject, pair);
                 }
             });
-            // No need to return a closest point in this mode
             return null;
         } else {
             // Return the closest pair (prioritizing left/right)
@@ -795,7 +793,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         };
     
         const updatedObjects = [...activeObjectsRef.current, newObject];
-        activeObjectsRef.current = updatedObjects; // Update the ref
+        activeObjectsRef.current = updatedObjects;
         setActiveObjectsState(updatedObjects); // Trigger a re-render
         return newObject;
     }
@@ -821,7 +819,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
         const linkStates = currentObject
             ? currentObject.snapPoints.reduce((links, point) => {
                 const linkType = point.type; // e.g., "top", "right", "bottom", "left"
-                const linkValue = currentObject[`${linkType}Link`]; // Access the corresponding link property
+                const linkValue = currentObject[`${linkType}Link`]; 
 
                 // Only include links that are in snapPoints
                 links[linkType] = linkValue !== null && linkValue !== 0 ? true : linkValue;

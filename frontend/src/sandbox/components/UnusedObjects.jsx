@@ -3,7 +3,7 @@ export function DenseLayerObject({ name, ref, handleRef, classNameOverride = "dr
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "#4CAF50", // Optional: Add a background color
+                backgroundColor: "#4CAF50", 
             }}
         >
             <div ref={handleRef} className="nodeHandle">
@@ -33,7 +33,7 @@ export function ReluObject({ name, ref, handleRef, classNameOverride = "draggabl
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+                backgroundColor: "rgb(76, 179, 247)",
             }}
             >
             <div ref={handleRef} className="nodeHandle">
@@ -53,7 +53,7 @@ export function SigmoidObject({ name, ref, handleRef, classNameOverride = "dragg
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+                backgroundColor: "rgb(76, 179, 247)", 
             }}
             >
             <div ref={handleRef} className="nodeHandle">
@@ -70,7 +70,7 @@ export function TanhObject({ name, ref, handleRef, classNameOverride = "draggabl
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+                backgroundColor: "rgb(76, 179, 247)", 
             }}
             >
             <div ref={handleRef} className="nodeHandle">
@@ -87,7 +87,7 @@ export function SoftmaxObject({ name, ref, handleRef, classNameOverride = "dragg
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(76, 179, 247)", // Optional: Add a background color
+                backgroundColor: "rgb(76, 179, 247)",
             }}
             >
             <div ref={handleRef} className="nodeHandle">
@@ -110,7 +110,7 @@ export function ConvolutionLayerObject({filterSize, name, ref, handleRef, classN
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+                backgroundColor: "rgb(202, 102, 180)",
             }}
         >
             <div ref={handleRef} className="nodeHandle">
@@ -127,7 +127,7 @@ export function ConvolutionLayer3x3Object({name, ref, handleRef, classNameOverri
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+                backgroundColor: "rgb(202, 102, 180)",
             }}
         >
             <div ref={handleRef} className="nodeHandle">
@@ -144,7 +144,7 @@ export function ConvolutionLayer5x5Object({name, ref, handleRef, classNameOverri
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+                backgroundColor: "rgb(202, 102, 180)",
             }}
         >
             <div ref={handleRef} className="nodeHandle">
@@ -161,7 +161,7 @@ export function ConvolutionLayer7x7Object({name, ref, handleRef, classNameOverri
     return (
         <div ref={ref} id={name} className={classNameOverride}
             style={{
-                backgroundColor: "rgb(202, 102, 180)", // Optional: Add a background color
+                backgroundColor: "rgb(202, 102, 180)",
             }}
         >
             <div ref={handleRef} className="nodeHandle">
