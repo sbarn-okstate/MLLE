@@ -4,7 +4,7 @@
   *
   * PURPOSE: Drawer for selecting nodes to place on stage. 
   * 
-  * NOTES: Idealy, this is drag and drop thing.
+  * NOTES: 
   * 
   * - Is called by Sandbox.jsx
   *     - Contains the following functions:

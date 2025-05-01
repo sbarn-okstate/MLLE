@@ -466,14 +466,6 @@ function Sandbox() {
             console.error("Stage reference is not available!");
         }
     }
-    
-    const linkerChangeTest = () => {
-        if (stageRef.current) {
-            stageRef.current.linkerChangeTest();
-        } else {
-            console.error("Stage reference is not available!");
-        }
-    }
 
     return (
         <>

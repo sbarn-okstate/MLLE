@@ -1,11 +1,10 @@
 /* Welcome.jsx
   *
-  * AUTHOR(S): Mark Taylor
+  * AUTHOR(S): Mark Taylor, Justin Moua
   *
   * PURPOSE: Landing page for the webapp.
   * 
-  * NOTES: Maybe at some point we just go directly to the sandbox? Would we
-  *        need this page?
+  * NOTES: 
   */
 
 import { Link } from "react-router";
