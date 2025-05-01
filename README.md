@@ -17,7 +17,7 @@
 # TODO List
 
 # TODO functional (High Priority)
-- [ ] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
+- [x] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
 - [ ] Add visual component to neurons that reflect biases
 - [x] Figure out how to package the webapp - JM
 - [x] Add a fullscreen button in the bottom right - JM
@@ -25,7 +25,7 @@
 - [x] Change startNode to 'Data Batcher'
 - [x] Add specific drawers for datasets and activation functions - SB
 - [x] Add tooltip buttons for each type of object and some buttons. (possibly add links to websites with more information)
-- [ ] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
+- [x] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
   
 # TODO visual (Medium Priority)
 - [x] Move button bar to the top of the screen
@@ -36,11 +36,11 @@
 
 # END OF PROJECT TODO
 - [ ] Standardize inline comments
-- [ ] Create dataset files and update dataset-defaults.js with their information
-- [ ] Update header comments
+- [x] Create dataset files and update dataset-defaults.js with their information
+- [x] Update header comments
 - [ ] Remove unused variables, functions, and classes.
-- [ ] Rename variables, functions, and classes to be appropriate.
-- [ ] Cleanup and refactor code where appropriate to improve readability.
+- [x] Rename variables, functions, and classes to be appropriate.
+- [x] Cleanup and refactor code where appropriate to improve readability.
 
 # Notes for presentation
  - Future work: allow user to select which input features to utilize

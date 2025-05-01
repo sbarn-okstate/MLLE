@@ -13,11 +13,10 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
     const [graphData, setGraphData] = useState([]); // Data for the graph
     const [accuracy, setAccuracy] = useState(0); // Current accuracy percentage
 
-    const width = 300; // Width of the graph
-    const height = 200; // Height of the graph
-    const margin = { top: 10, right: 10, bottom: 10, left: 50 }; // Margins for axes
+    const width = 300
+    const height = 200; 
+    const margin = { top: 10, right: 10, bottom: 10, left: 50 };
 
-    // Define scales for the graph
     const xScale = scaleLinear({
         domain: [0, Math.max(graphData.length - 1, 1)], // Epochs
         range: [margin.left, width - margin.right], // Adjust for margins
@@ -28,7 +27,6 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
         range: [height - margin.bottom, margin.top], // Inverted for SVG coordinates
     });
 
-    // Expose methods to the parent component via the ref
     useImperativeHandle(ref, () => ({
         addGraphData(epoch, accuracy) {
             setGraphData(prevData => [
@@ -37,7 +35,7 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
             ]);
         },
         updateAccuracy(newAccuracy) {
-            setAccuracy(newAccuracy * 100); // Convert to percentage
+            setAccuracy(newAccuracy * 100);
         },
         clearGraphData() {
             setGraphData([]);
@@ -88,8 +86,8 @@ const Report = forwardRef(({ title = "Training Report" }, ref) => {
                     <AxisLeft
                         left={margin.left}
                         scale={yScale}
-                        numTicks={3} // Reduce the number of ticks
-                        tickFormat={d => d.toFixed(2)} // Show raw accuracy (e.g., 0.10, 0.50)
+                        numTicks={3}
+                        tickFormat={d => d.toFixed(2)}
                         tickLength={5}
                         stroke="none"
                         tickStroke="#333"

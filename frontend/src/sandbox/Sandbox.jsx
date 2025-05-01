@@ -92,7 +92,6 @@ function createBackend(updateMetricsCallback, updateWeightsCallback) {
 
 //called by validateModel() to create the model.
 function createModel() {
-    //FIXME: This is just a test
     const dataset = model[0].dataset;
     console.log("dataset in createModel() is:", dataset);
     let layers = model.slice(1);
@@ -100,7 +99,7 @@ function createModel() {
 }
 
 function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, chainOfObjects, reportRef, stageRef) {
-    if (modelState === 'valid') { //FIXME: check if model is valid
+    if (modelState === 'valid') {
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
         let problemType = 'classification';
@@ -442,13 +441,13 @@ function Sandbox() {
     };
 
     function RemoveObject(id) {
-        //console.log(list);
-        //console.log("Removing object with ID:", id);
+        console.log("Removing object with ID:", id);
         setList(prevList => {
+            //console.log("Previous list:", prevList); // Debugging log
             const updatedList = prevList.filter(item => item.id !== id);
+            //console.log("Updated list:", updatedList); // Debugging log
             return updatedList;
         });
-        //console.log("Updated list after removal:", list); // Debugging log
     }
 
 
@@ -541,7 +540,7 @@ function Sandbox() {
                     <Toolbar createNodeFunction={AddObject} elements={list}/>
                 </div>
 
-                {/* Fixed Top Right Status/Report */}
+                {/* Top Right Status/Report */}
                 <div className="topRightContainer">
                     {showStatusAndReport && (
                         <>
@@ -549,7 +548,7 @@ function Sandbox() {
                             <Report ref={reportRef} title="Training Report" />
                         </>
                     )}
-                    {/* Toggle Button (can also be fixed if you want) */}
+                    {/* Toggle Button */}
                     {/*<button
                         className="toggleButton"
                         onClick={toggleStatusAndReport}

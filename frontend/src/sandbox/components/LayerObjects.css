@@ -1,3 +1,8 @@
+/* LayerObjects.css
+  *
+  * AUTHOR(S): Mark Taylor, Justin Moua, Samuel Barney
+*/
+
 .draggable {
     position: absolute;
     background-color: red;
