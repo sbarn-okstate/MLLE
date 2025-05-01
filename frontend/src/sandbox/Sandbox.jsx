@@ -99,6 +99,7 @@ function createModel() {
 }
 
 function startTraining(setTrainingState, setChangeStartTrainingBtnColor, setChangeStopTrainingBtnColor, setChangePauseTrainingBtnColor, modelState, setStatusContent, chainOfObjects, reportRef, stageRef) {
+    backend_worker.postMessage({func: 'stopTraining'});
     if (modelState === 'valid') {
         let fileName = model[0].dataset; 
         console.log("fileName in startTraining() is:", fileName);
@@ -571,7 +572,8 @@ function Sandbox() {
                         RemoveObject={RemoveObject}
                         drawerOpen={drawerOpen}
                         modelState={modelState}
-                    />
+                        stopTraining={() => stopTraining(setTrainingState, setChangeValidateModelBtnColor, setChangeStartTrainingBtnColor, setStatusContent, reportRef, stageRef)}
+                        />
                     {/* Fullscreen Button */}
                     <button
                         className="fullscreenButton"

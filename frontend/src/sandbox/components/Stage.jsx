@@ -32,7 +32,7 @@ import "./Stage.css";
 //      subType,
 //      snapType
 //  }
-const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, backend }, ref) => {
+const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, drawerOpen, modelState, stopTraining }, ref) => {
     const delay = 1;
     const lineThicknessIntensity = 3;
     const stageRef = useRef(null);
@@ -504,6 +504,7 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 draggable.onDragStart = function () {
                     const currentObject = activeObjectsRef.current.find(obj => obj.element === div);
+                    stopTraining();
                     clearLinks(currentObject);
                 }
                 

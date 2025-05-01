@@ -37,9 +37,11 @@ let layerSizes = []; // Stores offsets for each layer's weights
 let pauseResumeCallback;
 let allWeights = []; //Created to store to json file
 let allMetrics = []; //Created to store to json file
+let forceEnd = false; // Flag to indicate if training should be
 
 //called by createModel() in sandbox.jsx which is called by startTraining();
 export async function prepareModel({layers, dataset}, self) {
+    forceEnd = true;
     await tf.ready();  // ensure TensorFlow.js is initialized
     model = tf.sequential();
 
@@ -230,6 +232,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
             batchSize: batchSize,
             callbacks: {
                 onTrainingBegin: () => {
+                    forceEnd = false; // Reset the flag
                     self.postMessage('Training started...');
                     epochStartTime = performance.now(); // Record the start time of the training
                 },
@@ -256,6 +259,11 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
                     saveWeightsAndMetricsToSharedMemory(epoch + 1, loss, accuracy);
                     
                     epochStartTime = performance.now(); // Reset the start time for the next epoch
+
+                    if (forceEnd) {
+                        forceEnd = false; // Reset the flag
+                        return;
+                    }
                 },
                 onTrainingEnd: () => {
                     //console.log("✅ Reached onTrainingEnd callback");
