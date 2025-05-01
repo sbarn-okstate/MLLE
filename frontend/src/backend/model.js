@@ -239,7 +239,7 @@ export async function trainModel(fileName, problemType, chainOfObjects, savePret
                     //Throttle the training to 100ms per epoch
                     const epochEndTime = performance.now();
                     const elapsedTime = epochEndTime - epochStartTime;
-                    const delayTime = Math.max(0, defaults.TRAINING_TROTTLE_MS - elapsedTime);
+                    const delayTime = Math.max(0, defaults.TRAINING_THROTTLE_MS - elapsedTime);
                     if (delayTime > 0) {
                         await new Promise((resolve) => setTimeout(resolve, delayTime));
                     }
@@ -443,7 +443,7 @@ async function prepareSimulateTrainingWithDelay(jsonData) {
 
         // Wait for 300ms before the next iteration to simulate training. 
         // Can adjust number if needed.
-        await delay(300);
+        await delay(defaults.TRAINING_THROTTLE_MS);
     }
 }
 

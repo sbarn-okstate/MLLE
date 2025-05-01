@@ -43,4 +43,4 @@ export const OUTPUT = {
     activation: 'sigmoid'
 };
 
-export const TRAINING_TROTTLE_MS = 300; // ms
+export const TRAINING_THROTTLE_MS = 500; // ms
