@@ -26,6 +26,7 @@
 import * as defaults from './defaults.js'
 import { datasetDefaults } from './dataset-defaults.js';
 import { data } from 'react-router';
+import * as tf from '@tensorflow/tfjs';
 
 let isSimulating; //indicates whether code is currently simulating or not.
 let model = null;

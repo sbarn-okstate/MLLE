@@ -305,17 +305,19 @@ const Stage = forwardRef(({ elements, drags, setDrags, AddObject, RemoveObject, 
 
                 // Set the current to actual current
                 //console.log(`STUFF: gIndex: ${index}, size at gIndex: ${group.length}, clIndex: ${clIndex}, total: ${group.length + 1 + clIndex}`);
-                console.log(fIndex);
+                // console.log(fIndex);
                 tmp[fIndex][0] = weights.weights[gIndex + 1][lIndex];
 
                 // set the color
-                console.error(`comparing ${tmp[fIndex][0]} and ${tmp[fIndex][1]}`);
+                // console.log(`comparing ${tmp[fIndex][0]} and ${tmp[fIndex][1]}`);
                 if (dir){
                     tmp[fIndex][2] = `coral`;
                 } else if (tmp[fIndex][0] > tmp[fIndex][1]) {
                     tmp[fIndex][2] = `green`;
                 } else if(tmp[fIndex][0] < tmp[fIndex][1]) {
                     tmp[fIndex][2] = `red`;
+                } else {
+                    tmp[fIndex][2] = `grey`;
                 }
                 
                 // Update line weight
