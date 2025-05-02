@@ -48,10 +48,10 @@ const WelcomeButtons = () => {
       {openAuthors && (
         <Overlay onClose={() => setOpenAuthors(false)}>
           <p>About the Authors</p>
-          <p>This application was created by Mark Taylor, Justin Moua, and Samuel Barney in Spring 2025 at Oklahoma State University.</p>
+          <p>This application was created by Samuel Barney, Justin Moua, and Mark Taylor in Spring 2025 at Oklahoma State University.</p>
         <div className="horizontalContainer">
             <div className="authorCard">
-            <img src={'/missing_textures2.png'} alt="Samuel Barney" />
+            <img src={'/silhouette.png'} alt="Samuel Barney" />
             <p>Samuel Barney</p>
             <a href='https://www.linkedin.com/in/samuel-barney/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
             </div>
@@ -66,9 +66,9 @@ const WelcomeButtons = () => {
             
 
             <div className="authorCard">
-            <img src={'/missing_textures2.png'} alt="Mark Taylor" />
+            <img src={'/silhouette.png'} alt="Mark Taylor" />
             <p>Mark Taylor</p>
-            <a href='https://www.linkedin.com/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
+            <a href='https://www.linkedin.com/in/mark-taylor-94282a363/' target="_blank"><img className="linkedin" src="/linkedin.png"></img></a>
             <a href='https://github.com/MarkkusBoi' target="_blank"><img className="github" src="/github.png"></img></a>
             </div>
             

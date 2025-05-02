@@ -1,47 +1,10 @@
-# Example file header
+# Machine Learning Learning Environment
 
-```
-/* <Filename>
- *
- * AUTHOR(S):
- *
- * PURPOSE: What is this file used for and WHY?
- *
- * NOTES: <space to leave important information about development.
- *       Ex. DO NOT TOUCH "my_function"!
- *       Ex. Follow this format when creating snap points -> <format>
- */
-```
+This is a web-application created by Samuel Barney, Justin Moua, and Mark Taylor in Spring of 2025 at Oklahoma State University (OSU). 
+This project was created for OSU's Computer Science Senior Capstone course by Dr. Asaad Althoubi. 
 
+Our project is an educational and interactive resource for users who are interested in machine learning but are unfamiliar with how it works. 
 
-# TODO List
+Interested in seeing the website? Click the link below to see for yourself!
 
-# TODO functional (High Priority)
-- [x] Animate step-by-step backpropagation at the beginning of training. After X seconds, the training should speed up.
-- [ ] Add visual component to neurons that reflect biases
-- [x] Figure out how to package the webapp - JM
-- [x] Add a fullscreen button in the bottom right - JM
-- [x] Make objects removeable by dragging to specific location - SB
-- [x] Change startNode to 'Data Batcher'
-- [x] Add specific drawers for datasets and activation functions - SB
-- [x] Add tooltip buttons for each type of object and some buttons. (possibly add links to websites with more information)
-- [x] Update welcome screen to be useful. I.e. add information about the sandbox, what it's for, etc.
-  
-# TODO visual (Medium Priority)
-- [x] Move button bar to the top of the screen
-- [x] Resize objects so that spacing and linker lines look good.
-- [x] Update activation function visuals to show what data it modifys (vertical highlight)
-- [x] Update all objects so that they match the style of the neurons
-- [x] Update snap point visuals so that they're linked to their object with a line.
-
-# END OF PROJECT TODO
-- [ ] Standardize inline comments
-- [x] Create dataset files and update dataset-defaults.js with their information
-- [x] Update header comments
-- [ ] Remove unused variables, functions, and classes.
-- [x] Rename variables, functions, and classes to be appropriate.
-- [x] Cleanup and refactor code where appropriate to improve readability.
-
-# Notes for presentation
- - Future work: allow user to select which input features to utilize
- - Talk about what components are dynamic vs state (e.g. dataset graphs)
+https://mlle.netlify.app/
